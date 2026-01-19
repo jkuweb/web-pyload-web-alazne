@@ -163,7 +163,7 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		grid-column: 1fr;
 	}
 
-	@media screen and (width >= 425px) {
+	@media screen and (min-width: 425px) {
 		.h-footer__grid {
 			position: relative;
 			display: grid;
@@ -190,7 +190,7 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		}
 	}
 
-	@media screen and (width >= 47.82rem) {
+	@media screen and (min-width: 47.82rem) {
 		.h-footer__grid {
 			grid-template-columns: repeat(3, 1fr);
 			justify-items: center;
@@ -198,7 +198,7 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		}
 	}
 
-	@media screen and (width >= 950px) {
+	@media screen and (min-width: 950px) {
 		.h-footer__grid {
 			grid-template-columns: 2fr 2fr 2fr 1fr;
 			justify-items: center;
