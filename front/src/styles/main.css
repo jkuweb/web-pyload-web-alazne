@@ -260,7 +260,7 @@ p {
 	line-height: 1.7;
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	p {
 		font-size: 1.125rem;
 	}
@@ -276,7 +276,7 @@ h2 {
 	text-align: center;
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	h2 {
 		font-size: 2rem;
 	}
@@ -354,7 +354,7 @@ main {
 	height: 72px;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.header__logo {
 		position: absolute;
 		top: 0;
@@ -365,7 +365,7 @@ main {
 	}
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.header__logo {
 		position: fixed;
 		padding: 3px;
@@ -377,7 +377,7 @@ main {
 	padding: 0 var(--wrapper);
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	.wrapper {
 		padding: 0 calc(var(--wrapper) * 2);
 	}
@@ -391,12 +391,6 @@ main {
 	margin: 4rem auto 0;
 }
 
-.bg-service {
-	/*background-image: url('https://res.cloudinary.com/joseba/image/upload/f_auto,q_auto:eco/v1655143483/alazne_website/bwubcnuab0ffgja4e1dn.jpg');*/
-}
-
-/*.bg-contact { background-image: url("https://res.cloudinary.com/joseba/image/upload/c_scale,f_auto,w_1920/v1655403552/alazne_website/hyooexfbcrjrq1ljyjln.jpg"); }*/
-
 /** #HERO SECTION **/
 .hero-image {
 	position: relative;
@@ -409,7 +403,7 @@ main {
 	clip-path: polygon(0 0, 100% 0%, 100% 100%, 0 92%);
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image {
 		max-width: 100%;
 		min-height: 83vh;
@@ -431,7 +425,7 @@ main {
 		opacity 0.3s;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__overlay {
 		min-height: 106vh;
 	}
@@ -443,7 +437,7 @@ main {
 	padding-top: 3rem;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__info {
 		display: block;
 		max-width: 1245px;
@@ -479,7 +473,7 @@ main {
 	content: '';
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__text {
 		position: relative;
 		top: 6rem;
@@ -516,7 +510,7 @@ main {
 	text-align: left;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__text > h1 {
 		color: #222;
 		font-size: 42px;
@@ -531,7 +525,7 @@ main {
 	left: 20px;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__info > a {
 		position: absolute;
 		bottom: -95%;
@@ -539,7 +533,7 @@ main {
 	}
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.hero-image__info > .service-text {
 		min-height: 27rem !important;
 	}
@@ -620,7 +614,7 @@ main {
 
 /** #PARAGRAPHS **/
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	p {
 		font-size: 1.2rem;
 	}
@@ -632,7 +626,7 @@ main {
 	hyphens: manual;
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	.paragraph {
 		margin-right: auto;
 		margin-left: auto;
@@ -667,13 +661,13 @@ main {
 		rgb(0 0 0 / 22%) 0 10px 10px;
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	.h-contact {
 		width: 70%;
 	}
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.h-contact {
 		width: 70%;
 		max-width: 47rem;
@@ -770,7 +764,7 @@ service-paragraph > ul {
 	text-align: center;
 }
 
-@media screen and (width >= 47.82rem) {
+@media screen and (min-width: 47.82rem) {
 	.services__options {
 		display: flex;
 		justify-content: space-around;
@@ -897,7 +891,7 @@ service-paragraph > ul {
 	bottom: -85px;
 }
 
-@media screen and (width >= 64rem) {
+@media screen and (min-width: 64rem) {
 	.service-box-info > div {
 		margin-top: 0;
 	}

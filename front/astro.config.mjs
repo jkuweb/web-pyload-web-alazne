@@ -36,16 +36,15 @@ export default defineConfig({
 		}),
 	},
 	build: {
-		inlineStylesheets: 'auto', // Inline CSS crítico automáticamente
-		assets: '_astro', // Carpeta para assets
+		inlineStylesheets: 'auto',
+		assets: '_astro',
 	},
 	vite: {
 		build: {
-			cssCodeSplit: true, // Split CSS por página
+			cssCodeSplit: true,
 			rollupOptions: {
 				output: {
 					manualChunks: {
-						// Separar vendor chunks grandes
 						glider: ['glider-js'],
 					},
 				},
@@ -79,7 +78,6 @@ export default defineConfig({
 				'https://aitamasleepcoaching.com/eu/contact',
 			],
 		}),
-		// Opcional: Compresión de assets
 		compress({
 			CSS: true,
 			HTML: {
@@ -87,7 +85,7 @@ export default defineConfig({
 				collapseWhitespace: true,
 				removeComments: true,
 			},
-			Image: false, // Cloudinary ya optimiza
+			Image: false,
 			JavaScript: true,
 			SVG: true,
 		}),
