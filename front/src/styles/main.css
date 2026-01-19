@@ -956,3 +956,14 @@ service-paragraph > ul {
 .text-justify {
 	text-align: justify !important;
 }
+.no-js .site-navigation {
+	display: none;
+}
+
+.site-navigation {
+	transition: transform 0.3s ease;
+}
+
+.site-navigation.is-active {
+	transform: translateX(0);
+}
