@@ -83,14 +83,12 @@ if (result?.data) {
 	alternates={alternates}
 	preloadImages={preloadImages}
 >
-	<!-- Solo en la home: Organization Schema -->
 	<OrganizationSchema
 		slot="head"
 		description={seoDescription}
 		locale={currentLang}
 	/>
 
-	<!-- En todas las páginas: WebPage Schema -->
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
@@ -99,7 +97,6 @@ if (result?.data) {
 		image={seoImage}
 	/>
 
-	<!-- En todas las páginas: Breadcrumbs -->
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />
 	<section>
 		<div
@@ -181,14 +178,6 @@ if (result?.data) {
 			</div>
 		</div>
 		<div class="h-job__img">
-			<!-- <OptimizedImage
-					src={page.layout[5].media.unpicUrl}
-					width={480}
-					height={446}
-					alt={page.layout[5].media.alt || ''}
-					loading="lazy"
-					fetchpriority="low"
-				/> -->
 			<Image
 				src={page.layout[5].media.unpicUrl}
 				width={480}

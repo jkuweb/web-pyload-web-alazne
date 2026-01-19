@@ -110,5 +110,5 @@ export default defineConfig({
 		},
 	},
 	adapter: netlify(),
-	output: 'server',
+	output: 'static',
 });
