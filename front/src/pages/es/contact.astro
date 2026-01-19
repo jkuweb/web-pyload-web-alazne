@@ -83,7 +83,9 @@ if (result?.data) {
 	<section>
 		<div
 			class="hero-image bg-contact"
-			style={layoutImage?.unpicUrl ? `background-image: url(${layoutImage.unpicUrl})`}
+			style={layoutImage?.unpicUrl
+				? `background-image: url(${layoutImage.unpicUrl})`
+				: ''}
 		>
 		</div>
 	</section>
