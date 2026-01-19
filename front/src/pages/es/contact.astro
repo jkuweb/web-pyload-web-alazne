@@ -84,316 +84,325 @@ if (result?.data) {
 	<section>
 		<div
 			class="hero-image bg-contact"
-			style={layoutImage?.unpicUrl
-				? `background-image: url(${layoutImage.unpicUrl})`
-				: ''}
+			style={`
+    min-height: 37vh;
+    ${
+			layoutImage?.unpicUrl
+				? `background-image: url(${layoutImage.unpicUrl});`
+				: ''
+		}
+  `}
 		>
 		</div>
-	</section>
-	<div id="contact"></div>
+		<div id="contact"></div>
 
-	<section class="h-contact h-contact-page">
-		<div
-			class="h-contact-page__col1"
-			style={`background-image: url(${page.layout[0].media.unpicUrl})`}
-		>
-		</div>
-		<div class="h-contact-page__col2">
-			<div class="wrapper" style="margin-top: 3rem;">
-				<p class="heading-title" tabindex="0">Contacto</p>
-				<h2 class="heading-secondary animated fadeInUp" tabindex="0">
-					Formulario de contacto
-				</h2>
-				<div class="paragraph animated u-text-align-center fadeInUp">
-					<p tabindex="0">¡Ponte en contacto conmigo y hablamos!</p>
-				</div>
-			</div>
-			<form
-				id="contactPageForm"
-				class="h-contact__form h-contact-page__form"
-				action={actions.send}
-				method="POST"
-				onsubmit="return contactPageFormSend(event)"
+		<section class="h-contact h-contact-page">
+			<div
+				class="h-contact-page__col1"
+				style={`background-image: url(${page.layout[0].media.unpicUrl})`}
 			>
-				<div class="h-contact-page__field">
-					<label class="h-contact-page__label" for="contactPageName"
-						>¿Cómo te llamas?</label
-					>
-					<input
-						type="text"
-						id="contactPageName"
-						name="username"
-						required=""
-						onfocus="loadRecaptcha()"
-					/>
-					<span id="error-name" style="color:#eb374d"
-						>{inputErrors.username}</span
-					>
+			</div>
+			<div class="h-contact-page__col2">
+				<div class="wrapper" style="margin-top: 3rem;">
+					<p class="heading-title" tabindex="0">Contacto</p>
+					<h2 class="heading-secondary animated fadeInUp" tabindex="0">
+						Formulario de contacto
+					</h2>
+					<div class="paragraph animated u-text-align-center fadeInUp">
+						<p tabindex="0">¡Ponte en contacto conmigo y hablamos!</p>
+					</div>
 				</div>
-				<div class="h-contact-page__field">
-					<label class="h-contact-page__label" for="contactPageEmail"
-						>Email</label
-					>
-					<input
-						type="email"
-						id="contactPageEmail"
-						name="email"
-						required=""
-						onfocus="loadRecaptcha()"
-					/>
-					<span id="error-email" style="color:#eb374d">{inputErrors.email}</span
-					>
-				</div>
-				<div class="h-contact-page__field">
-					<label class="h-contact-page__label" for="contactPageSelect"
-						>Selecciona un asunto:</label
-					>
-					<select
-						name="select"
-						id="contactPageSelect"
-						onfocus="loadRecaptcha()"
-					>
-						<option value="" selected=""></option>
-						<option value="Plan de sueño personalizado con seguimiento"
-							>Plan de sueño personalizado con seguimiento</option
-						>
-						<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
-						<option value="Consultas">Consultas</option>
-						<option value="Encuentros grupales">Encuentros grupales</option>
-						<option value="Plan de sueño conmigo pero a tu ritmo"
-							>Plan de sueño conmigo pero a tu ritmo</option
-						>
-					</select>
-					<span id="error-reason" style="color:#eb374d"
-						>{inputErrors.select}</span
-					>
-				</div>
-				<div class="h-contact-page__field">
-					<label class="h-contact-page__label" for="contactPageMessage"
-						>Mensaje</label
-					>
-					<textarea
-						id="contactPageMessage"
-						name="message"
-						cols="40"
-						rows="10"
-						required=""
-						onfocus="loadRecaptcha()"></textarea>
-					<span id="error-message" style="color:#eb374d"
-						>{inputErrors.message}</span
-					>
-				</div>
-				<input type="hidden" name="lang" id="idioma" value={currentLang} />
-				<input type="hidden" id="recaptcha-token" name="recaptcha" />
-				<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
-				<button
-					id="contactPageBtn"
-					class="btn btn-section animated h-contact__btn g-recaptcha"
-					style="z-index: 0 margin-top: 1rem;"
-					data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
-					data-action="submit"
-					data-callback="onSubmit"
-					disabled>Enviar</button
+				<form
+					id="contactPageForm"
+					class="h-contact__form h-contact-page__form"
+					action={actions.send}
+					method="POST"
+					onsubmit="return contactPageFormSend(event)"
 				>
-				<div class="h-contact__footer">
-					<input
-						id="contactPageTerms"
-						type="checkbox"
-						name="termsAccepted"
-						required=""
-						onfocus="loadRecaptcha()"
-						aria-label="Aceptar terminos"
-					/>
-					<p style="font-size: .9rem;line-height: 1.2; margin-top:1rem;">
-						Todos los datos aportados por el usuario en este formulario NO
-						tendrán persistencia en ninguna base de datos ni en ningún otro
-						sistema de persistencia.
-					</p>
-				</div>
-				<span id="error-terms" style="color:#eb374d">
-					{inputErrors.termsAccepted}
-				</span>
-			</form>
-			<SuccessContactPopup />
-		</div>
+					<div class="h-contact-page__field">
+						<label class="h-contact-page__label" for="contactPageName"
+							>¿Cómo te llamas?</label
+						>
+						<input
+							type="text"
+							id="contactPageName"
+							name="username"
+							required=""
+							onfocus="loadRecaptcha()"
+						/>
+						<span id="error-name" style="color:#eb374d"
+							>{inputErrors.username}</span
+						>
+					</div>
+					<div class="h-contact-page__field">
+						<label class="h-contact-page__label" for="contactPageEmail"
+							>Email</label
+						>
+						<input
+							type="email"
+							id="contactPageEmail"
+							name="email"
+							required=""
+							onfocus="loadRecaptcha()"
+						/>
+						<span id="error-email" style="color:#eb374d"
+							>{inputErrors.email}</span
+						>
+					</div>
+					<div class="h-contact-page__field">
+						<label class="h-contact-page__label" for="contactPageSelect"
+							>Selecciona un asunto:</label
+						>
+						<select
+							name="select"
+							id="contactPageSelect"
+							onfocus="loadRecaptcha()"
+						>
+							<option value="" selected=""></option>
+							<option value="Plan de sueño personalizado con seguimiento"
+								>Plan de sueño personalizado con seguimiento</option
+							>
+							<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
+							<option value="Consultas">Consultas</option>
+							<option value="Encuentros grupales">Encuentros grupales</option>
+							<option value="Plan de sueño conmigo pero a tu ritmo"
+								>Plan de sueño conmigo pero a tu ritmo</option
+							>
+						</select>
+						<span id="error-reason" style="color:#eb374d"
+							>{inputErrors.select}</span
+						>
+					</div>
+					<div class="h-contact-page__field">
+						<label class="h-contact-page__label" for="contactPageMessage"
+							>Mensaje</label
+						>
+						<textarea
+							id="contactPageMessage"
+							name="message"
+							cols="40"
+							rows="10"
+							required=""
+							onfocus="loadRecaptcha()"></textarea>
+						<span id="error-message" style="color:#eb374d"
+							>{inputErrors.message}</span
+						>
+					</div>
+					<input type="hidden" name="lang" id="idioma" value={currentLang} />
+					<input type="hidden" id="recaptcha-token" name="recaptcha" />
+					<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+					<button
+						id="contactPageBtn"
+						class="btn btn-section animated h-contact__btn g-recaptcha"
+						style="z-index: 0 margin-top: 1rem;"
+						data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
+						data-action="submit"
+						data-callback="onSubmit"
+						disabled>Enviar</button
+					>
+					<div class="h-contact__footer">
+						<input
+							id="contactPageTerms"
+							type="checkbox"
+							name="termsAccepted"
+							required=""
+							onfocus="loadRecaptcha()"
+							aria-label="Aceptar terminos"
+						/>
+						<p style="font-size: .9rem;line-height: 1.2; margin-top:1rem;">
+							Todos los datos aportados por el usuario en este formulario NO
+							tendrán persistencia en ninguna base de datos ni en ningún otro
+							sistema de persistencia.
+						</p>
+					</div>
+					<span id="error-terms" style="color:#eb374d">
+						{inputErrors.termsAccepted}
+					</span>
+				</form>
+				<SuccessContactPopup />
+			</div>
+		</section>
 	</section>
-</Layout>
 
-<script type="module">
-	const lang = window.location.pathname.split('/')[1] || 'es';
+	<script type="module">
+		const lang = window.location.pathname.split('/')[1] || 'es';
 
-	const messages =
-		{
-			es: {
-				nameRequired: 'El nombre es obligatorio',
-				nameInvalid: 'El nombre debe de tener al menos 2 caracter',
-				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
-				emailInvalid: 'Email no válido',
-				reasonRequired: 'Selecciona un motivo',
-				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
-				termsRequired: 'Debes aceptar los términos',
+		const messages =
+			{
+				es: {
+					nameRequired: 'El nombre es obligatorio',
+					nameInvalid: 'El nombre debe de tener al menos 2 caracter',
+					nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
+					emailInvalid: 'Email no válido',
+					reasonRequired: 'Selecciona un motivo',
+					messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
+					termsRequired: 'Debes aceptar los términos',
+				},
+				eu: {
+					nameRequired: 'Izena derrigorrezkoa da',
+					nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
+					nameLengthInvalid:
+						'Izenak ezin ditu 50 karaktere baino gehiago izan.',
+					emailInvalid: 'Emaila ez da baliozkoa',
+					reasonRequired: 'Aukera bat hautatu',
+					messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
+					termsRequired: 'Baldintzak onartu behar dituzu',
+				},
+			}[lang] || messages.es;
+
+		const form = document.getElementById('contactPageForm');
+		const submitBtn = document.getElementById('contactPageBtn');
+		document.addEventListener('DOMContentLoaded', () => {
+			submitBtn?.disabled;
+		});
+
+		const fields = {
+			name: {
+				input: document.getElementById('contactPageName'),
+				error: document.getElementById('error-name'),
+				validate: (v) => {
+					const nameLength = v.length;
+					if (typeof v !== 'string' || v.trim() === '') {
+						return messages.nameRequired;
+					} else if (nameLength <= 2) {
+						return messages.nameInvalid;
+					}
+
+					return nameLength > 50 ? messages.nameLengthInvalid : true;
+				},
 			},
-			eu: {
-				nameRequired: 'Izena derrigorrezkoa da',
-				nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
-				nameLengthInvalid: 'Izenak ezin ditu 50 karaktere baino gehiago izan.',
-				emailInvalid: 'Emaila ez da baliozkoa',
-				reasonRequired: 'Aukera bat hautatu',
-				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
-				termsRequired: 'Baldintzak onartu behar dituzu',
+			email: {
+				input: document.getElementById('contactPageEmail'),
+				error: document.getElementById('error-email'),
+				validate: (v) =>
+					/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
 			},
-		}[lang] || messages.es;
+			reason: {
+				input: document.getElementById('contactPageSelect'),
+				error: document.getElementById('error-reason'),
+				validate: (v) => v !== '' || messages.reasonRequired,
+			},
+			message: {
+				input: document.getElementById('contactPageMessage'),
+				error: document.getElementById('error-message'),
+				validate: (v) => v.trim().length >= 10 || messages.messageShort,
+			},
+			terms: {
+				input: document.getElementById('contactPageTerms'),
+				error: document.getElementById('error-terms'),
+				validate: (v, input) => input.checked || messages.termsRequired,
+			},
+		};
 
-	const form = document.getElementById('contactPageForm');
-	const submitBtn = document.getElementById('contactPageBtn');
-	document.addEventListener('DOMContentLoaded', () => {
-		submitBtn?.disabled;
-	});
+		function validateAll() {
+			let valid = true;
 
-	const fields = {
-		name: {
-			input: document.getElementById('contactPageName'),
-			error: document.getElementById('error-name'),
-			validate: (v) => {
-				const nameLength = v.length;
-				if (typeof v !== 'string' || v.trim() === '') {
-					return messages.nameRequired;
-				} else if (nameLength <= 2) {
-					return messages.nameInvalid;
+			Object.values(fields).forEach(({ input, error, validate }) => {
+				const value = input.type === 'checkbox' ? input.checked : input.value;
+				const result = validate(value, input);
+
+				if (result !== true) {
+					error.textContent = result;
+					input.classList.add('invalid');
+					input.setAttribute('aria-invalid', 'true');
+					valid = false;
+				} else {
+					error.textContent = '';
+					input.classList.remove('invalid');
+					input.setAttribute('aria-invalid', 'false');
 				}
+			});
 
-				return nameLength > 50 ? messages.nameLengthInvalid : true;
-			},
-		},
-		email: {
-			input: document.getElementById('contactPageEmail'),
-			error: document.getElementById('error-email'),
-			validate: (v) =>
-				/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
-		},
-		reason: {
-			input: document.getElementById('contactPageSelect'),
-			error: document.getElementById('error-reason'),
-			validate: (v) => v !== '' || messages.reasonRequired,
-		},
-		message: {
-			input: document.getElementById('contactPageMessage'),
-			error: document.getElementById('error-message'),
-			validate: (v) => v.trim().length >= 10 || messages.messageShort,
-		},
-		terms: {
-			input: document.getElementById('contactPageTerms'),
-			error: document.getElementById('error-terms'),
-			validate: (v, input) => input.checked || messages.termsRequired,
-		},
-	};
+			submitBtn.disabled = !valid;
+			return valid;
+		}
 
-	function validateAll() {
-		let valid = true;
+		Object.values(fields).forEach(({ input }) => {
+			const validateAndUpdateButton = () => {
+				validateAll();
+			};
 
-		Object.values(fields).forEach(({ input, error, validate }) => {
-			const value = input.type === 'checkbox' ? input.checked : input.value;
-			const result = validate(value, input);
+			input.addEventListener('input', validateAndUpdateButton);
+			input.addEventListener('change', validateAndUpdateButton);
+			input.addEventListener('blur', validateAndUpdateButton);
+		});
 
-			if (result !== true) {
-				error.textContent = result;
-				input.classList.add('invalid');
-				input.setAttribute('aria-invalid', 'true');
-				valid = false;
-			} else {
-				error.textContent = '';
-				input.classList.remove('invalid');
-				input.setAttribute('aria-invalid', 'false');
+		form.addEventListener('submit', (e) => {
+			if (!validateAll()) {
+				e.preventDefault();
 			}
 		});
+	</script>
 
-		submitBtn.disabled = !valid;
-		return valid;
-	}
+	<script is:inline>
+		let recaptchaCargado = false;
 
-	Object.values(fields).forEach(({ input }) => {
-		const validateAndUpdateButton = () => {
-			validateAll();
-		};
+		function loadRecaptcha() {
+			if (recaptchaCargado) return;
+			recaptchaCargado = true;
 
-		input.addEventListener('input', validateAndUpdateButton);
-		input.addEventListener('change', validateAndUpdateButton);
-		input.addEventListener('blur', validateAndUpdateButton);
-	});
-
-	form.addEventListener('submit', (e) => {
-		if (!validateAll()) {
-			e.preventDefault();
+			const script = document.createElement('script');
+			script.src =
+				'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
+			script.async = true;
+			script.defer = true;
+			script.onload = () => {
+				grecaptcha.ready(() => {
+					window.recaptchaReady = true;
+				});
+			};
+			document.head.appendChild(script);
 		}
-	});
-</script>
+		function contactPageFormSend(event) {
+			event.preventDefault();
 
-<script is:inline>
-	let recaptchaCargado = false;
+			if (!validateAll()) {
+				console.warn('❌ El formulario tiene errores de validación.');
+				return false;
+			}
 
-	function loadRecaptcha() {
-		if (recaptchaCargado) return;
-		recaptchaCargado = true;
-
-		const script = document.createElement('script');
-		script.src =
-			'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
-		script.async = true;
-		script.defer = true;
-		script.onload = () => {
+			if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
+				alert(
+					'⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.',
+				);
+				return false;
+			}
 			grecaptcha.ready(() => {
-				window.recaptchaReady = true;
+				grecaptcha
+					.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
+						action: 'submit',
+					})
+					.then(onSubmit);
 			});
-		};
-		document.head.appendChild(script);
-	}
-	function contactPageFormSend(event) {
-		event.preventDefault();
 
-		if (!validateAll()) {
-			console.warn('❌ El formulario tiene errores de validación.');
 			return false;
 		}
 
-		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
-			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
-			return false;
-		}
-		grecaptcha.ready(() => {
-			grecaptcha
-				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
-					action: 'submit',
-				})
-				.then(onSubmit);
-		});
-
-		return false;
-	}
-
-	function onSubmit(token) {
-		fetch('/recaptcha', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ recaptcha: token }),
-		})
-			.then((response) => response.json())
-			.then((gResponse) => {
-				if (gResponse.success && gResponse.score >= 0.5) {
-					const formToken = document.getElementById('csrf_token')?.value;
-					if (!formToken) {
-						alert('⚠️ Falta token CSRF');
-						return;
-					}
-					document.getElementById('recaptcha-token').value = token;
-					document.getElementById('contactPageForm').submit();
-				} else {
-					console.warn('❌ Falló la verificación de reCAPTCHA');
-					alert('No pudimos verificar que eres humano.');
-				}
+		function onSubmit(token) {
+			fetch('/recaptcha', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ recaptcha: token }),
 			})
-			.catch((err) => {
-				console.error('⚠️ Error en verificación reCAPTCHA', err);
-				alert('Error al verificar reCAPTCHA. Intenta más tarde.');
-			});
-	}
-</script>
+				.then((response) => response.json())
+				.then((gResponse) => {
+					if (gResponse.success && gResponse.score >= 0.5) {
+						const formToken = document.getElementById('csrf_token')?.value;
+						if (!formToken) {
+							alert('⚠️ Falta token CSRF');
+							return;
+						}
+						document.getElementById('recaptcha-token').value = token;
+						document.getElementById('contactPageForm').submit();
+					} else {
+						console.warn('❌ Falló la verificación de reCAPTCHA');
+						alert('No pudimos verificar que eres humano.');
+					}
+				})
+				.catch((err) => {
+					console.error('⚠️ Error en verificación reCAPTCHA', err);
+					alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+				});
+		}
+	</script>
+</Layout>

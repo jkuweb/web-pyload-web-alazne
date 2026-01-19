@@ -85,9 +85,14 @@ if (result?.data) {
 	<section>
 		<div
 			class="hero-image bg-contact"
-			style={layoutImage?.unpicUrl
-				? `background-image: url(${layoutImage.unpicUrl})`
-				: ''}
+			style={`
+    min-height: 37vh;
+    ${
+			layoutImage?.unpicUrl
+				? `background-image: url(${layoutImage.unpicUrl});`
+				: ''
+		}
+  `}
 		>
 		</div>
 		<div id="contact"></div>
@@ -335,7 +340,6 @@ if (result?.data) {
 		script.async = true;
 		script.defer = true;
 		script.onload = () => {
-			// Solo permitir envío cuando grecaptcha está realmente listo
 			grecaptcha.ready(() => {
 				window.recaptchaReady = true;
 			});
@@ -345,19 +349,16 @@ if (result?.data) {
 	function contactPageFormSend(event) {
 		event.preventDefault();
 
-		// Validar antes de continuar
 		if (!validateAll()) {
 			console.warn('❌ El formulario tiene errores de validación.');
 			return false;
 		}
 
-		// Verificar si reCAPTCHA está listo
 		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
 			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
 			return false;
 		}
 
-		// Ejecutar reCAPTCHA
 		grecaptcha.ready(() => {
 			grecaptcha
 				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
@@ -378,14 +379,12 @@ if (result?.data) {
 			.then((response) => response.json())
 			.then((gResponse) => {
 				if (gResponse.success && gResponse.score >= 0.5) {
-					// ✅ Establecer el token en el input oculto
 					const formToken = document.getElementById('csrf_token')?.value;
 					if (!formToken) {
 						alert('⚠️ Falta token CSRF');
 						return;
 					}
 					document.getElementById('recaptcha-token').value = token;
-					// ✅ Enviar el formulario
 					document.getElementById('contactPageForm').submit();
 				} else {
 					console.warn('❌ Falló la verificación de reCAPTCHA');
