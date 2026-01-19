@@ -159,8 +159,8 @@ export default buildConfig({
     // 'https://api.aitamasleepcoaching.com',
     process.env.FRONTEND_URL,
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
-    // 'http://localhost:4321',
-    // 'http://localhost:3000',
+    'http://localhost:4321',
+    'http://localhost:3000',
   ].filter(Boolean),
   csrf: [
     // 'https://www.aitamasleepcoaching.com',
@@ -168,7 +168,7 @@ export default buildConfig({
     // 'https://api.aitamasleepcoaching.com',
     process.env.FRONTEND_URL,
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
-    // 'http://localhost:4321',
-    // 'http://localhost:3000',
+    'http://localhost:4321',
+    'http://localhost:3000',
   ].filter(Boolean),
 })
