@@ -99,7 +99,9 @@ if (result?.data) {
 		<section class="h-contact h-contact-page">
 			<div
 				class="h-contact-page__col1"
-				style={`background-image: url(${page.layout[0].media.unpicUrl})`}
+				style={page.layout[0]?.media?.unpicUrl
+					? `background-image: url('${page.layout[0].media.unpicUrl}')`
+					: ''}
 			>
 			</div>
 			<div class="h-contact-page__col2">
@@ -189,7 +191,7 @@ if (result?.data) {
 					<button
 						id="contactPageBtn"
 						class="btn btn-section animated h-contact__btn g-recaptcha"
-						style="z-index: 0 margin-top: 1rem;"
+						style="z-index: 0; margin-top: 1rem;"
 						data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
 						data-action="submit"
 						data-callback="onSubmit"
