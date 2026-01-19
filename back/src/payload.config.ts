@@ -161,6 +161,7 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
     'http://localhost:3000',
+    'web-pyload-web-alazne-production.up.railway.app',
   ].filter(Boolean),
   csrf: [
     // 'https://www.aitamasleepcoaching.com',
@@ -170,5 +171,6 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
     'http://localhost:3000',
+    'web-pyload-web-alazne-production.up.railway.app',
   ].filter(Boolean),
 })
