@@ -26,6 +26,10 @@ const breadcrumbs = [
 		url: canonical,
 	},
 ];
+const layoutImage =
+	page.layout[0]?.media && typeof page.layout[0].media === 'object'
+		? page.layout[0].media
+		: null;
 
 const seoTitle = page.meta?.title || 'Sobre mí';
 const seoDescription = page.meta?.description || '...';
@@ -42,6 +46,7 @@ const heroImage =
 const preloadImages = [
 	heroImage?.unpicUrl,
 	page.layout[1]?.media?.unpicUrl,
+	layoutImage?.unpicUrl,
 ].filter(Boolean);
 const result = Astro.getActionResult(actions.send);
 
@@ -79,7 +84,9 @@ if (result?.data) {
 	<section>
 		<div
 			class="hero-image bg-contact"
-			style={`min-height: 37vh;background-image: url(${image.unpicUrl})`}
+			style={layoutImage?.unpicUrl
+				? `background-image: url(${layoutImage.unpicUrl})`
+				: ''}
 		>
 		</div>
 		<div id="contact"></div>
