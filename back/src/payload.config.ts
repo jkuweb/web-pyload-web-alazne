@@ -86,6 +86,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  serverURL: process.env.SERVER_URL,
+  cookiePrefix: 'payload',
   localization: {
     locales: [
       {
