@@ -1,0 +1,138 @@
+---
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+
+const currentLang = Astro.currentLocale || 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+const sentences = Astro.props;
+---
+
+<section class="h-sentence display">
+	<div
+		class="animated catchwords glider-containt multiple"
+		style="max-width: 80%; margin:0 auto;"
+	>
+		<ul class="catchwords__list glider-2">
+			{
+				sentences.sentences.map((sentence) => (
+					<li class="testimonials__item">
+						<p>{sentence.title}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function () {
+		const glider2 = new Glider(document.querySelector('.glider-2'), {
+			rewind: true,
+			dots: '#dots-2',
+			arrows: {
+				prev: '.glider-prev',
+				next: '.glider-next',
+			},
+			responsive: [
+				{
+					breakpoint: 300,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 600,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 1500,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+			],
+		});
+
+		function sliderAuto(slider, miliseconds) {
+			const slidesCount = slider.track.childElementCount;
+			let slideTimeout = null;
+			let nextIndex = 1;
+
+			function slide() {
+				slideTimeout = setTimeout(function () {
+					if (nextIndex >= slidesCount) {
+						nextIndex = 0;
+					}
+					slider.scrollItem(nextIndex++);
+				}, miliseconds);
+			}
+
+			slider.ele.addEventListener('glider-animated', function () {
+				window.clearTimeout(slideTimeout);
+				slide();
+			});
+
+			slide();
+		}
+
+		sliderAuto(glider2, 6000);
+	});
+</script>
+<style>
+	/** #H-SENTENCE  */
+	.h-sentence {
+		background-color: pink;
+	}
+
+	.h-sentence {
+		position: relative;
+		width: 100%;
+		padding-top: 100px;
+		padding-bottom: 100px;
+		background-image: url('../../assets/img/sentence_background_img.jpg');
+		background-size: cover;
+		background-position: top center;
+		background-repeat: no-repeat;
+		overflow: hidden;
+		background-attachment: fixed;
+	}
+	.testimonials__item > p {
+		padding: 0;
+		font-size: 1.5rem;
+		text-align: center;
+		font-style: italic;
+		width: 100%;
+	}
+	.h-sentence > div {
+		background: #ffffff57;
+	}
+
+	.h-sentence > p,
+	.h-sentence > div > p {
+		margin: 0;
+		padding: 0;
+		font-size: 1.5rem;
+		text-align: center;
+		font-style: italic;
+	}
+
+	.catchwords {
+		padding: 50px 0;
+	}
+
+	.catchwords__list {
+		display: flex;
+		overflow-x: hidden;
+	}
+
+	.catchwords > ul > div > li > div {
+		display: flex;
+	}
+</style>

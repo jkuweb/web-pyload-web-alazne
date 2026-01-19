@@ -1,0 +1,392 @@
+---
+import SuccessContactPopup from '@/components/pop-ups/SuccessContactPopup.astro';
+import Layout from '@/layouts/Layout.astro';
+import { generateCSRFToken } from '@/utils/csrf';
+import { actions, isInputError } from 'astro:actions';
+import {
+	getAlternateUrls,
+	getCanonicalUrl,
+	getPageBySlug,
+} from '@/utils/payloadFetch';
+import type { Page, Media } from '@/payloadTypes';
+import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
+import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
+
+const currentLang = Astro.currentLocale || 'eu';
+const page: Page | null = await getPageBySlug('kontaktua', 'eu');
+
+if (!page) {
+	return Astro.redirect(`/${currentLang}/`);
+}
+const canonical = getCanonicalUrl('/contact', 'eu');
+const alternates = getAlternateUrls('/contact');
+const breadcrumbs = [
+	{
+		name: currentLang === 'eu' ? 'Kontaktua' : 'Contacto',
+		url: canonical,
+	},
+];
+
+const seoTitle = page.meta?.title || 'Sobre mí';
+const seoDescription = page.meta?.description || '...';
+const seoImage =
+	page.meta?.image?.unpicUrl ||
+	'https://aitamasleepcoaching.com/img/banner.png';
+const heroImage =
+	page.hero && 'media' in page.hero && page.hero.media
+		? typeof page.hero.media === 'object'
+			? page.hero.media
+			: null
+		: null;
+
+const preloadImages = [
+	heroImage?.unpicUrl,
+	page.layout[1]?.media?.unpicUrl,
+].filter(Boolean);
+const result = Astro.getActionResult(actions.send);
+
+const inputErrors = isInputError(result?.error) ? result?.error.fields : {};
+
+const csrf = generateCSRFToken();
+Astro.cookies.set('csrf_token', csrf, {
+	path: '/',
+	httpOnly: true,
+	sameSite: 'strict',
+	secure: true,
+});
+if (result?.data) {
+	return Astro.redirect(`/${currentLang}/contact/?sent=true`);
+}
+---
+
+<Layout
+	title={seoTitle}
+	description={seoDescription}
+	ogImage={seoImage}
+	canonical={canonical}
+	lang="eu"
+	alternates={alternates}
+	preloadImages={preloadImages}
+>
+	<WebPageSchema
+		slot="head"
+		title={seoTitle}
+		description={seoDescription}
+		url={canonical}
+		image={seoImage}
+	/>
+	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+	<section>
+		<div
+			class="hero-image bg-contact"
+			style={`min-height: 37vh;background-image: url(${image.unpicUrl})`}
+		>
+		</div>
+		<div id="contact"></div>
+
+		<section class="h-contact h-contact-page">
+			<div
+				class="h-contact-page__col1"
+				style={`background-image: url(${page.layout[0].media.unpicUrl})`}
+			>
+			</div>
+			<div class="h-contact-page__col2">
+				<div class="wrapper" style="margin-top: 3rem;">
+					<p class="heading-title" tabindex="0">Kontaktua</p>
+					<h2 class="heading-secondary animated fadeInUp" tabindex="0">
+						Harremanetarako formularioa
+					</h2>
+					<div class="paragraph animated u-text-align-center fadeInUp">
+						<p tabindex="0">Jarri nirekin harremanetan eta hitz egingo dugu!</p>
+					</div>
+				</div>
+				<div class="alert alert-success">
+					<ul style="color: #eb374d;"></ul>
+				</div>
+				<form
+					id="contactPageForm"
+					class="h-contact__form h-contact-page__form"
+					action={actions.send}
+					method="POST"
+					onsubmit="return contactPageFormSend(event)"
+				>
+					<div>
+						<label for="contactPageName">Zure izena?</label>
+						<input
+							type="text"
+							id="contactPageName"
+							name="username"
+							required=""
+							onfocus="loadRecaptcha()"
+						/>
+						<span id="error-name" style="color:#eb374d"
+							>{inputErrors.username}</span
+						>
+					</div>
+					<div>
+						<label for="contactPageEmail">posta elektronikoa</label>
+						<input
+							type="email"
+							id="contactPageEmail"
+							name="email"
+							required=""
+							onfocus="loadRecaptcha()"
+						/>
+						<span id="error-email" style="color:#eb374d"
+							>{inputErrors.email}</span
+						>
+					</div>
+					<div>
+						<label for="selectcontactPageSelect">hautatu gai bat</label>
+						<select
+							name="select"
+							id="contactPageSelect"
+							onfocus="loadRecaptcha()"
+						>
+							<option value="" selected=""></option>
+							<option value="Plan de sueño personalizado con seguimiento"
+								>Plan de sueño personalizado con seguimiento</option
+							>
+							<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
+							<option value="Consultas">Consultas</option>
+							<option value="Encuentros grupales">Encuentros grupales</option>
+							<option value="Plan de sueño conmigo pero a tu ritmo"
+								>Plan de sueño conmigo pero a tu ritmo</option
+							>
+						</select>
+						<span id="error-reason" style="color:#eb374d"
+							>{inputErrors.select}</span
+						>
+					</div>
+					<div>
+						<label for="message">mezua</label>
+						<textarea
+							id="contactPageMessage"
+							name="message"
+							cols="40"
+							rows="10"
+							required=""
+							onfocus="loadRecaptcha()"></textarea>
+					</div>
+					<span id="error-message" style="color:#eb374d"
+						>{inputErrors.message}</span
+					>
+					<input type="hidden" name="lang" id="idioma" value={currentLang} />
+					<input type="hidden" id="recaptcha-token" name="recaptcha" />
+					<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+					<button
+						id="contactPageBtn"
+						class="btn btn-section animated h-contact__btn g-recaptcha"
+						style="z-index: 0 margin-top: 1rem;"
+						data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
+						data-action="submit"
+						data-callback="onSubmit"
+						disabled>Bidali</button
+					>
+					<div class="h-contact__footer">
+						<input
+							id="contactPageTerms"
+							type="checkbox"
+							name="termsAccepted"
+							required=""
+							onfocus="loadRecaptcha()"
+							aria-label="Aceptar terminos"
+						/>
+						<p style="font-size: .9rem;line-height: 1.2; margin-top:1rem;">
+							Todos los datos aportados por el usuario en este formulario NO
+							tendrán persistencia en ninguna base de datos ni en ningún otro
+							sistema de persistencia.
+						</p>
+					</div>
+					<span id="error-terms" style="color:#eb374d"></span>
+				</form>
+				<SuccessContactPopup />
+			</div>
+		</section>
+	</section>
+</Layout>
+<script type="module">
+	const lang = window.location.pathname.split('/')[1] || 'es';
+
+	const messages =
+		{
+			es: {
+				nameRequired: 'El nombre es obligatorio',
+				nameInvalid: 'El nombre debe de tener al menos 2 caracter',
+				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
+				emailInvalid: 'Email no válido',
+				reasonRequired: 'Selecciona un motivo',
+				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
+				termsRequired: 'Debes aceptar los términos',
+			},
+			eu: {
+				nameRequired: 'Izena derrigorrezkoa da',
+				nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
+				nameLengthInvalid: 'Izenak ezin ditu 50 karaktere baino gehiago izan.',
+				emailInvalid: 'Emaila ez da baliozkoa',
+				reasonRequired: 'Aukera bat hautatu',
+				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
+				termsRequired: 'Baldintzak onartu behar dituzu',
+			},
+		}[lang] || messages.es;
+
+	const form = document.getElementById('contactPageForm');
+	const submitBtn = document.getElementById('contactPageBtn');
+	document.addEventListener('DOMContentLoaded', () => {
+		submitBtn?.disabled;
+	});
+
+	const fields = {
+		name: {
+			input: document.getElementById('contactPageName'),
+			error: document.getElementById('error-name'),
+			validate: (v) => {
+				const nameLength = v.length;
+				if (typeof v !== 'string' || v.trim() === '') {
+					return messages.nameRequired;
+				} else if (nameLength <= 2) {
+					return messages.nameInvalid;
+				}
+
+				return nameLength > 50 ? messages.nameLengthInvalid : true;
+			},
+		},
+		email: {
+			input: document.getElementById('contactPageEmail'),
+			error: document.getElementById('error-email'),
+			validate: (v) =>
+				/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
+		},
+		reason: {
+			input: document.getElementById('contactPageSelect'),
+			error: document.getElementById('error-reason'),
+			validate: (v) => v !== '' || messages.reasonRequired,
+		},
+		message: {
+			input: document.getElementById('contactPageMessage'),
+			error: document.getElementById('error-message'),
+			validate: (v) => v.trim().length >= 10 || messages.messageShort,
+		},
+		terms: {
+			input: document.getElementById('contactPageTerms'),
+			error: document.getElementById('error-terms'),
+			validate: (v, input) => input.checked || messages.termsRequired,
+		},
+	};
+
+	function validateAll() {
+		let valid = true;
+
+		Object.values(fields).forEach(({ input, error, validate }) => {
+			const value = input.type === 'checkbox' ? input.checked : input.value;
+			const result = validate(value, input);
+
+			if (result !== true) {
+				error.textContent = result;
+				input.classList.add('invalid');
+				input.setAttribute('aria-invalid', 'true');
+				valid = false;
+			} else {
+				error.textContent = '';
+				input.classList.remove('invalid');
+				input.setAttribute('aria-invalid', 'false');
+			}
+		});
+
+		submitBtn.disabled = !valid;
+		return valid;
+	}
+
+	Object.values(fields).forEach(({ input }) => {
+		const validateAndUpdateButton = () => {
+			validateAll();
+		};
+
+		input.addEventListener('input', validateAndUpdateButton);
+		input.addEventListener('change', validateAndUpdateButton);
+		input.addEventListener('blur', validateAndUpdateButton);
+	});
+
+	form.addEventListener('submit', (e) => {
+		if (!validateAll()) {
+			e.preventDefault();
+		}
+	});
+</script>
+
+<script is:inline>
+	let recaptchaCargado = false;
+
+	function loadRecaptcha() {
+		if (recaptchaCargado) return;
+		recaptchaCargado = true;
+
+		const script = document.createElement('script');
+		script.src =
+			'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => {
+			// Solo permitir envío cuando grecaptcha está realmente listo
+			grecaptcha.ready(() => {
+				window.recaptchaReady = true;
+			});
+		};
+		document.head.appendChild(script);
+	}
+	function contactPageFormSend(event) {
+		event.preventDefault();
+
+		// Validar antes de continuar
+		if (!validateAll()) {
+			console.warn('❌ El formulario tiene errores de validación.');
+			return false;
+		}
+
+		// Verificar si reCAPTCHA está listo
+		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
+			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
+			return false;
+		}
+
+		// Ejecutar reCAPTCHA
+		grecaptcha.ready(() => {
+			grecaptcha
+				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
+					action: 'submit',
+				})
+				.then(onSubmit);
+		});
+
+		return false;
+	}
+
+	function onSubmit(token) {
+		fetch('/recaptcha', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ recaptcha: token }),
+		})
+			.then((response) => response.json())
+			.then((gResponse) => {
+				if (gResponse.success && gResponse.score >= 0.5) {
+					// ✅ Establecer el token en el input oculto
+					const formToken = document.getElementById('csrf_token')?.value;
+					if (!formToken) {
+						alert('⚠️ Falta token CSRF');
+						return;
+					}
+					document.getElementById('recaptcha-token').value = token;
+					// ✅ Enviar el formulario
+					document.getElementById('contactPageForm').submit();
+				} else {
+					console.warn('❌ Falló la verificación de reCAPTCHA');
+					alert('No pudimos verificar que eres humano.');
+				}
+			})
+			.catch((err) => {
+				console.error('⚠️ Error en verificación reCAPTCHA', err);
+				alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+			});
+	}
+</script>

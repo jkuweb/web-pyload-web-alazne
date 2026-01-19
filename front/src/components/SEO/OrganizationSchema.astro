@@ -1,0 +1,33 @@
+---
+export interface Props {
+	description: string;
+	locale?: 'es' | 'eu';
+}
+
+const { description, locale = 'es' } = Astro.props;
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: 'Aitama Sleep Coaching',
+	url: 'https://aitamasleepcoaching.com',
+	logo: 'https://aitamasleepcoaching.com/img/logo.png',
+	image: 'https://aitamasleepcoaching.com/img/banner.png',
+	description: description,
+	address: {
+		'@type': 'PostalAddress',
+		addressLocality: 'Donostia',
+		addressRegion: 'Gipuzkoa',
+		addressCountry: 'ES',
+	},
+	sameAs: ['https://www.instagram.com/aitama_sleepcoaching/'],
+	contactPoint: {
+		'@type': 'ContactPoint',
+		contactType: 'Customer Service',
+		availableLanguage: ['es', 'eu'],
+		email: 'info@aitamasleepcoaching.com',
+	},
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

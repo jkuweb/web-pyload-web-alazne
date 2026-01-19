@@ -1,0 +1,360 @@
+---
+import { useTranslations } from '@/i18n/utils';
+import type { languagesList } from '@/i18n/ui';
+import CldImage from '@/components/image/Image.astro';
+import { Image } from 'astro:assets';
+import banerImage from '@/assets/img/baner.png';
+
+const currentLang = Astro.currentLocale || 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+const services = Astro.props;
+---
+
+<ul class="h-services__list">
+	<li class="h-services__item animated">
+		<a href={`/${currentLang}/services/#service-01`} class="h-services__link">
+			<CldImage
+				src={services.services[0].image.unpicUrl}
+				width={500}
+				height={375}
+				alt=""
+				class="lazy h-services__img"
+			/>
+			<a class="h-services__text">{services.services[0].title}</a>
+		</a>
+	</li>
+	<li class="h-services__item animated">
+		<a href={`/${currentLang}/services/#service-02`} class="h-services__link">
+			<CldImage
+				src={services.services[1].image.unpicUrl}
+				width={500}
+				height={375}
+				alt=""
+				class="lazy h-services__img"
+			/>
+			<span class="h-services__text">{services.services[1].title}</span>
+		</a>
+	</li>
+	<li class="h-services__item animated">
+		<a href={`/${currentLang}/services/#service-03`} class="h-services__link">
+			<CldImage
+				src={services.services[2].image.unpicUrl}
+				width={500}
+				height={375}
+				alt=""
+				class="lazy h-services__img"
+			/>
+			<span class="h-services__text">{services.services[2].title}</span>
+		</a>
+	</li>
+	<li class="h-services__item animated">
+		<a href={`/${currentLang}/services/#service-04`} class="h-services__link">
+			<CldImage
+				src={services.services[3].image.unpicUrl}
+				width={500}
+				height={375}
+				alt=""
+				class="lazy h-services__img"
+			/>
+			<span class="h-services__text">{services.services[3].title}</span>
+		</a>
+	</li>
+	<li class="h-services__item animated">
+		<a href={`/${currentLang}/services/#service-05`} class="h-services__link">
+			<CldImage
+				src={services.services[4].image.unpicUrl}
+				width={500}
+				height={375}
+				alt=""
+				class="lazy h-services__img"
+			/>
+			<span class="h-services__text">{services.services[4].title}</span>
+		</a>
+	</li>
+	<li class="h-services__item animated">
+		<a href="#contact" class="h-services__link">
+			<Image
+				src={banerImage}
+				width={513}
+				height={253}
+				alt=""
+				class="lazy h-services__img border-pink"
+			/>
+			<span class="h-services__text">{services.services[5].title}</span>
+		</a>
+	</li>
+</ul>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const elements = document.querySelectorAll<HTMLElement>('.animated');
+
+		const options: IntersectionObserverInit = {
+			threshold: 0.1,
+			rootMargin: '0px 0px -5% 0px',
+		};
+
+		const observer = new IntersectionObserver((entries, observer) => {
+			entries.forEach((entry, index) => {
+				if (entry.target instanceof HTMLElement) {
+					const target = entry.target;
+
+					if (
+						entry.isIntersecting &&
+						!target.classList.contains('animated--done')
+					) {
+						const delay = target.dataset?.delay ?? `${index * 100}`;
+						const animation = target.dataset?.animation ?? 'fadeInUp';
+
+						target.style.animationDelay = `${delay}ms`;
+						target.classList.add(animation, 'animated--done');
+
+						observer.unobserve(target);
+					}
+				}
+			});
+		}, options);
+
+		elements.forEach((el) => observer.observe(el));
+	});
+</script>
+<style is:global>
+	.h-services {
+		margin-top: 8.75rem;
+	}
+
+	.h-services__list {
+		display: grid;
+		place-items: center;
+		-ms-grid-columns: 1fr;
+		grid-template-columns: 1fr;
+		-ms-grid-rows: 23.125rem;
+		grid-template-rows: 23.125rem;
+		grid-row-gap: 2.5rem;
+		margin-top: 5rem;
+	}
+
+	.h-services__list > *:nth-child(1) {
+		grid-row: 1;
+		grid-column: 1;
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-services__list {
+			display: grid;
+			-ms-grid-columns: 1fr 3rem 1fr;
+			grid-template-columns: repeat(2, 1fr);
+			-ms-grid-rows: 2rem 1rem 1fr 1rem 2rem 1rem 1fr 1rem 2rem 1rem 1fr;
+			grid-template-rows: repeat(3, 2rem 1fr);
+			grid-gap: 1rem 3rem;
+		}
+
+		.h-services__list > *:nth-child(1) {
+			grid-row: 1;
+			grid-column: 1;
+		}
+
+		.h-services__list > *:nth-child(2) {
+			grid-row: 1;
+			grid-column: 3;
+		}
+
+		.h-services__list > *:nth-child(3) {
+			grid-row: 3;
+			grid-column: 1;
+		}
+
+		.h-services__list > *:nth-child(4) {
+			grid-row: 3;
+			grid-column: 3;
+		}
+
+		.h-services__list > *:nth-child(5) {
+			grid-row: 5;
+			grid-column: 1;
+		}
+
+		.h-services__list > *:nth-child(6) {
+			grid-row: 5;
+			grid-column: 3;
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.h-services__list {
+			display: grid;
+			justify-content: center;
+			grid-template-columns: repeat(3, 30%);
+			grid-template-rows: repeat(2, 2rem 1fr);
+			-ms-grid-columns: 30% 3rem 30% 3rem 30%;
+			-webkit-box-pack: center;
+			-ms-flex-pack: center;
+			grid-column-gap: 3rem;
+		}
+
+		.h-services__list > *:nth-child(1) {
+			grid-row: 1;
+			grid-column: 1;
+		}
+
+		.h-services__list > *:nth-child(2) {
+			grid-row: 1;
+			grid-column: 3;
+		}
+
+		.h-services__list > *:nth-child(3) {
+			grid-row: 1;
+			grid-column: 5;
+		}
+
+		.h-services__list > *:nth-child(4) {
+			grid-row: 2;
+			grid-column: 1;
+		}
+
+		.h-services__list > *:nth-child(5) {
+			grid-row: 2;
+			grid-column: 3;
+		}
+
+		.h-services__list > *:nth-child(6) {
+			grid-row: 2;
+			grid-column: 5;
+		}
+	}
+
+	.h-services__item {
+		width: 100%;
+		max-width: 23.125rem;
+		opacity: 0;
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-services__item:nth-of-type(1) {
+			grid-row: 1/3;
+			grid-row-align: start;
+			align-self: start;
+		}
+
+		.h-services__item:nth-of-type(2) {
+			grid-row: 2/3;
+			grid-column: 2/3;
+		}
+
+		.h-services__item:nth-of-type(3) {
+			grid-column: 1/2;
+			grid-row-align: start;
+			align-self: start;
+		}
+
+		.h-services__item:nth-of-type(4) {
+			grid-row: 4/5;
+			grid-column: 2/3;
+		}
+		.h-services__item:nth-of-type(5) {
+			grid-row: 6/-1;
+		}
+
+		.h-services__item:nth-of-type(6) {
+			grid-row: 5/-1;
+			grid-column: 2/-1;
+			grid-row-align: start;
+			align-self: start;
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.h-services__item:nth-of-type(1) {
+			grid-row: 1/3;
+			grid-row-align: start;
+			align-self: start;
+		}
+
+		.h-services__item:nth-of-type(2) {
+			grid-row: 2/3;
+			grid-column: 2/3;
+		}
+
+		.h-services__item:nth-of-type(3) {
+			grid-column: 3/4;
+			grid-row-align: start;
+			align-self: start;
+		}
+
+		.h-services__item:nth-of-type(4) {
+			-ms-grid-row-span: 1;
+			grid-row: 3/4;
+			grid-column: 1/2;
+			grid-row-align: start;
+			align-self: start;
+		}
+
+		.h-services__item:nth-of-type(5) {
+			grid-row: 4/-1;
+			grid-column: 2/3;
+		}
+
+		.h-services__item:nth-of-type(6) {
+			grid-row: 3/4;
+			grid-column: 3/4;
+			grid-row-align: start;
+			align-self: start;
+		}
+		.h-services__item:nth-of-type(6) > a > img {
+			border: 1px solid #ff787d;
+			object-fit: contain;
+		}
+	}
+	.h-services__link {
+		text-decoration: none;
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-services__img {
+			transition-duration: 0.3s;
+			transition-property: transform;
+
+			transition-timing-function: ease-out;
+		}
+
+		.h-services__img:hover {
+			transform: translateY(-8px);
+		}
+	}
+
+	.h-services__text {
+		position: relative;
+		top: -30px;
+		display: grid;
+		width: 90%;
+		margin: 0 auto;
+		padding: 1em;
+		border-radius: 0;
+		background-color: #fff;
+		color: #222;
+		font-size: 0.8125em;
+		font-weight: 900;
+		letter-spacing: 1px;
+		text-align: center;
+		text-transform: uppercase;
+		box-shadow: 0 15px 60px 0 rgb(0 0 0 / 10%);
+		fill: #222;
+		border-style: solid;
+		border-width: 5px 5px 2px;
+		border-color: #fff;
+		place-items: center;
+	}
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.fadeInUp {
+		animation: fadeInUp 0.6s ease-out forwards;
+	}
+</style>

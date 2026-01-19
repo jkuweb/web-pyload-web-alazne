@@ -1,0 +1,199 @@
+---
+import CldImage from '@/components/image/Image.astro';
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import RichText from '@/components/RichText/RichText.astro';
+
+const currentLang = Astro.currentLocale || 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+const opinionsPage = Astro.props;
+const opinions = opinionsPage.opinions.opinions;
+---
+
+<section class="h-opinions wrapper">
+	<p class="heading-title u-padding-top-12" style="color:#ff7479" tabindex="0">
+		{opinionsPage.opinions.sectionTitle}
+	</p>
+	<h2 class="heading-secondary animated" tabindex="0">
+		{opinionsPage.opinions.title}
+	</h2>
+	<div class="paragraph h-opinions__text animated">
+		<RichText content={opinionsPage.opinions.richText} />
+	</div>
+	<div class="testimonials wrapper glider-containt multiple">
+		<div class="testimonials__list glider">
+			<div class="testimonials__item">
+				<CldImage
+					src={opinions[0].media.unpicUrl}
+					width={128}
+					height={128}
+					alt=""
+					class="testimonials__img"
+					layout="fixed"
+				/>
+				<blockquote class="testimonials__text">
+					<div>
+						<div>
+							{opinions[0].opinion}
+						</div>
+					</div>
+				</blockquote>
+			</div>
+			<div class="testimonials__item">
+				<CldImage
+					src={opinions[1].media.unpicUrl}
+					width={128}
+					height={128}
+					alt=""
+					class="testimonials__img"
+					layout="fixed"
+				/>
+				<blockquote class="testimonials__text">
+					<div>
+						<div>
+							{opinions[1].opinion}
+						</div>
+					</div>
+				</blockquote>
+			</div>
+			<div class="testimonials__item">
+				<CldImage
+					src={opinions[2].media.unpicUrl}
+					width={128}
+					height={128}
+					alt=""
+					class="testimonials__img"
+					layout="fixed"
+				/>
+				<blockquote class="testimonials__text">
+					<div>
+						<div>
+							{opinions[2].opinion}
+						</div>
+					</div>
+				</blockquote>
+			</div>
+		</div>
+		<button aria-label="Previous" class="testimonials__btn glider-prev"
+			>↜</button
+		>
+		<button aria-label="Next" class="testimonials__btn glider-next">↝</button>
+		<div role="tablist" id="dots" class="glider-dots"></div>
+	</div>
+</section>
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function () {
+		const glider1 = new Glider(document.querySelector('.glider'), {
+			slidesToShow: 3,
+			draggable: true,
+			slidesToScroll: 1,
+			scrollLock: true,
+			dots: '#dots',
+			arrows: {
+				prev: '.glider-prev',
+				next: '.glider-next',
+			},
+			responsive: [
+				{
+					breakpoint: 300,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 600,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 1500,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+			],
+		});
+	});
+</script>
+<style is:inline>
+	.h-opinions {
+		position: relative;
+		width: 100%;
+		min-height: 120vh;
+		background-color: #000;
+		color: var(--neutral-color);
+		clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 100%);
+		transform-style: inherit;
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-opinions {
+			clip-path: polygon(0 0, 100% 19%, 100% 100%, 0 100%);
+			min-height: 80vh;
+		}
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-opinions {
+			min-height: 90vh;
+		}
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-opinions__text {
+			max-width: 50%;
+			margin-right: auto;
+			margin-left: auto;
+		}
+	}
+
+	.testimonials {
+		position: relative;
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.testimonials {
+			max-width: 62.5rem;
+			margin-top: 6rem;
+			margin-right: auto;
+			margin-left: auto;
+		}
+
+		.testimonials__text > p {
+			font-size: 1rem;
+			font-style: italic;
+		}
+	}
+
+	.testimonials__img {
+		width: 8rem;
+		height: 8rem;
+		margin-right: 1rem;
+		border: 3px solid var(--main-color);
+		border-radius: 50%;
+		float: left;
+		shape-outside: circle(50%);
+		object-fit: cover;
+	}
+
+	.testimonials__list {
+		display: -webkit-box;
+		display: flexbox;
+		display: flex;
+		margin-bottom: 2rem;
+		overflow-x: hidden;
+	}
+
+	.testimonials__btn {
+		top: -15%;
+		width: 4rem;
+		height: 4rem;
+	}
+</style>

@@ -1,0 +1,86 @@
+{
+	"name": "plantilla-astro",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"lint:fix": "eslint --ignore-pattern dist/ . --fix",
+		"lint": "eslint . --ignore-pattern dist/ . ",
+		"prettier": "npx prettier . --write",
+		"stylelint": "stylelint 'src/styles/**/*.{css, scss}' --fix",
+		"prepare": "husky",
+		"commit": "git-cz",
+		"test": "vitest",
+		"validate-seo": "node scripts/validate-seo.js"
+	},
+	"dependencies": {
+		"@astrojs/netlify": "^6.6.3",
+		"@astrojs/preact": "^4.1.3",
+		"@astrojs/sitemap": "^3.7.0",
+		"@unpic/astro": "^1.0.2",
+		"astro": "^5.16.5",
+		"astro-compress": "^2.3.9",
+		"cloudinary": "^2.8.0",
+		"resend": "^4.8.0",
+		"svix": "^1.82.0"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.6",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@commitlint/cz-commitlint": "^19.8.1",
+		"@eslint/js": "9.31.0",
+		"@types/node": "^24.10.2",
+		"@typescript-eslint/eslint-plugin": "8.36.0",
+		"@typescript-eslint/parser": "8.36.0",
+		"astro-eslint-parser": "^1.2.2",
+		"commitizen": "^4.3.1",
+		"eslint": "9.31.0",
+		"eslint-config-prettier": "10.1.5",
+		"eslint-plugin-astro": "1.3.1",
+		"eslint-plugin-import": "2.32.0",
+		"eslint-plugin-prettier": "5.5.1",
+		"eslint-plugin-unused-imports": "4.1.4",
+		"glider-js": "^1.7.9",
+		"globals": "16.3.0",
+		"husky": "^9.1.7",
+		"inquirer": "^9.3.8",
+		"lint-staged": "^16.2.7",
+		"postcss-html": "^1.8.0",
+		"prettier": "3.6.2",
+		"prettier-plugin-astro": "0.14.1",
+		"stylelint": "^16.26.1",
+		"stylelint-config-clean-order": "^7.0.0",
+		"stylelint-config-html": "^1.1.0",
+		"stylelint-config-standard": "^38.0.0",
+		"stylelint-config-standard-scss": "^15.0.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "8.36.0",
+		"vitest": "^3.2.4"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{ts,tsx}": [
+			"eslint 'src/**/*'  --fix ",
+			"bash -c tsc --noEmit --pretty",
+			"prettier --write"
+		],
+		"*.astro": [
+			"prettier --write",
+			"eslint"
+		],
+		"*.{css,scss}": "stylelint --fix"
+	},
+	"config": {
+		"commitizen": {
+			"path": "@commitlint/cz-commitlint"
+		}
+	}
+}

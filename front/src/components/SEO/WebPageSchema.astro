@@ -1,0 +1,38 @@
+---
+export interface Props {
+	title: string;
+	description: string;
+	url: string;
+	image?: string;
+	datePublished?: string;
+	dateModified?: string;
+}
+
+const {
+	title,
+	description,
+	url,
+	image = 'https://aitamasleepcoaching.com/img/banner.png',
+	datePublished,
+	dateModified,
+} = Astro.props;
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebPage',
+	name: title,
+	description: description,
+	url: url,
+	image: image,
+	inLanguage: Astro.currentLocale || 'es',
+	isPartOf: {
+		'@type': 'WebSite',
+		name: 'Aitama Sleep Coaching',
+		url: 'https://aitamasleepcoaching.com',
+	},
+	...(datePublished && { datePublished }),
+	...(dateModified && { dateModified }),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

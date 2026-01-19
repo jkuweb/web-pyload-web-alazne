@@ -1,0 +1,33 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+		"allowJs": true,
+		"checkJs": false,
+		"strict": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"],
+		},
+		"types": ["vitest/globals", "astro/client"],
+	},
+	"include": [
+		"src",
+		"astro.config.*",
+		"env.d.ts",
+		".astro/types.d.ts",
+		"vitest.config.ts",
+		"scripts",
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		".env.production",
+		"**/*.spec.ts",
+		"**/*.test.ts",
+	],
+}

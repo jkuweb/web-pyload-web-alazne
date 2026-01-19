@@ -1,0 +1,448 @@
+---
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { actions } from 'astro:actions';
+import SuccessServicePopup from '../pop-ups/SuccessServicePopup.astro';
+
+const currentLang = Astro.currentLocale || 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+
+const { inputErrors, csrf } = Astro.props;
+---
+
+<div id="contact"></div>
+<section class="h-contact">
+	<SuccessServicePopup />
+	<div class="wrapper">
+		<p class="heading-title" tabindex="0">{t('form.heading.text')}</p>
+		<h2 class="heading-secondary animated" tabindex="0">
+			{t('form.heading.text')}
+		</h2>
+		<div class="paragraph animated u-text-align-center">
+			<p tabindex="0">{t('reclamo')}</p>
+		</div>
+	</div>
+	<div>
+		<form
+			id="form"
+			class="h-contact__form"
+			action={actions.send}
+			method="POST"
+			onsubmit="return formSend(event)"
+		>
+			<div>
+				<label for="registration_form_firstName">{t('form.label.nombre')}</label
+				>
+				<input
+					type="text"
+					id="registration_form_firstName"
+					name="username"
+					onfocus="loadRecaptcha()"
+				/>
+				<span id="error-name" style="color:#eb374d">{inputErrors.username}</span
+				>
+			</div>
+			<div>
+				<label for="registration_form_email">{t('form.label.email')}</label>
+				<input
+					type="email"
+					id="registration_form_email"
+					name="email"
+					onfocus="loadRecaptcha()"
+				/>
+				<span id="error-email" style="color:#eb374d">{inputErrors.email}</span>
+			</div>
+			<div>
+				<label for="select">{t('form.label.select')}</label>
+				<select name="select" id="select" onfocus="loadRecaptcha()">
+					<option value="" selected></option>
+					<option value="Plan de sueño personalizado con seguimiento">
+						Plan de sueño personalizado con seguimiento
+					</option>
+					<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
+					<option value="Consultas">Consultas</option>
+					<option value="Encuentros grupales">Encuentros grupales</option>
+					<option value="Plan de sueño conmigo pero a tu ritmo">
+						Plan de sueño conmigo pero a tu ritmo
+					</option>
+				</select>
+				<span id="error-reason" style="color:#eb374d">{inputErrors.select}</span
+				>
+			</div>
+			<div>
+				<label for="message">{t('form.label.mensaje')}</label>
+				<textarea
+					id="message"
+					name="message"
+					cols="40"
+					rows="10"
+					onfocus="loadRecaptcha()"></textarea>
+				<span id="error-message" style="color:#eb374d"
+					>{inputErrors.message}</span
+				>
+			</div>
+			<input type="hidden" name="lang" id="idioma" value={currentLang} />
+			<input type="hidden" id="recaptcha-token" name="recaptcha" />
+			<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+			<button
+				id="contact-btn"
+				class="btn btn-section aminated h-contact__btn g-recaptcha"
+				style="z-index: 0; margin-top: 1rem;"
+				data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
+				data-callback="onSubmit"
+				data-action="submit"
+				disabled
+			>
+				{t('form.btn.texto')}
+			</button>
+			<div class="h-contact__footer">
+				<input
+					id="terms"
+					name="termsAccepted"
+					type="checkbox"
+					onfocus="loadRecaptcha()"
+					aria-label="Aceptar terminos"
+				/>
+				<p>
+					Todos los datos aportados por el usuario en este formulario NO tendrán
+					persistencia en ninguna base de datos ni en ningún otro sistema de
+					persistencia.
+				</p>
+			</div>
+			<span id="error-terms" style="color:#eb374d">
+				{inputErrors.termsAccepted}
+			</span>
+		</form>
+	</div>
+</section>
+<script is:inline>
+	const lang = window.location.pathname.split('/')[1] || 'es';
+
+	const messages =
+		{
+			es: {
+				nameRequired: 'El nombre es obligatorio',
+				nameInvalid: 'El nombre debe de tener al menos 2 caracter',
+				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
+				emailInvalid: 'Email no válido',
+				reasonRequired: 'Selecciona un motivo',
+				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
+				termsRequired: 'Debes aceptar los términos',
+			},
+			eu: {
+				nameRequired: 'Izena derrigorrezkoa da',
+				nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
+				nameLengthInvalid: 'Izenak ezin ditu 50 karaktere baino gehiago izan.',
+				emailInvalid: 'Emaila ez da baliozkoa',
+				reasonRequired: 'Aukera bat hautatu',
+				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
+				termsRequired: 'Baldintzak onartu behar dituzu',
+			},
+		}[lang] || messages.es;
+
+	const form = document.getElementById('form');
+	const submitBtn = document.getElementById('contact-btn');
+	document.addEventListener('DOMContentLoaded', () => {
+		submitBtn?.disabled;
+	});
+
+	const fields = {
+		name: {
+			input: document.getElementById('registration_form_firstName'),
+			error: document.getElementById('error-name'),
+			validate: (v) => {
+				const nameLength = v.length;
+				if (typeof v !== 'string' || v.trim() === '') {
+					return messages.nameRequired;
+				} else if (nameLength <= 2) {
+					return messages.nameInvalid;
+				}
+
+				return nameLength > 50 ? messages.nameLengthInvalid : true;
+			},
+		},
+		email: {
+			input: document.getElementById('registration_form_email'),
+			error: document.getElementById('error-email'),
+			validate: (v) =>
+				/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
+		},
+		reason: {
+			input: document.getElementById('select'),
+			error: document.getElementById('error-reason'),
+			validate: (v) => v !== '' || messages.reasonRequired,
+		},
+		message: {
+			input: document.getElementById('message'),
+			error: document.getElementById('error-message'),
+			validate: (v) => v.trim().length >= 10 || messages.messageShort,
+		},
+		terms: {
+			input: document.getElementById('terms'),
+			error: document.getElementById('error-terms'),
+			validate: (v, input) => input.checked || messages.termsRequired,
+		},
+	};
+
+	function validateAll() {
+		let valid = true;
+
+		Object.values(fields).forEach(({ input, error, validate }) => {
+			const value = input.type === 'checkbox' ? input.checked : input.value;
+			const result = validate(value, input);
+
+			if (result !== true) {
+				error.textContent = result;
+				input.classList.add('invalid');
+				input.setAttribute('aria-invalid', 'true');
+				valid = false;
+			} else {
+				error.textContent = '';
+				input.classList.remove('invalid');
+				input.setAttribute('aria-invalid', 'false');
+			}
+		});
+
+		submitBtn.disabled = !valid;
+		return valid;
+	}
+
+	Object.values(fields).forEach(({ input }) => {
+		const validateAndUpdateButton = () => {
+			validateAll();
+		};
+
+		input.addEventListener('input', validateAndUpdateButton);
+		input.addEventListener('change', validateAndUpdateButton);
+		input.addEventListener('blur', validateAndUpdateButton);
+	});
+
+	form.addEventListener('submit', (e) => {
+		if (!validateAll()) {
+			e.preventDefault();
+		}
+	});
+</script>
+
+<script is:inline>
+	let recaptchaCargado = false;
+
+	function loadRecaptcha() {
+		if (recaptchaCargado) return;
+		recaptchaCargado = true;
+
+		const script = document.createElement('script');
+		script.src =
+			'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => {
+			grecaptcha.ready(() => {
+				window.recaptchaReady = true;
+			});
+		};
+		document.head.appendChild(script);
+	}
+	function formSend(event) {
+		event.preventDefault();
+
+		if (!validateAll()) {
+			console.warn('❌ El formulario tiene errores de validación.');
+			return false;
+		}
+
+		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
+			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
+			return false;
+		}
+
+		grecaptcha.ready(() => {
+			grecaptcha
+				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
+					action: 'submit',
+				})
+				.then(onSubmit);
+		});
+
+		return false;
+	}
+
+	function onSubmit(token) {
+		fetch('/recaptcha', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ recaptcha: token }),
+		})
+			.then((response) => response.json())
+			.then((gResponse) => {
+				if (gResponse.success && gResponse.score >= 0.5) {
+					const formToken = document.getElementById('csrf_token')?.value;
+					if (!formToken) {
+						alert('⚠️ Falta token CSRF');
+						return;
+					}
+					document.getElementById('recaptcha-token').value = token;
+					document.getElementById('form').submit();
+				} else {
+					console.warn('❌ Falló la verificación de reCAPTCHA');
+					alert('No pudimos verificar que eres humano.');
+				}
+			})
+			.catch((err) => {
+				console.error('⚠️ Error en verificación reCAPTCHA', err);
+				alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+			});
+	}
+</script>
+<style>
+	.h-contact {
+		position: relative;
+		box-shadow:
+			rgb(0 0 0 / 25%) 0px 14px 28px,
+			rgb(0 0 0 / 22%) 0px 10px 10px;
+		width: 95%;
+		margin: 8rem auto;
+		padding: 30px;
+	}
+	@media screen and (min-width: 47.82rem) {
+		.h-contact {
+			width: 70%;
+		}
+	}
+	@media screen and (min-width: 64rem) {
+		.h-contact {
+			width: 70%;
+			max-width: 47rem;
+		}
+	}
+	.h-contact__form {
+		margin-left: auto;
+		margin-right: auto;
+		margin-bottom: 4.75rem;
+	}
+	.h-contact__form > div {
+		display: -webkit-box;
+		display: flex;
+		flex-direction: column;
+	}
+	.h-contact__form > div > label {
+		margin-bottom: 0;
+		font-size: 13px;
+		letter-spacing: 2px;
+		font-weight: 700;
+		text-transform: uppercase;
+		margin-bottom: 0.5rem;
+	}
+	.h-contact__footer {
+		display: grid !important;
+		grid-template-columns: 1.5rem auto !important;
+		font-size: 0.72em;
+		margin-top: 4rem;
+		font-style: italic;
+	}
+	.h-contact__footer > input {
+		margin-right: 0.4rem;
+	}
+	.h-contact__btn:disabled,
+	.h-contact__btn[disabled],
+	.btn-section:disabled,
+	.btn-section[disabled] {
+		filter: grayscale(1);
+		cursor: default;
+	}
+
+	.h-contact-page {
+		margin-top: 100px;
+	}
+	.h-contact-page__col1 {
+		height: 30rem;
+	}
+	.h-contact-page__col1 {
+		/*background-image: url('https://res.cloudinary.com/joseba/image/upload/q_auto/v1665650184/alazne_website/xcivipdlqvejfewduhqp.jpg');*/
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position-y: -50px;
+	}
+	.h-contact-page__form {
+		max-width: 30rem;
+	}
+	@media screen and (min-width: 550px) {
+		.h-contact-page__col1 {
+			background-position-y: -232px;
+		}
+	}
+	@media screen and (min-width: 1027px) {
+		.h-contact-page {
+			margin-top: 180px;
+			display: grid;
+			grid-template-columns: 1fr 2fr;
+			grid-template-rows: 15rem auto;
+			width: 70%;
+			max-width: 49rem;
+			grid-column-gap: 0;
+			padding-left: 0;
+			padding-top: 0;
+			padding-bottom: 0;
+			padding-right: 0;
+		}
+		.h-contact-page__col1 {
+			grid-row: 1/2;
+			height: auto;
+			background-position-y: -190px;
+			border-radius: 50%;
+			margin: -4rem;
+		}
+		.h-contact-page__col2 {
+			grid-row: 1/-1;
+		}
+		.h-contact-page__form {
+			padding-right: 30px;
+		}
+	}
+	@media screen and (min-width: 1660px) {
+		.h-contact-page {
+			display: grid;
+			grid-template-columns: 2fr 1fr;
+			grid-template-rows: auto;
+			width: 70%;
+			max-width: 108rem;
+			padding-left: 0;
+			padding-top: 0;
+			padding-bottom: 0;
+			padding-right: 0;
+		}
+		.h-contact-page__col1 {
+			grid-column: 2/3;
+			grid-row: 1/2;
+			height: auto;
+			background-position-x: -143px;
+			background-position-y: 0;
+			border-radius: 0;
+			margin: 0;
+		}
+		.h-contact-page__col2 {
+			grid-column: 1/2;
+			grid-row: 1/2;
+		}
+	}
+	.invalid {
+		border: 2px solid #eb374d;
+		outline: none;
+	}
+
+	.h-contact__footer {
+		margin: 3rem 0 0;
+	}
+	.h-contact__footer > p {
+		font-size: 12px;
+	}
+	mobile-only {
+		display: none;
+	}
+
+	@media (max-width: 768px) {
+		.mobile-only {
+			display: none;
+		}
+	}
+</style>

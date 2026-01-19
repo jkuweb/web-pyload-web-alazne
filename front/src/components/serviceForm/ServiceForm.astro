@@ -1,0 +1,382 @@
+---
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { actions } from 'astro:actions';
+import SuccessPopup from '../pop-ups/SuccessPopup.astro';
+
+const currentLang = Astro.currentLocale || 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+
+const { inputErrors, csrf } = Astro.props;
+---
+
+<form
+	id="serviceForm"
+	class="h-contact__form"
+	action={actions.sendContactEmail}
+	method="POST"
+	onsubmit="return serviceFormSend(event)"
+	style="max-width: 45rem; margin-bottom: 0;"
+>
+	<div>
+		<label for="serviceUsername">¿Cómo te llamas?</label>
+		<input type="text" id="serviceUsername" name="serviceUsername" />
+		<span id="serviceNameError" style="color:#eb374d"
+			>{inputErrors?.username}</span
+		>
+	</div>
+	<div>
+		<label for="telephone">Teléfono de contacto</label>
+		<input type="tel" id="telephone" name="telephone" required />
+		<span id="servicePhoneError" style="color:#eb374d"
+			>{inputErrors?.phone}</span
+		>
+	</div>
+	<div>
+		<label for="serviceEmail">{t('form.label.email')}</label>
+		<input type="email" id="serviceEmail" name="serviceEmail" required />
+		<span id="serviceEmailError" style="color:#eb374d"
+			>{inputErrors?.serviceEmail}</span
+		>
+	</div>
+
+	<button
+		type="button"
+		id="serviceBtn"
+		class="btn btn-section animated g-recaptcha"
+		style="z-index: 0; margin-top: 1rem;"
+		data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
+		data-callback="onCaptchaPassed"
+		data-action="submit"
+		disabled
+	>
+		<span id="ServiceBtnText">Enviar</span>
+		<span
+			id="btn-loader"
+			class="spinner"
+			style="display: none; margin-left: 0.5rem;"></span>
+	</button>
+
+	<div class="h-contact__footer">
+		<input
+			id="serviceTerms"
+			name="termsAccepted"
+			type="checkbox"
+			required
+			aria-label="Aceptar terminos"
+		/>
+		<p style="font-size: 10px; margin-top: 1rem;">
+			Todos los datos aportados por el usuario en este formulario NO tendrán
+			persistencia en ninguna base de datos ni en ningún otro sistema de
+			persistencia.
+		</p>
+		<span id="serviceTermsError" style="color:#eb374d"
+			>{inputErrors?.termsAccepted}</span
+		>
+	</div>
+	<input
+		type="hidden"
+		name="service"
+		id="serviceInput"
+		value={Astro.props.service || ''}
+	/>
+	<input type="hidden" name="lang" id="idioma" value={currentLang} />
+	<input type="hidden" id="recaptcha-token" name="recaptcha" />
+	<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+</form>
+<SuccessPopup />
+
+<script>
+	export {};
+
+	declare global {
+		interface Window {
+			loadRecaptcha: () => void;
+			serviceFormSend: (e: Event) => boolean;
+			onCaptchaPassed: (token: string) => void;
+			recaptchaReady?: boolean;
+			recaptchaCargado?: boolean;
+		}
+	}
+	type LangMessages = {
+		serviceNameRequired: string;
+		serviceNameInvalid: string;
+		serviceNameLengthInvalid: string;
+		servicePhone: string;
+		servicePhoneInvalid: string;
+		serviceTermsRequired: string;
+		serviceEmailRequired: string;
+		serviceEmailInvalid: string;
+	};
+	const form = document.getElementById('serviceForm') as HTMLFormElement | null;
+	const submitBtn = document.getElementById(
+		'serviceBtn',
+	) as HTMLButtonElement | null;
+	document.addEventListener('DOMContentLoaded', () => {
+		submitBtn?.disabled;
+	});
+
+	const lang = window.location.pathname.split('/')[1] || 'es';
+
+	const messages: LangMessages = {
+		es: {
+			serviceNameRequired: 'El nombre es obligatorio',
+			serviceNameInvalid: 'El nombre debe de tener al menos 2 caracter',
+			serviceNameLengthInvalid:
+				'El nombre no debe de tener más de 50 caracteres',
+			servicePhone: 'El número de teléfono es obligatorio',
+			servicePhoneInvalid: 'Introduce un número de teléfono español válido',
+			serviceTermsRequired: 'Debes aceptar los términos',
+			serviceEmailRequired: 'El email es obligatorio',
+			serviceEmailInvalid: 'Email no válido',
+		},
+		eu: {
+			serviceNameRequired: 'Izena derrigorrezkoa da',
+			serviceNameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
+			serviceNameLengthInvalid:
+				'Izenak ezin ditu 50 karaktere baino gehiago izan.',
+			servicePhone: 'Telefono zenbakia beharrezkoa da',
+			servicePhoneInvalid: 'Baliozko telefono zenbaki bat sartu',
+			serviceTermsRequired: 'Baldintzak onartu behar dituzu',
+			serviceEmailRequired: 'Posta elektronikoa derrigorrezkoa da',
+			serviceEmailInvalid: 'Posta elektronikoa ez da baliozkoa',
+		},
+	}[lang as 'es' | 'eu'];
+
+	const setSubmittingState = () => {
+		if (!submitBtn) return;
+		submitBtn.disabled = true;
+		const text = document.getElementById('serviceBtnText');
+		const loader = document.getElementById('btn-loader') as HTMLElement | null;
+		if (text) text.textContent = 'Enviando...';
+		if (loader) loader.style.display = 'inline-block';
+	};
+
+	const resetSubmitState = () => {
+		if (!submitBtn) return;
+		submitBtn.disabled = false;
+		const text = document.getElementById('serviceBtnText');
+		const loader = document.getElementById('btn-loader') as HTMLElement | null;
+		if (text) text.textContent = 'Enviar';
+		if (loader) loader.style.display = 'none';
+	};
+
+	type TextField = {
+		input: HTMLInputElement;
+		error: HTMLElement;
+		type: 'text';
+		validate: (value: string) => string | true;
+	};
+
+	type CheckboxField = {
+		input: HTMLInputElement;
+		error: HTMLElement;
+		type: 'checkbox';
+		validate: (checked: boolean) => string | true;
+	};
+
+	type Field = TextField | CheckboxField;
+
+	const fields: Record<string, Field> = {
+		username: {
+			type: 'text',
+			input: document.getElementById('serviceUsername') as HTMLInputElement,
+			error: document.getElementById('serviceNameError') as HTMLElement,
+			validate: (v: string) => {
+				const nameLength = v.length;
+				if (v.trim() === '') {
+					return messages.serviceNameRequired;
+				} else if (nameLength <= 2) {
+					return messages.serviceNameInvalid;
+				}
+				return nameLength > 50 ? messages.serviceNameLengthInvalid : true;
+			},
+		},
+		telephone: {
+			type: 'text',
+			input: document.getElementById('telephone') as HTMLInputElement,
+			error: document.getElementById('servicePhoneError') as HTMLElement,
+			validate: (v: string) => {
+				if (v.trim() === '') {
+					return messages.servicePhone;
+				}
+				const phoneRegex = /^(6|7|8|9)\d{8}$/;
+				return phoneRegex.test(v.trim()) ? true : messages.servicePhoneInvalid;
+			},
+		},
+		email: {
+			type: 'text',
+			input: document.getElementById('serviceEmail') as HTMLInputElement,
+			error: document.getElementById('serviceEmailError') as HTMLElement,
+			validate: (v: string) => {
+				if (v.trim() === '') {
+					return messages.serviceEmailRequired;
+				}
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				return emailRegex.test(v.trim()) ? true : messages.serviceEmailInvalid;
+			},
+		},
+		terms: {
+			type: 'checkbox',
+			input: document.getElementById('serviceTerms') as HTMLInputElement,
+			error: document.getElementById('serviceTermsError') as HTMLElement,
+			validate: (checked: boolean) => checked || messages.serviceTermsRequired,
+		},
+	};
+
+	function validateAll(): boolean {
+		let valid = true;
+
+		Object.values(fields).forEach((field) => {
+			let result: string | true;
+
+			if (field.type === 'checkbox') {
+				result = field.validate((field.input as HTMLInputElement).checked);
+			} else {
+				result = field.validate((field.input as HTMLInputElement).value);
+			}
+
+			if (result !== true) {
+				field.error.textContent = result;
+				field.input.classList.add('invalid');
+				field.input.setAttribute('aria-invalid', 'true');
+				valid = false;
+			} else {
+				field.error.textContent = '';
+				field.input.classList.remove('invalid');
+				field.input.setAttribute('aria-invalid', 'false');
+				field.input.setCustomValidity('');
+			}
+		});
+		if (submitBtn) submitBtn.disabled = !valid;
+		return valid;
+	}
+
+	Object.values(fields).forEach(({ input }) => {
+		const validateAndUpdateButton = () => {
+			validateAll();
+		};
+
+		input.addEventListener('input', validateAndUpdateButton);
+		input.addEventListener('change', validateAndUpdateButton);
+		input.addEventListener('blur', validateAndUpdateButton);
+	});
+
+	form?.addEventListener('submit', (e) => {
+		if (!validateAll()) {
+			e.preventDefault();
+			resetSubmitState();
+		} else {
+			setSubmittingState();
+			setTimeout(resetSubmitState, 15000);
+		}
+	});
+
+	window.loadRecaptcha = () => {
+		if (window.recaptchaCargado) return;
+		window.recaptchaCargado = true;
+
+		const script = document.createElement('script');
+		script.src =
+			'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => {
+			(window as any).grecaptcha?.ready(() => {
+				window.recaptchaReady = true;
+			});
+		};
+		document.head.appendChild(script);
+	};
+
+	let recaptchaTriggered = false;
+	function triggerRecaptchaLoadOnce() {
+		if (!recaptchaTriggered) {
+			recaptchaTriggered = true;
+			window.loadRecaptcha();
+		}
+	}
+	form?.addEventListener('focusin', triggerRecaptchaLoadOnce);
+	form?.addEventListener('mousedown', triggerRecaptchaLoadOnce);
+	form?.addEventListener('keydown', triggerRecaptchaLoadOnce);
+
+	window.serviceFormSend = (event: Event): boolean => {
+		event.preventDefault();
+		if (!validateAll()) {
+			resetSubmitState();
+			return false;
+		}
+
+		const grecaptcha = (window as any).grecaptcha;
+		if (!window.recaptchaReady || typeof grecaptcha === 'undefined') {
+			if (!window.recaptchaCargado) {
+				window.loadRecaptcha();
+			}
+			resetSubmitState();
+			return false;
+		}
+
+		setSubmittingState();
+
+		grecaptcha.ready(() => {
+			grecaptcha
+				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
+					action: 'submit',
+				})
+				.then((token: string) => {
+					fetch('/recaptcha', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ recaptcha: token }),
+					})
+						.then((res) => res.json())
+						.then((data) => {
+							if (data.success && data.score >= 0.5) {
+								const tokenInput = document.getElementById(
+									'recaptcha-token',
+								) as HTMLInputElement;
+								if (tokenInput) tokenInput.value = token;
+								form?.submit();
+							} else {
+								alert('No pudimos verificar que eres humano.');
+								resetSubmitState();
+							}
+						})
+						.catch(() => {
+							alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+							resetSubmitState();
+						});
+				});
+		});
+		return false;
+	};
+
+	window.onCaptchaPassed = (token: string) => {
+		const tokenInput = document.getElementById(
+			'recaptcha-token',
+		) as HTMLInputElement;
+		if (tokenInput) tokenInput.value = token;
+		form?.submit();
+	};
+</script>
+
+<style>
+	.spinner {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid #fff;
+		border-top: 2px solid transparent;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+		vertical-align: middle;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>

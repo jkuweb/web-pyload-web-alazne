@@ -1,0 +1,21 @@
+---
+import CldImage from '@/components/image/Image.astro';
+---
+
+<div style="display: grid;place-items: center;min-height:100dvh">
+	<div style="display: grid; place-items: center;">
+		<CldImage
+			src="https://res.cloudinary.com/web-alazne/image/upload/v1768677746/media/baner-1.png"
+			width={710}
+			height={363}
+			alt="página no encontrada, no pasa nada haz click en el botón de abajo para volver a la web"
+		/>
+		<div style="background: #de717f; margin-top: 2rem">
+			<a
+				href="/"
+				style="text-transform: uppercase;padding: 1.5rem;display: block;color:#610202; text-decoration: none; font-weight: 900; "
+				>Volver a la web</a
+			>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,355 @@
+---
+import ContactForm from '@/components/contactForm/ContactForm.astro';
+import ServiceForm from '@/components/serviceForm/ServiceForm.astro';
+import ServicesPage from '@/components/services/ServicesPage.astro';
+import Layout from '@/layouts/Layout.astro';
+import CldImage from '@/components/image/Image.astro';
+import { generateCSRFToken } from '@/utils/csrf';
+import { actions, isInputError } from 'astro:actions';
+import {
+	getAlternateUrls,
+	getCanonicalUrl,
+	getPageBySlug,
+} from '@/utils/payloadFetch';
+import type { Page, Media } from '@/payloadTypes';
+import RichText from '@/components/RichText/RichText.astro';
+import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
+import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
+
+const currentLang = Astro.currentLocale || 'es';
+const page: Page | null = await getPageBySlug('servicios', 'es');
+
+if (!page) {
+	return Astro.redirect(`/${currentLang}/`);
+}
+const canonical = getCanonicalUrl('/services', 'es');
+const alternates = getAlternateUrls('/services');
+const breadcrumbs = [
+	{
+		name: currentLang === 'es' ? 'Servicios' : 'Zerbitzuak',
+		url: canonical,
+	},
+];
+
+const seoTitle = page.meta?.title || 'Sobre mí';
+const seoDescription = page.meta?.description || '...';
+const seoImage =
+	page.meta?.image?.unpicUrl ||
+	'https://aitamasleepcoaching.com/img/banner.png';
+const heroImage =
+	page.hero && 'media' in page.hero && page.hero.media
+		? typeof page.hero.media === 'object'
+			? page.hero.media
+			: null
+		: null;
+
+const preloadImages = [
+	heroImage?.unpicUrl,
+	page.layout[1]?.media?.unpicUrl,
+].filter(Boolean);
+
+const contactResult = Astro.getActionResult(actions.send);
+const serviceResult = Astro.getActionResult(actions.sendContactEmail);
+
+const contactInputErrors = isInputError(contactResult?.error)
+	? contactResult?.error.fields
+	: {};
+const serviceInputErrors = isInputError(serviceResult?.error)
+	? serviceResult?.error.fields
+	: {};
+
+const csrf = generateCSRFToken();
+Astro.cookies.set('csrf_token', csrf, {
+	path: '/',
+	httpOnly: true,
+	sameSite: 'strict',
+	secure: true,
+});
+if (serviceResult?.data || contactResult?.data) {
+	return Astro.redirect(`/${currentLang}/services/?sent=true`);
+}
+---
+
+<Layout
+	title={seoTitle}
+	description={seoDescription}
+	ogImage={seoImage}
+	canonical={canonical}
+	lang="es"
+	alternates={alternates}
+	preloadImages={preloadImages}
+>
+	<WebPageSchema
+		slot="head"
+		title={seoTitle}
+		description={seoDescription}
+		url={canonical}
+		image={seoImage}
+	/>
+	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+	<section>
+		<div
+			class="hero-image bg-service"
+			style={`background-image: url(${heroImage?.unpicUrl})`}
+		>
+			<div class="hero-image__overlay"></div>
+			<div class="hero-image__info service-box-info">
+				<div class="hero-image__text service-text">
+					<p tabindex="0">Servicios</p>
+					<h1 tabindex="0" class="service_heading">
+						{page.hero.title}
+					</h1>
+					<p tabindex="0">
+						{page.hero.text}
+					</p>
+					<small
+						class="hero-image__small-text"
+						style="margin-top: .5rem; color:#222; font-size: 1rem; font-family: Montserrat, sans-serif;"
+					>
+						{page.hero.subtext}
+					</small>
+				</div>
+				{
+					page?.hero?.links?.map((link) => (
+						<a href="#contact" class="btn service-button">
+							{link.link.label}
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
+	<div id="mask" class="hidden"></div>
+	<section class="h-services boxes-services">
+		<p class="heading-title" tabindex="0">
+			{page.layout[0].sectionTitle}
+		</p>
+		<h2 class="heading-secondary" tabindex="0">
+			{page.layout[0].title}
+		</h2>
+
+		<ServicesPage services={page.layout[1].services} />
+	</section>
+	<section id="service-01" class="h-services">
+		<div class="wrapper">
+			<p class="heading-title" tabindex="0">
+				{page.layout[2].sectionTitle}
+			</p>
+			<h2 class="heading-secondary animated" tabindex="0">Consultas</h2>
+			<div class="paragraph animated">
+				<RichText content={page.layout[2].richText} />
+				<div
+					class="services__price"
+					itemprop="offers"
+					itemscope=""
+					itemtype="http://schema.org/Offer"
+				>
+					<span itemprop="priceCurrency">€</span>
+					<span itemprop="price">
+						{page.layout[3].price}
+					</span><span>(IVA incluido)</span>
+				</div>
+				<div class="services__options">
+					<a
+						href="javascript:void(0)"
+						class="btn btn-section js-modal"
+						data-service="Consultas">Llamada de valoración gratuita</a
+					>
+				</div>
+			</div>
+		</div>
+		<div class="h-job__img">
+			<CldImage
+				src={page.layout[4].media.unpicUrl}
+				width={400}
+				height={533}
+				alt=""
+			/>
+		</div>
+	</section>
+	<section id="service-02" class="h-services">
+		<div class="wrapper">
+			<h2 class="heading-secondary animated" tabindex="0">
+				{page.layout[5].title}
+			</h2>
+			<div class="paragraph animated service-paragraph">
+				<RichText content={page.layout[5].richText} />
+				<div
+					class="services__price"
+					itemprop="offers"
+					itemscope=""
+					itemtype="http://schema.org/Offer"
+				>
+					<span itemprop="priceCurrency">€</span>
+					<span itemprop="price">
+						{page.layout[6].price}
+					</span><span>(IVA incluido)</span>
+				</div>
+				<div class="services__options">
+					<a
+						href="javascript:void(0)"
+						class="btn btn-section js-modal"
+						data-service="Plan de sueño personalizado con seguimiento"
+						>Llamada de valoración gratuita</a
+					>
+				</div>
+			</div>
+		</div>
+		<div class="h-job__img">
+			<CldImage
+				src={page.layout[7].media.unpicUrl}
+				width={400}
+				height={712}
+				alt=""
+			/>
+		</div>
+	</section>
+	<section id="service-03" class="h-services">
+		<div class="wrapper">
+			<h2 class="heading-secondary animated" tabindex="0">
+				{page.layout[8].title}
+			</h2>
+			<div class="paragraph animated service-paragraph">
+				<RichText content={page.layout[8].richText} />
+				<div
+					class="services__price"
+					itemprop="offers"
+					itemscope=""
+					itemtype="http://schema.org/Offer"
+				>
+					<span itemprop="priceCurrency">€</span>
+					<span itemprop="price">
+						{page.layout[9].price}
+					</span><span>(IVA incluido)</span>
+				</div>
+
+				<div class="services__options">
+					<a
+						href="javascript:void(0)"
+						class="btn btn-section js-modal"
+						data-service="Plan de sueño	conmigo, pero a tu ritmo"
+						>Llamada de valoración gratuita</a
+					>
+				</div>
+			</div>
+		</div>
+		<div class="h-job__img">
+			<CldImage
+				src={page.layout[10].media.unpicUrl}
+				width={400}
+				height={299}
+				alt=""
+			/>
+		</div>
+	</section>
+	<section id="service-04" class="h-services">
+		<div class="wrapper">
+			<h2 class="heading-secondary animated" tabindex="0">
+				{page.layout[11].title}
+			</h2>
+			<div class="paragraph animated service-paragraph">
+				<RichText content={page.layout[11].richText} />
+				<div
+					class="services__price"
+					itemprop="offers"
+					itemscope=""
+					itemtype="http://schema.org/Offer"
+				>
+					<span itemprop="priceCurrency">€</span>
+					<span itemprop="price">
+						{page.layout[12].price}
+					</span><span>(IVA incluido)</span>
+				</div>
+
+				<div class="services__options">
+					<a
+						href="javascript:void(0)"
+						class="btn btn-section js-modal"
+						data-service="Plan a vuestro ritmo"
+						>Llamada de valoración gratuita</a
+					>
+				</div>
+			</div>
+		</div>
+		<div class="h-job__img">
+			<CldImage
+				src={page.layout[13].media.unpicUrl}
+				width={400}
+				height={535}
+				alt=""
+			/>
+		</div>
+	</section>
+	<section id="service-05" class="h-services">
+		<div class="wrapper">
+			<h2 class="heading-secondary animated" tabindex="0">
+				{page.layout[14].title}
+			</h2>
+			<div class="paragraph animated service-paragraph">
+				<RichText content={page.layout[14].richText} />
+				<a
+					href="javascript:void(0)"
+					class="btn btn-section js-modal cta-btn"
+					data-service="Encuentros grupales">Llamada de valoración gratuita</a
+				>
+			</div>
+		</div>
+		<div class="h-job__img">
+			<CldImage
+				src={page.layout[15].media.unpicUrl}
+				width={400}
+				height={267}
+				alt=""
+			/>
+		</div>
+	</section>
+	<div id="my-modal" class="modal">
+		<div
+			class="modal-content"
+			style="position: fixed;top: 50%;left: 50%;transform: translate(-50%,-50%); margin:0"
+		>
+			<div class="modal-header">
+				<span class="close">×</span>
+			</div>
+			<div class="modal-body">
+				<ServiceForm inputErrors={serviceInputErrors} csrf={csrf} />
+			</div>
+		</div>
+	</div>
+	<ContactForm inputErrors={contactInputErrors} csrf={csrf} />
+</Layout>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const modal = document.getElementById('my-modal');
+		const input = document.getElementById('serviceInput');
+		const closeBtn = document.querySelector('.close');
+
+		document.addEventListener('click', (e) => {
+			const target = e.target;
+
+			if (target.classList.contains('js-modal')) {
+				e.preventDefault();
+
+				const serviceTitle = target.dataset.service;
+				if (input && serviceTitle) input.value = serviceTitle;
+				if (modal) {
+					modal.style.display = 'block';
+					document.body.style.overflow = 'hidden';
+				}
+			}
+
+			if (modal && target === modal) {
+				modal.style.display = 'none';
+				document.body.style.overflow = '';
+			}
+		});
+
+		if (closeBtn && modal) {
+			closeBtn.addEventListener('click', () => {
+				modal.style.display = 'none';
+				document.body.style.overflow = '';
+			});
+		}
+	});
+</script>

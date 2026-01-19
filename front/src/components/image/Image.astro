@@ -1,0 +1,41 @@
+---
+import { Image as CldImage } from '@unpic/astro';
+
+export interface Props {
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+	loading?: 'lazy' | 'eager';
+	priority?: boolean;
+	class?: string;
+	aspectRatio?: number;
+}
+
+const {
+	src,
+	alt,
+	width,
+	height,
+	loading = 'lazy',
+	priority = false,
+	class: className = '',
+	aspectRatio,
+} = Astro.props;
+
+const ratio = aspectRatio || width / height;
+---
+
+<CldImage
+	src={src}
+	alt={alt}
+	width={width}
+	height={height}
+	aspectRatio={ratio}
+	layout="constrained"
+	loading={loading}
+	priority={priority}
+	cdn="cloudinary"
+	class={className}
+	breakpoints={[320, 640, 768, 1024, 1280, 1536]}
+/>

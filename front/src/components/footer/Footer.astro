@@ -1,0 +1,285 @@
+---
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { Image } from 'astro:assets';
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import logoImg from '@/assets/img/logo.png';
+
+const currentLang = Astro.currentLocale || 'es';
+
+const t = useTranslations(currentLang as keyof typeof languagesList);
+---
+
+<footer class="h-footer wrapper">
+	<div class="logo h-footer__logo">
+		<Image src={logoImg} width={473} height={267} alt={'logo'} />
+	</div>
+	<div class="h-footer__grid">
+		<div>
+			<h3 class="h-footer__heading">Menú</h3>
+			<nav>
+				<ul class="footer-nav">
+					<li class="footer__item">
+						<a
+							class="footer-nav__link"
+							href={getAbsoluteLocaleUrl(currentLang, '/')}
+							>{t('menu.item.inicio')}</a
+						>
+					</li>
+					<li class="footer__item">
+						<a
+							class="footer-nav__link"
+							href={getAbsoluteLocaleUrl(currentLang, 'about')}
+							>{t('menu.item.sobre-mi')}
+						</a>
+						<li class="footer__item">
+							<a
+								class="footer-nav__link"
+								href={getAbsoluteLocaleUrl(currentLang, 'services')}
+								>{t('menu.item.servicios')}
+							</a>
+							<li class="footer__item">
+								<a
+									class="footer-nav__link"
+									href={getAbsoluteLocaleUrl(currentLang, 'contact')}
+									>{t('menu.item.contacto')}</a
+								>
+							</li>
+						</li>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div>
+			<h3 class="h-footer__heading">Clientes</h3>
+			<nav>
+				<ul class="footer-nav">
+					<li class="footer__item">
+						<a class="footer-nav__link" href="/privacy-policy"
+							>Política de Privacidad</a
+						>
+					</li>
+					<li class="footer__item">
+						<a class="footer-nav__link" href="/legal-notice">Aviso Legal</a>
+					</li>
+					<li class="footer__item">
+						<a class="footer-nav__link" href="/eu/web/politica-de-cookies"
+							>Política de Cookies</a
+						>
+					</li>
+					<li class="footer__item">
+						<a class="footer-nav__link" href="/terms-and-conditions"
+							>Términos y Condiciones</a
+						>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div>
+			<h3 class="h-footer__heading">Redes</h3>
+			<nav>
+				<ul class="footer-nav">
+					<li class="footer__item">
+						<a
+							class="footer-nav__link"
+							href="https://www.instagram.com/aitama_sleepcoach/"
+							target="__blank"
+						>
+							<svg
+								viewBox="0 0 14 13"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								style="width: 2rem;"
+							>
+								<path
+									fill-rule="evenodd"
+									clip-rule="evenodd"
+									d="M11.91 11.909C12.236 11.582 12.492 11.189 12.659 10.758C12.819 10.344 12.929 9.872 12.961 9.18C12.993 8.487 13.001 8.265 13.001 6.5C13.001 4.735 12.993 4.513 12.961 3.82C12.929 3.128 12.819 2.656 12.659 2.242C12.4957 1.80834 12.2398 1.41554 11.909 1.091C11.5844 0.760298 11.1916 0.504352 10.758 0.341C10.344 0.181 9.872 0.071 9.18 0.039C8.487 0.00700003 8.265 0 6.5 0C4.735 0 4.513 0.00699996 3.82 0.04C3.128 0.07 2.656 0.18 2.242 0.341C1.80856 0.504725 1.41585 0.760621 1.091 1.091C0.760621 1.41585 0.504725 1.80856 0.341 2.242C0.181 2.656 0.071 3.128 0.039 3.82C0.00700003 4.513 0 4.735 0 6.5C0 8.265 0.00699996 8.487 0.04 9.18C0.07 9.872 0.18 10.344 0.341 10.758C0.505 11.192 0.761 11.584 1.091 11.909C1.416 12.239 1.809 12.495 2.242 12.659C2.656 12.819 3.128 12.929 3.82 12.961C4.513 12.992 4.735 13 6.5 13C8.265 13 8.487 12.992 9.18 12.96C9.872 12.93 10.344 12.82 10.758 12.659C11.1897 12.4919 11.5818 12.2364 11.909 11.909H11.91ZM1 5.735V7.265C0.998 8.086 0.998 8.299 1.02 8.765C1.046 9.351 1.078 9.781 1.176 10.105C1.27 10.417 1.375 10.735 1.719 11.117C2.063 11.5 2.394 11.673 2.816 11.801C3.239 11.928 3.77 11.955 4.231 11.976C4.753 12 4.961 12 6.057 12H7.24C8.082 12.001 8.294 12.002 8.766 11.98C9.351 11.953 9.781 11.921 10.106 11.824C10.417 11.73 10.735 11.624 11.117 11.281C11.5 10.937 11.673 10.605 11.801 10.183C11.928 9.761 11.956 9.23 11.977 8.769C12 8.247 12 8.04 12 6.947V6.057C12 4.961 12 4.754 11.977 4.231C11.956 3.77 11.928 3.239 11.801 2.817C11.674 2.394 11.501 2.063 11.117 1.719C10.734 1.375 10.417 1.27 10.106 1.176C9.781 1.079 9.351 1.046 8.766 1.02C8.25762 0.999109 7.74875 0.99244 7.24 1H6.057C4.961 1 4.753 1 4.231 1.023C3.77 1.044 3.239 1.072 2.816 1.199C2.394 1.327 2.063 1.5 1.719 1.883C1.375 2.266 1.269 2.583 1.176 2.895C1.078 3.219 1.046 3.649 1.02 4.235C0.998 4.701 0.998 4.914 1 5.735V5.735ZM6.5 4.25C5.90326 4.25 5.33097 4.48705 4.90901 4.90901C4.48705 5.33097 4.25 5.90326 4.25 6.5C4.25 7.09674 4.48705 7.66903 4.90901 8.09099C5.33097 8.51295 5.90326 8.75 6.5 8.75C7.09674 8.75 7.66903 8.51295 8.09099 8.09099C8.51295 7.66903 8.75 7.09674 8.75 6.5C8.75 5.90326 8.51295 5.33097 8.09099 4.90901C7.66903 4.48705 7.09674 4.25 6.5 4.25V4.25ZM3.25 6.5C3.25 5.63805 3.59241 4.8114 4.2019 4.2019C4.8114 3.59241 5.63805 3.25 6.5 3.25C7.36195 3.25 8.1886 3.59241 8.7981 4.2019C9.40759 4.8114 9.75 5.63805 9.75 6.5C9.75 7.36195 9.40759 8.1886 8.7981 8.7981C8.1886 9.40759 7.36195 9.75 6.5 9.75C5.63805 9.75 4.8114 9.40759 4.2019 8.7981C3.59241 8.1886 3.25 7.36195 3.25 6.5V6.5ZM9.97 3.78C10.1689 3.78 10.3597 3.70098 10.5003 3.56033C10.641 3.41968 10.72 3.22891 10.72 3.03C10.72 2.83109 10.641 2.64032 10.5003 2.49967C10.3597 2.35902 10.1689 2.28 9.97 2.28C9.77109 2.28 9.58032 2.35902 9.43967 2.49967C9.29902 2.64032 9.22 2.83109 9.22 3.03C9.22 3.22891 9.29902 3.41968 9.43967 3.56033C9.58032 3.70098 9.77109 3.78 9.97 3.78Z"
+									fill="#222222"></path>
+							</svg>
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div>
+			<h3 class="h-footer__heading">Contacto</h3>
+			<div
+				style="display: grid;grid-template-rows: repeat(2,5rem);align-items: baseline;grid-row-gap: 1.5rem"
+			>
+				<a
+					href="mailto:contacto@aitamasleepcoaching.com"
+					style="display:grid;place-items: center;grid-row-gap: 1rem;color: #222;"
+				>
+					<svg
+						viewBox="0 0 16 13"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						style="width: 1.7rem; margin-right: .5rem;"
+					>
+						<path
+							d="M13.5 0C14.163 0 14.7989 0.263392 15.2678 0.732233C15.7366 1.20107 16 1.83696 16 2.5V10.5C16 11.163 15.7366 11.7989 15.2678 12.2678C14.7989 12.7366 14.163 13 13.5 13H2.5C1.83696 13 1.20107 12.7366 0.732233 12.2678C0.263392 11.7989 0 11.163 0 10.5V2.5C0 1.83696 0.263392 1.20107 0.732233 0.732233C1.20107 0.263392 1.83696 0 2.5 0H13.5ZM15 3.961L8.254 7.931C8.19022 7.96845 8.11893 7.99128 8.04527 7.99785C7.9716 8.00442 7.8974 7.99457 7.828 7.969L7.746 7.931L1 3.963V10.5C1 10.8978 1.15804 11.2794 1.43934 11.5607C1.72064 11.842 2.10218 12 2.5 12H13.5C13.8978 12 14.2794 11.842 14.5607 11.5607C14.842 11.2794 15 10.8978 15 10.5V3.961ZM13.5 1H2.5C2.10218 1 1.72064 1.15804 1.43934 1.43934C1.15804 1.72064 1 2.10218 1 2.5V2.802L8 6.92L15 2.8V2.5C15 2.10218 14.842 1.72064 14.5607 1.43934C14.2794 1.15804 13.8978 1 13.5 1V1Z"
+							fill="#222222"></path>
+					</svg>
+					contacto@aitamasleepcoaching.com</a
+				>
+				<p style="display:grid;place-items: center;grid-row-gap: 1rem;">
+					<svg
+						viewBox="0 0 18 28"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						style="width: 1.2rem; margin-right: .5rem;"
+					>
+						<path
+							d="M16 0H2C1.46957 0 0.96086 0.210714 0.585787 0.585786C0.210714 0.960859 0 1.46957 0 2V26C0 26.5304 0.210714 27.0391 0.585787 27.4142C0.96086 27.7893 1.46957 28 2 28H16C16.5304 28 17.0391 27.7893 17.4142 27.4142C17.7893 27.0391 18 26.5304 18 26V2C18 1.46957 17.7893 0.960859 17.4142 0.585786C17.0391 0.210714 16.5304 0 16 0ZM2 2H16V20H2V2ZM2 26V22H16V26H2Z"
+							fill="#222222"></path>
+						<path d="M8 23H10V25H8V23Z" fill="#FF6B6E"></path>
+					</svg>
+					619422269
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="h-footer-copyright">
+		<p>Copyright 2022 © aitamasleepcoaching. Todos los derechos reservados.</p>
+		<p>
+			Web desarrollada por <a
+				href="https://josebaquerejeta.com"
+				target="__blank">www.josebaquerejeta.com</a
+			>
+		</p>
+	</div>
+</footer>
+<style>
+	.h-footer {
+		max-width: 100rem;
+		margin: 0 auto;
+	}
+
+	.h-footer__grid {
+		display: grid;
+		grid-template-rows: 1fr 1fr 10rem 1fr;
+		margin-bottom: 3rem;
+		grid-column: 1fr;
+	}
+
+	@media screen and (width >= 425px) {
+		.h-footer__grid {
+			position: relative;
+			display: grid;
+			-ms-grid-columns: 50% 1rem 50%;
+			grid-template-columns: 50% 50%;
+			-ms-grid-rows: 2fr;
+			grid-template-rows: repeat(2, 1fr) 10rem;
+			grid-gap: 1.5rem;
+		}
+
+		.h-footer__grid > *:nth-child(1) {
+			grid-row: 1;
+			grid-column: 1;
+		}
+
+		.h-footer__grid > *:nth-child(2) {
+			grid-column: 2;
+			grid-row: 1;
+		}
+
+		.h-footer__grid > *:nth-child(4) {
+			grid-column: 1/-1;
+			grid-row: 2;
+		}
+	}
+
+	@media screen and (width >= 47.82rem) {
+		.h-footer__grid {
+			grid-template-columns: repeat(3, 1fr);
+			justify-items: center;
+			grid-template-rows: repeat(2, 1fr);
+		}
+	}
+
+	@media screen and (width >= 950px) {
+		.h-footer__grid {
+			grid-template-columns: 2fr 2fr 2fr 1fr;
+			justify-items: center;
+			grid-template-rows: 1fr;
+		}
+
+		.h-footer__grid > *:nth-child(3) {
+			grid-column: 4/-1;
+			grid-row: 1;
+		}
+
+		.h-footer__grid > *:nth-child(4) {
+			grid-column: 3/4;
+			grid-row: 1;
+		}
+	}
+	.h-footer__grid > div {
+		padding: 0.3rem;
+	}
+
+	.h-footer__logo {
+		width: 150px;
+		margin: 0 auto;
+		margin-bottom: 2rem;
+	}
+	.h-footer__heading {
+		margin-bottom: 20px;
+	}
+
+	.h-footer-copyright {
+		position: absolute;
+		left: 0;
+		display: grid;
+		grid-template-rows: repeat(2, 3rem);
+		width: 100%;
+		padding: 1rem;
+		background: #ffb3b5;
+		place-items: center;
+	}
+
+	.h-footer-copyright > p {
+		font-size: 0.8rem;
+	}
+
+	.footer-nav {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: repeat(4, 3rem);
+		-ms-grid-columns: 1fr;
+	}
+
+	.footer-nav > *:nth-child(1) {
+		grid-row: 1;
+		grid-column: 1;
+	}
+
+	.footer-nav > *:nth-child(2) {
+		grid-row: 2;
+		grid-column: 1;
+	}
+
+	.footer-nav > *:nth-child(3) {
+		grid-row: 3;
+		grid-column: 1;
+	}
+
+	.footer-nav > *:nth-child(4) {
+		grid-row: 4;
+		grid-column: 1;
+	}
+
+	.footer-nav > *:nth-child(5) {
+		grid-row: 5;
+		grid-column: 1;
+	}
+
+	.footer-nav > *:nth-child(6) {
+		grid-row: 6;
+		grid-column: 1;
+	}
+	.footer-nav__link {
+		color: #222;
+	}
+</style>

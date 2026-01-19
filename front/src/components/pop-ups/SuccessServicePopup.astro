@@ -1,0 +1,98 @@
+---
+import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+
+const currentLang = Astro.currentLocale ?? 'es';
+const t = useTranslations(currentLang as keyof typeof languagesList);
+---
+
+<div id="popupService" class="popup">
+	<div class="popup-content">
+		<p>✅ {t('email.template.success-01')}</p>
+		<p>{t('email.template.success-02')}</p>
+		<button id="close-success-popup">{t('email.template.cerrar')}</button>
+	</div>
+</div>
+
+<script is:inline>
+	// Versión más robusta del evento de carga
+	function checkPopup() {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get('sent') === 'true') {
+			const popup = document.getElementById('popupService');
+			if (popup) {
+				popup.classList.add('visible');
+
+				// Cerrar al hacer clic fuera del contenido
+				popup.addEventListener('click', (e) => {
+					if (e.target === popup) {
+						closePopup();
+					}
+				});
+			}
+		}
+
+		const btn = document.getElementById('close-success-popup');
+		if (btn) {
+			btn.addEventListener('click', closePopup);
+		}
+	}
+
+	function closePopup() {
+		const popup = document.getElementById('popupService');
+		if (popup) {
+			popup.classList.remove('visible');
+
+			const url = new URL(window.location.href);
+			url.searchParams.delete('sent');
+			window.history.replaceState({}, '', url);
+		}
+	}
+
+	if (document.readyState !== 'loading') {
+		checkPopup();
+	} else {
+		document.addEventListener('DOMContentLoaded', checkPopup);
+		window.addEventListener('load', checkPopup);
+	}
+</script>
+
+<style>
+	.popup {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.3s ease;
+		z-index: 9999;
+	}
+
+	.popup.visible {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.popup-content {
+		background: white;
+		padding: 20px;
+		border-radius: 8px;
+		max-width: 90%;
+		width: 300px;
+	}
+	button {
+		margin-top: 1rem;
+		padding: 0.5rem 1.2rem;
+		background-color: #77b255;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: p;
+	}
+</style>

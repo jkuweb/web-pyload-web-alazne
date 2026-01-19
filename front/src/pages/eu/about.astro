@@ -1,0 +1,128 @@
+---
+import ContactForm from '@/components/contactForm/ContactForm.astro';
+import AboutServices from '@/components/services/AboutServices.astro';
+import Layout from '@/layouts/Layout.astro';
+import CldImage from '@/components/image/Image.astro';
+import { generateCSRFToken } from '@/utils/csrf';
+import { actions, isInputError } from 'astro:actions';
+import type { Page, Media } from '@/payloadTypes';
+import RichText from '@/components/RichText/RichText.astro';
+import {
+	getAlternateUrls,
+	getCanonicalUrl,
+	getPageBySlug,
+} from '@/utils/payloadFetch';
+import Sentences from '@/components/sentences/Sentences.astro';
+import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
+import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
+
+const currentLang = Astro.currentLocale || 'eu';
+const page: Page | null = await getPageBySlug('niri-buruz', 'eu');
+
+if (!page) {
+	return Astro.redirect(`/${currentLang}/`);
+}
+
+const canonical = getCanonicalUrl('/about', 'eu');
+const alternates = getAlternateUrls('/about');
+const breadcrumbs = [
+	{
+		name: currentLang === 'eu' ? 'Niri buruz' : 'Sobre mí',
+		url: canonical,
+	},
+];
+
+const seoTitle = page.meta?.title || 'Sobre mí';
+const seoDescription = page.meta?.description || '...';
+const seoImage =
+	page.meta?.image?.unpicUrl ||
+	'https://aitamasleepcoaching.com/img/banner.png';
+const heroImage =
+	page.hero && 'media' in page.hero && page.hero.media
+		? typeof page.hero.media === 'object'
+			? page.hero.media
+			: null
+		: null;
+
+const preloadImages = [
+	heroImage?.unpicUrl,
+	page.layout[1]?.media?.unpicUrl,
+].filter(Boolean);
+
+const result = Astro.getActionResult(actions.send);
+
+const inputErrors = isInputError(result?.error) ? result?.error.fields : {};
+
+const csrf = generateCSRFToken();
+Astro.cookies.set('csrf_token', csrf, {
+	path: '/',
+	httpOnly: true,
+	sameSite: 'strict',
+	secure: true,
+});
+if (result?.data) {
+	return Astro.redirect(`/${currentLang}/about/?sent=true`);
+}
+---
+
+<Layout
+	title={seoTitle}
+	description={seoDescription}
+	ogImage={seoImage}
+	canonical={canonical}
+	lang="eu"
+	alternates={alternates}
+	preloadImages={preloadImages}
+>
+	<WebPageSchema
+		slot="head"
+		title={seoTitle}
+		description={seoDescription}
+		url={canonical}
+		image={seoImage}
+	/>
+	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+	<section>
+		<div
+			class="hero-image bg-home"
+			style={`background-image: url(${heroImage?.unpicUrl})`}
+		>
+			<div class="hero-image__overlay"></div>
+			<div class="hero-image__info">
+				<div class="hero-image__text hero-heading">
+					<p tabindex="0">Soy Alazne</p>
+					<h1>
+						{page.hero.title}
+					</h1>
+				</div>
+				{
+					page?.hero?.links?.map((link) => (
+						<a href="#contact" class="btn">
+							{link.link.label}
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
+	<section class="h-services wrapper">
+		<p class="heading-title" tabindex="0">Sobre mí</p>
+		<h2 class="heading-secondary" tabindex="0">
+			{page.layout[0].title}
+		</h2>
+		<div class="paragraph">
+			<RichText content={page.layout[0].richText} className={``} />
+			<div class="h-job__img">
+				<CldImage
+					src={page.layout[1].media.unpicUrl}
+					width={480}
+					height={360}
+					alt=""
+				/>
+			</div>
+		</div>
+	</section>
+	<Sentences sentences={page.layout[2].sentences} />
+	<AboutServices service={page.layout[3].services} />
+	<ContactForm inputErrors={inputErrors} csrf={csrf} />
+</Layout>

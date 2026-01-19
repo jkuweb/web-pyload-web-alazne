@@ -1,0 +1,171 @@
+---
+import Header from '@/components/header/Header.astro';
+import Footer from '@/components/footer/Footer.astro';
+import '../styles/main.css';
+import '../assets/css/glider.min.css';
+
+export interface Props {
+	title: string;
+	description: string;
+	ogImage?: string;
+	canonical: string;
+	lang: 'es' | 'eu';
+	alternates?: {
+		es: string;
+		eu: string;
+	};
+	noindex?: boolean;
+	preloadImages?: string[];
+}
+
+const {
+	title,
+	description,
+	ogImage = 'https://aitamasleepcoaching.com/img/banner.png',
+	canonical,
+	lang,
+	alternates,
+	noindex = false,
+	preloadImages = [],
+} = Astro.props;
+
+const siteUrl = 'https://aitamasleepcoaching.com';
+const currentLang = lang;
+
+const fullImageUrl = ogImage.startsWith('http')
+	? ogImage
+	: `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
+
+const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
+---
+
+<!doctype html>
+<html lang={currentLang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+
+		<!-- DNS Prefetch & Preconnect para recursos externos -->
+		<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+		<link rel="dns-prefetch" href="https://res.cloudinary.com" />
+		<link rel="preconnect" href="https://analytics.ahrefs.com" crossorigin />
+		<link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
+
+		<!-- Preload de imágenes críticas (hero, logo, etc.) -->
+		{
+			preloadImages.map((imgUrl) => {
+				const isWebP = imgUrl.includes('cloudinary');
+				return (
+					<>
+						{isWebP && (
+							<link
+								rel="preload"
+								as="image"
+								href={`${imgUrl.split('/upload/')[0]}/upload/f_avif,q_auto/${imgUrl.split('/upload/')[1]}`}
+								type="image/avif"
+							/>
+						)}
+						<link
+							rel="preload"
+							as="image"
+							href={imgUrl}
+							type={isWebP ? 'image/webp' : 'image/jpeg'}
+						/>
+					</>
+				);
+			})
+		}
+
+		<!-- Primary Meta Tags -->
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta name="author" content="Aitama Sleep Coaching" />
+
+		<!-- Canonical & Robots -->
+		<link rel="canonical" href={canonical} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+		<!-- Hreflang para i18n -->
+		{
+			alternates && (
+				<>
+					<link rel="alternate" hreflang="es" href={alternates.es} />
+					<link rel="alternate" hreflang="eu" href={alternates.eu} />
+					<link rel="alternate" hreflang="x-default" href={alternates.es} />
+				</>
+			)
+		}
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={fullImageUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:locale" content={localeCode} />
+		<meta property="og:site_name" content="Aitama Sleep Coaching" />
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={fullImageUrl} />
+
+		<!-- PWA / Browser -->
+		<meta name="theme-color" content="#ffffff" />
+		<meta name="msapplication-TileColor" content="#ffffff" />
+
+		<!-- Favicons -->
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+		<!-- Sitemap -->
+		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+		<!-- Ahrefs Verification -->
+		<meta
+			name="ahrefs-site-verification"
+			content="a11d721f3808502270cfb18884279928a193cb9a0b2a5bd0527dac19666822c6"
+		/>
+
+		<!-- Analytics (defer para no bloquear rendering) -->
+		<script
+			src="https://analytics.ahrefs.com/analytics.js"
+			data-key={import.meta.env.HREF}
+			defer></script>
+
+		<!-- Slot adicional para meta tags específicos de página -->
+		<slot name="head" />
+	</head>
+	<body>
+		<Header />
+		<main id="main-content">
+			<slot />
+		</main>
+		<Footer />
+		<script src="../assets/js/glider.min.js"></script>
+		<style>
+			.button__link {
+				display: inline-block;
+				margin: 3rem 3rem 0;
+				color: #fff;
+				padding: 1rem;
+				font-family: sans-serif;
+				font-weight: bold;
+				position: absolute;
+				right: 0;
+				text-transform: uppercase;
+			}
+			.button__link:hover {
+				background-color: #000;
+			}
+		</style>
+	</body>
+</html>
