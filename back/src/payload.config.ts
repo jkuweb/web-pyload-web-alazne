@@ -14,6 +14,7 @@ import { HandleDelete, HandleUpload } from '@payloadcms/plugin-cloud-storage/typ
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { redeployFrontend } from './endpoints/redeploy'
 import { hasPendingChanges } from './endpoints/hasPendingChanges'
+import { Settings } from './collections/Settings/Settings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -117,7 +118,7 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { es },
   },
-  collections: [Users, Media, Pages],
+  collections: [Users, Media, Pages, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

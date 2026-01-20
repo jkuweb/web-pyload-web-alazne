@@ -11,6 +11,12 @@ export const Settings: CollectionConfig<'settings'> = {
   },
   fields: [
     {
+      name: 'title',
+      type: 'text',
+      admin: { readOnly: true },
+      defaultValue: 'Settings',
+    },
+    {
       name: 'lastFrontendDeploy',
       type: 'date',
       admin: {
