@@ -53,7 +53,7 @@ export const RedeployButton = () => {
       <div
         style={{
           marginTop: '0.25rem',
-          fontSize: '0.75rem',
+          fontSize: '1.5rem',
           color: disabled ? '#4caf50' : '#d32f2f',
         }}
       >
