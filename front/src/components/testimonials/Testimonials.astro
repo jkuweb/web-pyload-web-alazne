@@ -20,7 +20,7 @@ const opinions = opinionsPage.opinions.opinions;
 	<div class="paragraph h-opinions__text animated">
 		<RichText content={opinionsPage.opinions.richText} />
 	</div>
-	<div class="testimonials wrapper glider-containt multiple" data-testimonials>
+	<div class="testimonials wrapper glider-containt multiple">
 		<div class="testimonials__list glider">
 			<div class="testimonials__item">
 				<CldImage
@@ -81,84 +81,48 @@ const opinions = opinionsPage.opinions.opinions;
 		<div role="tablist" id="dots" class="glider-dots"></div>
 	</div>
 </section>
-
-<script>
-	function initTestimonials() {
-		const testimonialsWrapper = document.querySelector('[data-testimonials]');
-		if (!testimonialsWrapper) return;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						observer.disconnect();
-
-						requestAnimationFrame(() => {
-							requestAnimationFrame(() => {
-								const gliderElement = document.querySelector('.glider');
-								if (!gliderElement || (gliderElement as any)._glider) return;
-
-								new (window as any).Glider(gliderElement, {
-									slidesToShow: 3,
-									draggable: true,
-									slidesToScroll: 1,
-									scrollLock: true,
-									scrollLockDelay: 100,
-									dots: '#dots',
-									arrows: {
-										prev: '.glider-prev',
-										next: '.glider-next',
-									},
-									duration: 0.25,
-									resizeLock: false,
-									responsive: [
-										{
-											breakpoint: 300,
-											settings: {
-												slidesToShow: 1,
-												slidesToScroll: 1,
-												duration: 0.25,
-											},
-										},
-										{
-											breakpoint: 600,
-											settings: {
-												slidesToShow: 1,
-												slidesToScroll: 1,
-												duration: 0.25,
-											},
-										},
-										{
-											breakpoint: 1500,
-											settings: {
-												slidesToShow: 1,
-												slidesToScroll: 1,
-												duration: 0.25,
-											},
-										},
-									],
-								});
-							});
-						});
-					}
-				});
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function () {
+		const glider1 = new Glider(document.querySelector('.glider'), {
+			slidesToShow: 3,
+			draggable: true,
+			slidesToScroll: 1,
+			scrollLock: true,
+			dots: '#dots',
+			arrows: {
+				prev: '.glider-prev',
+				next: '.glider-next',
 			},
-			{
-				rootMargin: '100px',
-			},
-		);
-
-		observer.observe(testimonialsWrapper);
-	}
-
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initTestimonials);
-	} else {
-		initTestimonials();
-	}
+			responsive: [
+				{
+					breakpoint: 300,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 600,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+				{
+					breakpoint: 1500,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 'auto',
+						duration: 0.25,
+					},
+				},
+			],
+		});
+	});
 </script>
-
-<style>
+<style is:inline>
 	.h-opinions {
 		position: relative;
 		width: 100%;
@@ -220,6 +184,8 @@ const opinions = opinionsPage.opinions.opinions;
 	}
 
 	.testimonials__list {
+		display: -webkit-box;
+		display: flexbox;
 		display: flex;
 		margin-bottom: 2rem;
 		overflow-x: hidden;
@@ -229,14 +195,5 @@ const opinions = opinionsPage.opinions.opinions;
 		top: -15%;
 		width: 4rem;
 		height: 4rem;
-	}
-
-	.glider-containt[data-testimonials] {
-		opacity: 0;
-		transition: opacity 0.3s ease-in-out;
-	}
-
-	.glider-containt[data-testimonials].glider-loaded {
-		opacity: 1;
 	}
 </style>

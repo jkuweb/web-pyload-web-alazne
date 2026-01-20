@@ -2,6 +2,7 @@
 import Header from '@/components/header/Header.astro';
 import Footer from '@/components/footer/Footer.astro';
 import '../styles/main.css';
+import '../assets/css/glider.min.css';
 import '../styles/header.css';
 
 export interface Props {
@@ -47,8 +48,12 @@ const isProd = import.meta.env.PROD;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
+
+		<!-- DNS Prefetch & Preconnect para recursos externos -->
 		<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 		<link rel="dns-prefetch" href="https://res.cloudinary.com" />
+		<link rel="preconnect" href="https://analytics.ahrefs.com" crossorigin />
+		<link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
 		{
 			preloadImages.map((imgUrl) => {
@@ -61,7 +66,6 @@ const isProd = import.meta.env.PROD;
 								as="image"
 								href={`${imgUrl.split('/upload/')[0]}/upload/f_avif,q_auto/${imgUrl.split('/upload/')[1]}`}
 								type="image/avif"
-								fetchpriority="high"
 							/>
 						)}
 						<link
@@ -69,15 +73,11 @@ const isProd = import.meta.env.PROD;
 							as="image"
 							href={imgUrl}
 							type={isWebP ? 'image/webp' : 'image/jpeg'}
-							fetchpriority="high"
 						/>
 					</>
 				);
 			})
 		}
-
-		<link rel="preload" href="/assets/css/glider.min.css" as="style" />
-		<link rel="stylesheet" href="/assets/css/glider.min.css" />
 
 		<title>{title}</title>
 		<meta name="title" content={title} />
@@ -96,18 +96,31 @@ const isProd = import.meta.env.PROD;
 				</>
 			)
 		}
+		<script
+			type="text/partytown"
+			src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+		></script>
+		<script type="text/partytown">
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+			gtag('config', '{GA_MEASUREMENT_ID}');
+		</script>
 
 		{isProd && (
-			<>
-				<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-				<script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
-					window.dataLayer = window.dataLayer || [];
-					function gtag(){dataLayer.push(arguments);}
-					gtag('js', new Date());
-					gtag('config', GA_MEASUREMENT_ID);
-				</script>
-			</>
-		)}
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', GA_MEASUREMENT_ID);
+    </script>
+  </>
+)}
+
 
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content={canonical} />
@@ -118,13 +131,11 @@ const isProd = import.meta.env.PROD;
 		<meta property="og:image:height" content="630" />
 		<meta property="og:locale" content={localeCode} />
 		<meta property="og:site_name" content="Aitama Sleep Coaching" />
-
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:url" content={canonical} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={fullImageUrl} />
-
 		<meta name="theme-color" content="#ffffff" />
 		<meta name="msapplication-TileColor" content="#ffffff" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -132,11 +143,14 @@ const isProd = import.meta.env.PROD;
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
-
 		<meta
 			name="ahrefs-site-verification"
 			content="a11d721f3808502270cfb18884279928a193cb9a0b2a5bd0527dac19666822c6"
 		/>
+		<script
+			src="https://analytics.ahrefs.com/analytics.js"
+			data-key={import.meta.env.HREF}
+			defer></script>
 
 		<slot name="head" />
 	</head>
@@ -146,62 +160,8 @@ const isProd = import.meta.env.PROD;
 			<slot />
 		</main>
 		<Footer />
-
-		<script>
-			function loadGlider() {
-				if (!document.querySelector('.glider')) return;
-
-				const script = document.createElement('script');
-				script.src = '/assets/js/glider.min.js';
-				script.async = true;
-				script.defer = true;
-
-				script.onerror = () => {
-					console.error('Error cargando Glider.js');
-				};
-
-				document.body.appendChild(script);
-			}
-
-			if (document.readyState === 'loading') {
-				document.addEventListener('DOMContentLoaded', () => {
-					requestAnimationFrame(() => {
-						requestAnimationFrame(loadGlider);
-					});
-				});
-			} else {
-				requestAnimationFrame(() => {
-					requestAnimationFrame(loadGlider);
-				});
-			}
-		</script>
-
-		<script>
-			let ahrefsLoaded = false;
-
-			function loadAhrefs() {
-				if (ahrefsLoaded) return;
-				ahrefsLoaded = true;
-
-				const script = document.createElement('script');
-				script.src = 'https://analytics.ahrefs.com/analytics.js';
-				script.setAttribute('data-key', '{import.meta.env.HREF}');
-				script.defer = true;
-				document.head.appendChild(script);
-			}
-
-			if ('requestIdleCallback' in window) {
-				requestIdleCallback(loadAhrefs, { timeout: 3000 });
-			} else {
-				setTimeout(loadAhrefs, 3000);
-			}
-
-			['scroll', 'click', 'touchstart'].forEach(event => {
-				window.addEventListener(event, loadAhrefs, { once: true, passive: true });
-			});
-		</script>
-
-		<style is:inline>
+		<script src="../assets/js/glider.min.js"></script>
+		<style>
 			.button__link {
 				display: inline-block;
 				margin: 3rem 3rem 0;
