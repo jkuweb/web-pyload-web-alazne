@@ -8,10 +8,10 @@ export const hasPendingChanges: PayloadHandler = async (req) => {
     where: {
       _status: { equals: 'draft' },
     },
-    limit: 1,
+    limit: 0,
   })
 
   return Response.json({
-    hasChanges: result.totalDocs > 0,
+    count: result.totalDocs,
   })
 }
