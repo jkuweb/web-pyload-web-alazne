@@ -1,5 +1,4 @@
 import { isAdminOrUser, publicAccess } from '@/access'
-import { triggerNetlifyRebuild, triggerNetlifyRebuildOnDelete } from '@/hooks/triggerNetlifyRebuild'
 import type { CollectionConfig } from 'payload'
 
 const getCloudinaryUrl = (filename: string, transformations?: string): string => {
@@ -28,12 +27,9 @@ export const Media: CollectionConfig = {
     disableLocalStorage: true,
     mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
     adminThumbnail: ({ doc }) => {
-      // Intentar obtener filename
       const filename = doc?.filename
 
-      // Si no hay filename válido, intentar usar la URL existente
       if (!filename || typeof filename !== 'string' || filename.trim() === '') {
-        // Si ya tiene una URL de Cloudinary válida, úsala
         if (doc?.url && typeof doc.url === 'string' && doc.url.includes('cloudinary')) {
           const isSVG = doc.mimeType === 'image/svg+xml'
           if (isSVG) {
@@ -117,13 +113,11 @@ export const Media: CollectionConfig = {
 
         return doc
       },
-      triggerNetlifyRebuild,
     ],
     afterRead: [
       async ({ doc }) => {
         if (!doc.url || doc.url.includes('localhost') || doc.url.includes('/api/media/file/')) {
           const cloudinary = (await import('cloudinary')).v2
-          // Corregido: paréntesis normales, no template literals
           doc.url = cloudinary.url(`media/${doc.filename}`, {
             secure: true,
             fetch_format: 'auto',
@@ -142,6 +136,5 @@ export const Media: CollectionConfig = {
         return doc
       },
     ],
-    afterDelete: [triggerNetlifyRebuildOnDelete],
   },
 }

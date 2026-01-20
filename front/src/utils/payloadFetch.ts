@@ -24,7 +24,11 @@ export function getAlternateUrls(path: string): { es: string; eu: string } {
 export async function getPageBySlug(slug: string, locale: 'es' | 'eu') {
 	try {
 		const response = await fetch(
-			`${PAYLOAD_URL}/api/pages?where[slug][equals]=${slug}&locale=${locale}&limit=1&depth=2`,
+			`${PAYLOAD_URL}/api/pages?where[slug][equals]=${slug}&where[_status][equals]=published&locale=${locale}&limit=1&depth=2`,
+
+			{
+				cache: 'no-store',
+			},
 		);
 
 		if (!response.ok) {

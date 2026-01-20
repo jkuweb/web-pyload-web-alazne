@@ -8,8 +8,6 @@ import { ServiceBlock } from '@/blocks/ServiceBlock/config'
 import { SentenceBlock } from '@/blocks/SentenceBlock/config'
 import { publicAccess, isAdmin, isAdminOrUser } from '@/access'
 import { PriceBlock } from '@/blocks/PriceBlock/config'
-import { populatePublishedAt } from '@/hooks/populatePublishedAt'
-import { triggerNetlifyRebuild, triggerNetlifyRebuildOnDelete } from '@/hooks/triggerNetlifyRebuild'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -75,11 +73,6 @@ export const Pages: CollectionConfig<'pages'> = {
     },
     ...slugField(),
   ],
-  hooks: {
-    afterChange: [triggerNetlifyRebuild],
-    beforeChange: [populatePublishedAt],
-    afterDelete: [triggerNetlifyRebuildOnDelete],
-  },
   versions: {
     drafts: {
       autosave: {
