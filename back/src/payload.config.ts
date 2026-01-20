@@ -13,6 +13,7 @@ import { UploadApiResponse, v2 as cloudinary } from 'cloudinary'
 import { HandleDelete, HandleUpload } from '@payloadcms/plugin-cloud-storage/types'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { redeployFrontend } from './endpoints/redeploy'
+import { hasPendingChanges } from './endpoints/hasPendingChanges'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -201,6 +202,11 @@ export default buildConfig({
       path: '/redeploy',
       method: 'post',
       handler: redeployFrontend,
+    },
+    {
+      path: '/has-pending-changes',
+      method: 'get',
+      handler: hasPendingChanges,
     },
   ],
 })
