@@ -12,6 +12,7 @@ import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import { UploadApiResponse, v2 as cloudinary } from 'cloudinary'
 import { HandleDelete, HandleUpload } from '@payloadcms/plugin-cloud-storage/types'
 import { seoPlugin } from '@payloadcms/plugin-seo'
+import { redeployFrontend } from './endpoints/redeploy'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -84,6 +85,14 @@ export default buildConfig({
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
+    },
+
+    components: {
+      afterNavLinks: [
+        {
+          path: '@/components/RedeployButton#RedeployButton',
+        },
+      ],
     },
   },
 
@@ -187,4 +196,11 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
   ].filter(Boolean),
+  endpoints: [
+    {
+      path: '/redeploy',
+      method: 'post',
+      handler: redeployFrontend,
+    },
+  ],
 })
