@@ -11,6 +11,9 @@ importers:
       '@astrojs/netlify':
         specifier: ^6.6.3
         version: 6.6.3(@netlify/api@14.0.12)(@types/node@24.10.2)(astro@5.16.5(@netlify/blobs@10.4.3)(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.44.1)(typescript@5.9.3)(yaml@2.8.2))(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.44.1)(yaml@2.8.2)
+      '@astrojs/partytown':
+        specifier: ^2.1.4
+        version: 2.1.4
       '@astrojs/preact':
         specifier: ^4.1.3
         version: 4.1.3(@babel/core@7.28.5)(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(preact@10.26.9)(terser@5.44.1)(yaml@2.8.2)
@@ -169,6 +172,9 @@ packages:
     resolution: {integrity: sha512-vGfdu5qapcqJPJHxJHr2pdyPefoAAkjxT057J16k49/kkRENzALGx8tN/sdzKj7nBOcVbtfJBxXBTC9VjBBEdA==}
     peerDependencies:
       astro: ^5.7.0
+
+  '@astrojs/partytown@2.1.4':
+    resolution: {integrity: sha512-loUrAu0cGYFDC6dHVRiomdsBJ41VjDYXPA+B3Br51V5hENFgDSOLju86OIj1TvBACcsB22UQV7BlppODDG5gig==}
 
   '@astrojs/preact@4.1.3':
     resolution: {integrity: sha512-Ph416wbgyumkmYr7erZ83l/d+LXdZethlHRRCbgoKEn8wo3Rkq13shKFp0QYXYSDYxVaA6UBdkdimeowy/lMLQ==}
@@ -1376,6 +1382,11 @@ packages:
     peerDependencies:
       preact: ^10.4.0 || ^11.0.0-0
       vite: '>=2.0.0'
+
+  '@qwik.dev/partytown@0.11.2':
+    resolution: {integrity: sha512-795y49CqBiKiwKAD+QBZlzlqEK275hVcazZ7wBPSfgC23L+vWuA7PJmMpgxojOucZHzYi5rAAQ+IP1I3BKVZxw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   '@react-email/render@1.1.2':
     resolution: {integrity: sha512-RnRehYN3v9gVlNMehHPHhyp2RQo7+pSkHDtXPvg3s0GbzM9SQMW4Qrf8GRNvtpLC4gsI+Wt0VatNRUFqjvevbw==}
@@ -6312,6 +6323,11 @@ snapshots:
       - uploadthing
       - yaml
 
+  '@astrojs/partytown@2.1.4':
+    dependencies:
+      '@qwik.dev/partytown': 0.11.2
+      mrmime: 2.0.1
+
   '@astrojs/preact@4.1.3(@babel/core@7.28.5)(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(preact@10.26.9)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@preact/preset-vite': 2.10.2(@babel/core@7.28.5)(preact@10.26.9)(vite@6.4.1(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
@@ -7666,6 +7682,10 @@ snapshots:
       vite: 6.4.1(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
+
+  '@qwik.dev/partytown@0.11.2':
+    dependencies:
+      dotenv: 16.6.1
 
   '@react-email/render@1.1.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:

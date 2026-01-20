@@ -3,6 +3,7 @@ import { imageService } from '@unpic/astro/service';
 import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
 import path from 'path';
+import partytown from '@astrojs/partytown';
 
 import netlify from '@astrojs/netlify';
 
@@ -36,12 +37,13 @@ export default defineConfig({
 		}),
 	},
 	build: {
-		inlineStylesheets: 'auto',
+		inlineStylesheets: 'always',
 		assets: '_astro',
 	},
 	vite: {
 		build: {
-			cssCodeSplit: true,
+			cssCodeSplit: false,
+			assetsInlineLimit: 10000,
 			rollupOptions: {
 				output: {
 					manualChunks: {
@@ -52,6 +54,11 @@ export default defineConfig({
 		},
 	},
 	integrations: [
+		partytown({
+			config: {
+				forward: ['dataLayer.push'],
+			},
+		}),
 		sitemap({
 			i18n: {
 				defaultLocale: 'es',

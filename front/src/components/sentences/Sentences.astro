@@ -1,7 +1,6 @@
 ---
 import type { languagesList } from '@/i18n/ui';
 import { useTranslations } from '@/i18n/utils';
-
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
 const sentences = Astro.props;
@@ -11,6 +10,7 @@ const sentences = Astro.props;
 	<div
 		class="animated catchwords glider-containt multiple"
 		style="max-width: 80%; margin:0 auto;"
+		data-sentences-carousel
 	>
 		<ul class="catchwords__list glider-2">
 			{
@@ -23,74 +23,117 @@ const sentences = Astro.props;
 		</ul>
 	</div>
 </section>
-<script is:inline>
-	document.addEventListener('DOMContentLoaded', function () {
-		const glider2 = new Glider(document.querySelector('.glider-2'), {
-			rewind: true,
-			dots: '#dots-2',
-			arrows: {
-				prev: '.glider-prev',
-				next: '.glider-next',
-			},
-			responsive: [
-				{
-					breakpoint: 300,
-					settings: {
-						slidesToShow: 1,
-						slidesToScroll: 'auto',
-						duration: 0.25,
-					},
-				},
-				{
-					breakpoint: 600,
-					settings: {
-						slidesToShow: 1,
-						slidesToScroll: 'auto',
-						duration: 0.25,
-					},
-				},
-				{
-					breakpoint: 1500,
-					settings: {
-						slidesToShow: 1,
-						slidesToScroll: 'auto',
-						duration: 0.25,
-					},
-				},
-			],
-		});
 
-		function sliderAuto(slider, miliseconds) {
-			const slidesCount = slider.track.childElementCount;
-			let slideTimeout = null;
-			let nextIndex = 1;
+<script>
+	function initSentencesCarousel() {
+		const carouselWrapper = document.querySelector('[data-sentences-carousel]');
+		if (!carouselWrapper) return;
 
-			function slide() {
-				slideTimeout = setTimeout(function () {
-					if (nextIndex >= slidesCount) {
-						nextIndex = 0;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						observer.disconnect();
+
+						requestAnimationFrame(() => {
+							requestAnimationFrame(() => {
+								const gliderElement = document.querySelector('.glider-2');
+								if (!gliderElement || (gliderElement as any)._glider) return;
+
+								const glider2 = new (window as any).Glider(gliderElement, {
+									rewind: true,
+									draggable: false,
+									scrollLock: true,
+									scrollLockDelay: 100,
+									duration: 0.25,
+									resizeLock: false,
+									responsive: [
+										{
+											breakpoint: 300,
+											settings: {
+												slidesToShow: 1,
+												slidesToScroll: 1,
+												duration: 0.25,
+											},
+										},
+										{
+											breakpoint: 600,
+											settings: {
+												slidesToShow: 1,
+												slidesToScroll: 1,
+												duration: 0.25,
+											},
+										},
+										{
+											breakpoint: 1500,
+											settings: {
+												slidesToShow: 1,
+												slidesToScroll: 1,
+												duration: 0.25,
+											},
+										},
+									],
+								});
+
+								let slideTimeout: number | null = null;
+								let nextIndex = 1;
+								const slidesCount = glider2.track.childElementCount;
+
+								function slide() {
+									slideTimeout = window.setTimeout(() => {
+										if (nextIndex >= slidesCount) {
+											nextIndex = 0;
+										}
+										glider2.scrollItem(nextIndex++);
+									}, 6000);
+								}
+
+								glider2.ele.addEventListener('glider-animated', () => {
+									if (slideTimeout) {
+										window.clearTimeout(slideTimeout);
+									}
+									slide();
+								});
+
+								const visibilityObserver = new IntersectionObserver(
+									(entries) => {
+										entries.forEach((entry) => {
+											if (!entry.isIntersecting && slideTimeout) {
+												window.clearTimeout(slideTimeout);
+											} else if (entry.isIntersecting) {
+												slide();
+											}
+										});
+									},
+									{ threshold: 0.5 },
+								);
+
+								visibilityObserver.observe(gliderElement);
+
+								slide();
+
+								carouselWrapper.classList.add('glider-loaded');
+							});
+						});
 					}
-					slider.scrollItem(nextIndex++);
-				}, miliseconds);
-			}
+				});
+			},
+			{
+				rootMargin: '150px',
+			},
+		);
 
-			slider.ele.addEventListener('glider-animated', function () {
-				window.clearTimeout(slideTimeout);
-				slide();
-			});
-
-			slide();
-		}
-
-		sliderAuto(glider2, 6000);
-	});
-</script>
-<style>
-	/** #H-SENTENCE  */
-	.h-sentence {
-		background-color: pink;
+		observer.observe(carouselWrapper);
 	}
 
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initSentencesCarousel);
+	} else {
+		initSentencesCarousel();
+	}
+</script>
+
+<style>
 	.h-sentence {
 		position: relative;
 		width: 100%;
@@ -103,6 +146,7 @@ const sentences = Astro.props;
 		overflow: hidden;
 		background-attachment: fixed;
 	}
+
 	.testimonials__item > p {
 		padding: 0;
 		font-size: 1.5rem;
@@ -110,6 +154,7 @@ const sentences = Astro.props;
 		font-style: italic;
 		width: 100%;
 	}
+
 	.h-sentence > div {
 		background: #ffffff57;
 	}
@@ -134,5 +179,18 @@ const sentences = Astro.props;
 
 	.catchwords > ul > div > li > div {
 		display: flex;
+	}
+
+	.glider-containt[data-sentences-carousel] {
+		opacity: 0;
+		transition: opacity 0.4s ease-in-out;
+	}
+
+	.glider-containt[data-sentences-carousel].glider-loaded {
+		opacity: 1;
+	}
+
+	.catchwords__list {
+		will-change: transform;
 	}
 </style>
