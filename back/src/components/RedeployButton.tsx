@@ -3,47 +3,42 @@ import { Button } from '@payloadcms/ui/elements/Button'
 import React, { useEffect, useState } from 'react'
 
 export const RedeployButton = () => {
-  // Estado para el número de drafts pendientes
   const [count, setCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Hook para consultar drafts pendientes al cargar
   useEffect(() => {
     const fetchPending = async () => {
       try {
         const res = await fetch('/api/has-pending-changes')
         const data = await res.json()
         setCount(data.count)
-      } catch (err) {
-        console.error('Error fetching pending changes:', err)
+      } catch {
         setCount(0)
       } finally {
         setLoading(false)
       }
     }
-
     fetchPending()
   }, [])
 
   const handleClick = async () => {
-    if (count === null) return
+    if (!count || count === 0) return
 
     const confirmed = confirm(
-      `Se actualizará el frontend con los cambios publicados.\nCambios pendientes: ${count}\n\n¿Continuar?`,
+      `Se actualizará el frontend con ${count} cambios publicados.\n¿Continuar?`,
     )
     if (!confirmed) return
 
     try {
       await fetch('/api/redeploy', { method: 'POST' })
       alert('Frontend en proceso de actualización')
-    } catch (err) {
-      console.error('Error triggering redeploy:', err)
+      setCount(0) // refresca UI inmediatamente
+    } catch {
       alert('Error al actualizar frontend')
     }
   }
 
   const disabled = loading || !count || count === 0
-
   if (loading || count === null) return null
 
   return (
@@ -51,7 +46,6 @@ export const RedeployButton = () => {
       <Button onClick={handleClick} disabled={disabled} size="small">
         Actualizar frontend
       </Button>
-
       <div
         style={{
           marginTop: '0.25rem',
