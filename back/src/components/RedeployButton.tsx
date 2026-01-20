@@ -6,19 +6,23 @@ export const RedeployButton = () => {
   const [count, setCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchPending = async () => {
-      try {
-        const res = await fetch('/api/has-pending-changes')
-        const data = await res.json()
-        setCount(data.count)
-      } catch {
-        setCount(0)
-      } finally {
-        setLoading(false)
-      }
+  const fetchPending = async () => {
+    try {
+      const res = await fetch('/api/has-pending-changes')
+      const data = await res.json()
+      setCount(data.count)
+    } catch {
+      setCount(0)
+    } finally {
+      setLoading(false)
     }
-    fetchPending()
+  }
+
+  useEffect(() => {
+    fetchPending() // primera carga
+
+    const interval = setInterval(fetchPending, 5000) // cada 5s
+    return () => clearInterval(interval) // limpiar al desmontar
   }, [])
 
   const handleClick = async () => {
@@ -44,7 +48,7 @@ export const RedeployButton = () => {
   return (
     <div style={{ padding: '0 1rem' }}>
       <Button onClick={handleClick} disabled={disabled} size="small">
-        Actualizar frontend
+        Actualizar Web
       </Button>
       <div
         style={{
