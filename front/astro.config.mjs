@@ -24,6 +24,9 @@ export default defineConfig({
 					es: 'es-ES',
 					eu: 'eu-ES',
 				},
+				routing: {
+					prefixDefaultLocale: true, // 👈 Esto fuerza /es/ en todas las URLs
+				},
 			},
 			filter: (page) =>
 				!page.includes('/admin') &&
