@@ -21,12 +21,10 @@ const {
 
 const siteUrl = 'https://aitamasleepcoaching.com';
 
-// Asegurarse de que la imagen tenga URL completa
 const fullImageUrl = image.startsWith('http')
 	? image
 	: `${siteUrl}${image.startsWith('/') ? '' : '/'}${image}`;
 
-// URL canónica
 const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).href;
 ---
 

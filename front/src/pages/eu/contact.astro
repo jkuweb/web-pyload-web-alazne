@@ -19,12 +19,10 @@ const page: Page | null = await getPageBySlug('kontaktua', 'eu');
 if (!page && Astro.url.pathname !== '/eu/contact') {
 	return Astro.redirect('/eu/contact');
 }
-const canonical = getCanonicalUrl('/contact', 'eu');
-const alternates = getAlternateUrls('/contact');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Kontaktua' : 'Contacto',
-		url: canonical,
+		url: Astro.url.pathname,
 	},
 ];
 const layoutImage =
@@ -69,16 +67,13 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
 	lang="eu"
-	alternates={alternates}
 	preloadImages={preloadImages}
 >
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />

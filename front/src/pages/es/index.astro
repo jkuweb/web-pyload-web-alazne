@@ -8,12 +8,8 @@ import HomeServices from '@/components/services/HomeServices.astro';
 import Testimonials from '@/components/testimonials/Testimonials.astro';
 import Sentences from '@/components/sentences/Sentences.astro';
 import Image from '@/components/image/Image.astro';
-import {
-	getAlternateUrls,
-	getCanonicalUrl,
-	getPageBySlug,
-} from '@/utils/payloadFetch';
-import type { Page, Media } from '@/payloadTypes';
+import { getPageBySlug } from '@/utils/payloadFetch';
+import type { Page } from '@/payloadTypes';
 import RichText from '@/components/RichText/RichText.astro';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import OrganizationSchema from '@/components/SEO/OrganizationSchema.astro';
@@ -25,14 +21,6 @@ const page: Page | null = await getPageBySlug('inicio', 'es');
 if (!page && Astro.url.pathname !== '/es/') {
 	return Astro.redirect('/es/');
 }
-const canonical = getCanonicalUrl('/', 'es');
-const alternates = getAlternateUrls('/');
-const breadcrumbs = [
-	{
-		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
-		url: canonical,
-	},
-];
 
 const seoTitle =
 	page.meta?.title ||
@@ -66,38 +54,41 @@ Astro.cookies.set('csrf_token', csrf, {
 	sameSite: 'strict',
 	secure: true,
 });
+
 if (result?.data) {
 	return Astro.redirect(`/${currentLang}/?sent=true`);
 }
+
+const breadcrumbs = [
+	{
+		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
+		url: Astro.url.pathname,
+	},
+];
 ---
 
 <Layout
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
-	lang="es"
-	alternates={alternates}
+	lang={currentLang}
 	preloadImages={preloadImages}
 >
-	<!-- Solo en la home: Organization Schema -->
 	<OrganizationSchema
 		slot="head"
 		description={seoDescription}
 		locale={currentLang}
 	/>
 
-	<!-- En todas las páginas: WebPage Schema -->
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 
-	<!-- En todas las páginas: Breadcrumbs -->
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+
 	<section>
 		<div
 			class="hero-image bg-home"
@@ -107,9 +98,7 @@ if (result?.data) {
 			<div class="hero-image__info">
 				<div class="hero-image__text hero-heading">
 					<p tabindex="0">Soy Alazne</p>
-					<h1>
-						{page.hero.title}
-					</h1>
+					<h1>{page.hero.title}</h1>
 				</div>
 				{
 					page?.hero?.links?.map((link) => (
@@ -121,15 +110,12 @@ if (result?.data) {
 			</div>
 		</div>
 	</section>
+
 	<section class="h-intro wrapper">
 		<div class="paragraph u-margin-top-8">
-			<h2 class="heading-secondary" tabindex="0">
-				{page.layout[0].title}
-			</h2>
-
-			<RichText content={page.layout[0].richText} className={``} />
+			<h2 class="heading-secondary" tabindex="0">{page.layout[0].title}</h2>
+			<RichText content={page.layout[0].richText} />
 		</div>
-
 		<div class="h-intro__img">
 			<Image
 				src={page.layout[1].media.unpicUrl}
@@ -142,31 +128,20 @@ if (result?.data) {
 			/>
 		</div>
 	</section>
-	<section class="h-services wrapper">
-		<p class="heading-title" tabindex="0">
-			{page.layout[2].sectionTitle}
-		</p>
 
-		<h2 class="heading-secondary" tabindex="0">
-			{page.layout[2].title}
-		</h2>
-		<div class="paragraph">
-			<RichText content={page.layout[2].richText} />
-		</div>
+	<section class="h-services wrapper">
+		<p class="heading-title" tabindex="0">{page.layout[2].sectionTitle}</p>
+		<h2 class="heading-secondary" tabindex="0">{page.layout[2].title}</h2>
+		<div class="paragraph"><RichText content={page.layout[2].richText} /></div>
 		<HomeServices services={page.layout[3].services} />
 	</section>
+
 	<section class="h-job">
 		<div class="wrapper">
-			<p class="heading-title" tabindex="0">
-				{page.layout[4].sectionTitle}
-			</p>
-
-			<h2 class="heading-secondary" tabindex="0">
-				{page.layout[4].title}
-			</h2>
+			<p class="heading-title" tabindex="0">{page.layout[4].sectionTitle}</p>
+			<h2 class="heading-secondary" tabindex="0">{page.layout[4].title}</h2>
 			<div class="paragraph animated">
 				<RichText content={page.layout[4].richText} />
-
 				<a href="#contact" class="btn btn-section animated cta-btn"
 					>Ponte en contacto</a
 				>
@@ -184,22 +159,21 @@ if (result?.data) {
 			/>
 		</div>
 	</section>
+
 	<Testimonials opinions={page.layout[6]} />
 	<Sentences sentences={page.layout[7].sentences} />
 	<ContactForm inputErrors={inputErrors} csrf={csrf} />
 </Layout>
+
 <style>
 	.border-pink {
 		border: 1px solid #ffc4c7;
 	}
 </style>
+
 <script>
 	document.addEventListener('DOMContentLoaded', () => {
-		const options = {
-			threshold: 0.05,
-			rootMargin: '0px 0px -10% 0px',
-		};
-
+		const options = { threshold: 0.05, rootMargin: '0px 0px -10% 0px' };
 		const animatedItems = document.querySelectorAll('.animated-2');
 
 		if (!('IntersectionObserver' in window)) {

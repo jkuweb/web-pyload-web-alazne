@@ -1,20 +1,20 @@
 ---
 import Header from '@/components/header/Header.astro';
 import Footer from '@/components/footer/Footer.astro';
+
 import '../styles/main.css';
 import '../assets/css/glider.min.css';
 import '../styles/header.css';
+
+const siteUrl = 'https://aitamasleepcoaching.com';
+
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
 export interface Props {
 	title: string;
 	description: string;
 	ogImage?: string;
-	canonical?: string;
 	lang: 'es' | 'eu';
-	alternates?: {
-		es: string;
-		eu: string;
-	};
 	noindex?: boolean;
 	preloadImages?: string[];
 }
@@ -22,15 +22,12 @@ export interface Props {
 const {
 	title,
 	description,
-	ogImage = 'https://aitamasleepcoaching.com/img/banner.png',
-	canonical,
+	ogImage = '/img/banner.png',
 	lang,
-	alternates,
 	noindex = false,
 	preloadImages = [],
 } = Astro.props;
 
-const siteUrl = 'https://aitamasleepcoaching.com';
 const currentLang = lang;
 
 const fullImageUrl = ogImage.startsWith('http')
@@ -38,8 +35,8 @@ const fullImageUrl = ogImage.startsWith('http')
 	: `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
 
 const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // Tu ID de GA4
-const isProd = import.meta.env.PROD;
+
+const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 ---
 
 <!doctype html>
@@ -49,34 +46,13 @@ const isProd = import.meta.env.PROD;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 
-		<!-- DNS Prefetch & Preconnect para recursos externos -->
 		<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 		<link rel="dns-prefetch" href="https://res.cloudinary.com" />
-		<link rel="preconnect" href="https://analytics.ahrefs.com" crossorigin />
-		<link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
 		{
-			preloadImages.map((imgUrl) => {
-				const isWebP = imgUrl.includes('cloudinary');
-				return (
-					<>
-						{isWebP && (
-							<link
-								rel="preload"
-								as="image"
-								href={`${imgUrl.split('/upload/')[0]}/upload/f_avif,q_auto/${imgUrl.split('/upload/')[1]}`}
-								type="image/avif"
-							/>
-						)}
-						<link
-							rel="preload"
-							as="image"
-							href={imgUrl}
-							type={isWebP ? 'image/webp' : 'image/jpeg'}
-						/>
-					</>
-				);
-			})
+			preloadImages.map((imgUrl) => (
+				<link rel="preload" as="image" href={imgUrl} fetchpriority="high" />
+			))
 		}
 
 		<title>{title}</title>
@@ -84,18 +60,22 @@ const isProd = import.meta.env.PROD;
 		<meta name="description" content={description} />
 		<meta name="author" content="Aitama Sleep Coaching" />
 
-		<link rel="canonical" href={canonical} />
+		<link rel="canonical" href={canonicalUrl} />
+
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 
-		{
-			alternates && (
-				<>
-					<link rel="alternate" hreflang="es" href={alternates.es} />
-					<link rel="alternate" hreflang="eu" href={alternates.eu} />
-					<link rel="alternate" hreflang="x-default" href={alternates.es} />
-				</>
-			)
-		}
+		<link
+			rel="alternate"
+			hreflang="es"
+			href={`${siteUrl}/es${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
+		/>
+		<link
+			rel="alternate"
+			hreflang="eu"
+			href={`${siteUrl}/eu${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
+		/>
+		<link rel="alternate" hreflang="x-default" href={siteUrl} />
+
 		<script
 			type="text/partytown"
 			src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -109,21 +89,8 @@ const isProd = import.meta.env.PROD;
 			gtag('config', '{GA_MEASUREMENT_ID}');
 		</script>
 
-		{isProd && (
-  <>
-    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', GA_MEASUREMENT_ID);
-    </script>
-  </>
-)}
-
-
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={canonical} />
+		<meta property="og:url" content={canonicalUrl} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={fullImageUrl} />
@@ -131,36 +98,37 @@ const isProd = import.meta.env.PROD;
 		<meta property="og:image:height" content="630" />
 		<meta property="og:locale" content={localeCode} />
 		<meta property="og:site_name" content="Aitama Sleep Coaching" />
+
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:url" content={canonicalUrl} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={fullImageUrl} />
+
 		<meta name="theme-color" content="#ffffff" />
 		<meta name="msapplication-TileColor" content="#ffffff" />
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+		<link rel="icon" href="/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
 		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
-		<meta
-			name="ahrefs-site-verification"
-			content="a11d721f3808502270cfb18884279928a193cb9a0b2a5bd0527dac19666822c6"
-		/>
-		<script
-			src="https://analytics.ahrefs.com/analytics.js"
-			data-key={import.meta.env.HREF}
-			defer></script>
 
 		<slot name="head" />
 	</head>
+
 	<body>
 		<Header />
+
 		<main id="main-content">
 			<slot />
 		</main>
+
 		<Footer />
-		<script src="../assets/js/glider.min.js"></script>
+
+		<script src="/assets/js/glider.min.js" defer></script>
+
 		<style>
 			.button__link {
 				display: inline-block;

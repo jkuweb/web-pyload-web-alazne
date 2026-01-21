@@ -22,12 +22,10 @@ const page: Page | null = await getPageBySlug('zerbitzuak', 'eu');
 if (!page && Astro.url.pathname !== '/eu/services') {
 	return Astro.redirect('/eu/services');
 }
-const canonical = getCanonicalUrl('/services', 'eu');
-const alternates = getAlternateUrls('/services');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Zerbitzuak' : 'Servicios',
-		url: canonical,
+		url: Astro.url.pathname,
 	},
 ];
 
@@ -73,16 +71,13 @@ if (serviceResult?.data || contactResult?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
 	lang="eu"
-	alternates={alternates}
 	preloadImages={preloadImages}
 >
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />

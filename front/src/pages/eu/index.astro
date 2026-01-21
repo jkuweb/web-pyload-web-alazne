@@ -10,11 +10,7 @@ import Sentences from '@/components/sentences/Sentences.astro';
 import Image from '@/components/image/Image.astro';
 import type { Page } from '@/payloadTypes';
 import RichText from '@/components/RichText/RichText.astro';
-import {
-	getAlternateUrls,
-	getCanonicalUrl,
-	getPageBySlug,
-} from '@/utils/payloadFetch';
+import { getPageBySlug } from '@/utils/payloadFetch';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import OrganizationSchema from '@/components/SEO/OrganizationSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
@@ -26,13 +22,10 @@ if (!page && Astro.url.pathname !== '/eu/') {
 	return Astro.redirect('/eu/');
 }
 
-const canonical = getCanonicalUrl('/', 'eu');
-const alternates = getAlternateUrls('/');
-
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
-		url: canonical,
+		url: Astro.url.pathname,
 	},
 ];
 
@@ -78,9 +71,7 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
-	lang="eu"
-	alternates={alternates}
+	lang={currentLang}
 	preloadImages={preloadImages}
 >
 	<OrganizationSchema
@@ -93,11 +84,11 @@ if (result?.data) {
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+
 	<section>
 		<div
 			class="hero-image bg-home"
@@ -131,9 +122,8 @@ if (result?.data) {
 			<h2 id="intro-heading" class="heading-secondary" tabindex="0">
 				{page.layout[0].title}
 			</h2>
-			<RichText content={page.layout[0].richText} className={``} />
+			<RichText content={page.layout[0].richText} />
 		</div>
-
 		<div class="h-intro__img">
 			<Image
 				src={page.layout[1].media.unpicUrl}
@@ -146,23 +136,17 @@ if (result?.data) {
 	</section>
 
 	<section class="h-services wrapper" aria-labelledby="services-heading">
-		<p class="heading-title" tabindex="0">
-			{page.layout[2].sectionTitle}
-		</p>
+		<p class="heading-title" tabindex="0">{page.layout[2].sectionTitle}</p>
 		<h2 id="services-heading" class="heading-secondary" tabindex="0">
 			{page.layout[2].title}
 		</h2>
-		<div class="paragraph">
-			<RichText content={page.layout[2].richText} />
-		</div>
+		<div class="paragraph"><RichText content={page.layout[2].richText} /></div>
 		<HomeServices services={page.layout[3].services} />
 	</section>
 
 	<section class="h-job" aria-labelledby="job-heading">
 		<div class="wrapper">
-			<p class="heading-title" tabindex="0">
-				{page.layout[4].sectionTitle}
-			</p>
+			<p class="heading-title" tabindex="0">{page.layout[4].sectionTitle}</p>
 			<h2 id="job-heading" class="heading-secondary" tabindex="0">
 				{page.layout[4].title}
 			</h2>
@@ -216,11 +200,7 @@ if (result?.data) {
 
 <script>
 	document.addEventListener('DOMContentLoaded', () => {
-		const options = {
-			threshold: 0.05,
-			rootMargin: '0px 0px -10% 0px',
-		};
-
+		const options = { threshold: 0.05, rootMargin: '0px 0px -10% 0px' };
 		const animatedItems = document.querySelectorAll('.animated-2');
 
 		if (!('IntersectionObserver' in window)) {
@@ -230,43 +210,37 @@ if (result?.data) {
 
 		const observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry, index) => {
-				if (entry.target instanceof HTMLElement) {
-					if (
-						entry.isIntersecting &&
-						!entry.target.classList.contains('slide-in-right')
-					) {
-						entry.target.style.animationDelay = `${index * 100}ms`;
-						entry.target.classList.add('slide-in-right');
-						observer.unobserve(entry.target);
-					}
+				if (
+					entry.isIntersecting &&
+					entry.target instanceof HTMLElement &&
+					!entry.target.classList.contains('slide-in-right')
+				) {
+					entry.target.style.animationDelay = `${index * 100}ms`;
+					entry.target.classList.add('slide-in-right');
+					observer.unobserve(entry.target);
 				}
 			});
 		}, options);
 
 		animatedItems.forEach((item) => observer.observe(item));
-	});
 
-	if ('loading' in HTMLImageElement.prototype) {
-		const images = document.querySelectorAll('img[loading="lazy"]');
-		images.forEach((img) => {
-			if (img instanceof HTMLImageElement) {
-				img.src = img.dataset.src || img.src;
-			}
-		});
-	} else {
-		const imageObserver = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting && entry.target instanceof HTMLImageElement) {
-					const img = entry.target;
-					img.src = img.dataset.src || img.src;
-					img.classList.remove('lazy');
-					imageObserver.unobserve(img);
-				}
+		if (!('loading' in HTMLImageElement.prototype)) {
+			const imageObserver = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (
+						entry.isIntersecting &&
+						entry.target instanceof HTMLImageElement
+					) {
+						const img = entry.target;
+						img.src = img.dataset.src || img.src;
+						img.classList.remove('lazy');
+						imageObserver.unobserve(img);
+					}
+				});
 			});
-		});
-
-		document.querySelectorAll('img.lazy').forEach((img) => {
-			imageObserver.observe(img);
-		});
-	}
+			document
+				.querySelectorAll('img.lazy')
+				.forEach((img) => imageObserver.observe(img));
+		}
+	});
 </script>

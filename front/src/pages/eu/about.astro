@@ -23,12 +23,10 @@ if (!page && Astro.url.pathname !== '/eu/about') {
 	return Astro.redirect('/eu/about');
 }
 
-const canonical = getCanonicalUrl('/about', 'eu');
-const alternates = getAlternateUrls('/about');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Niri buruz' : 'Sobre mí',
-		url: canonical,
+		url: Astro.url.pathname,
 	},
 ];
 
@@ -69,16 +67,13 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
 	lang="eu"
-	alternates={alternates}
 	preloadImages={preloadImages}
 >
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />

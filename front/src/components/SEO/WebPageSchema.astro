@@ -2,7 +2,6 @@
 export interface Props {
 	title: string;
 	description: string;
-	url: string;
 	image?: string;
 	datePublished?: string;
 	dateModified?: string;
@@ -11,7 +10,6 @@ export interface Props {
 const {
 	title,
 	description,
-	url,
 	image = 'https://aitamasleepcoaching.com/img/banner.png',
 	datePublished,
 	dateModified,
@@ -22,7 +20,6 @@ const schema = {
 	'@type': 'WebPage',
 	name: title,
 	description: description,
-	url: url,
 	image: image,
 	inLanguage: Astro.currentLocale || 'es',
 	isPartOf: {
