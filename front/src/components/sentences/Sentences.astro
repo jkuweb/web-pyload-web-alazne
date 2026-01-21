@@ -1,7 +1,6 @@
 ---
 import type { languagesList } from '@/i18n/ui';
 import { useTranslations } from '@/i18n/utils';
-
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
 const sentences = Astro.props;
@@ -12,32 +11,46 @@ const sentences = Astro.props;
 		class="animated catchwords glider-containt multiple"
 		style="max-width: 80%; margin:0 auto;"
 	>
-		<ul class="catchwords__list glider-2">
-			{
-				sentences.sentences.map((sentence) => (
-					<li class="testimonials__item">
-						<p>{sentence.title}</p>
-					</li>
-				))
-			}
-		</ul>
+		<div class="glider-wrapper">
+			<div class="glider-2">
+				{
+					sentences.sentences.map((sentence) => (
+						<div class="slide-wrapper">
+							<ul class="catchwords__list">
+								<li class="testimonials__item">
+									<p>{sentence.title}</p>
+								</li>
+							</ul>
+						</div>
+					))
+				}
+			</div>
+		</div>
 	</div>
 </section>
+
 <script is:inline>
 	document.addEventListener('DOMContentLoaded', function () {
-		const glider2 = new Glider(document.querySelector('.glider-2'), {
+		const gliderElement = document.querySelector('.glider-2');
+
+		if (!gliderElement) return;
+
+		const glider2 = new Glider(gliderElement, {
 			rewind: true,
 			dots: '#dots-2',
 			arrows: {
 				prev: '.glider-prev',
 				next: '.glider-next',
 			},
+			slidesToShow: 1,
+			slidesToScroll: 1,
+			duration: 0.25,
 			responsive: [
 				{
 					breakpoint: 300,
 					settings: {
 						slidesToShow: 1,
-						slidesToScroll: 'auto',
+						slidesToScroll: 1,
 						duration: 0.25,
 					},
 				},
@@ -45,7 +58,7 @@ const sentences = Astro.props;
 					breakpoint: 600,
 					settings: {
 						slidesToShow: 1,
-						slidesToScroll: 'auto',
+						slidesToScroll: 1,
 						duration: 0.25,
 					},
 				},
@@ -53,7 +66,7 @@ const sentences = Astro.props;
 					breakpoint: 1500,
 					settings: {
 						slidesToShow: 1,
-						slidesToScroll: 'auto',
+						slidesToScroll: 1,
 						duration: 0.25,
 					},
 				},
@@ -85,12 +98,9 @@ const sentences = Astro.props;
 		sliderAuto(glider2, 6000);
 	});
 </script>
+
 <style>
 	/** #H-SENTENCE  */
-	.h-sentence {
-		background-color: pink;
-	}
-
 	.h-sentence {
 		position: relative;
 		width: 100%;
@@ -103,36 +113,41 @@ const sentences = Astro.props;
 		overflow: hidden;
 		background-attachment: fixed;
 	}
-	.testimonials__item > p {
-		padding: 0;
-		font-size: 1.5rem;
-		text-align: center;
-		font-style: italic;
-		width: 100%;
-	}
+
 	.h-sentence > div {
 		background: #ffffff57;
-	}
-
-	.h-sentence > p,
-	.h-sentence > div > p {
-		margin: 0;
-		padding: 0;
-		font-size: 1.5rem;
-		text-align: center;
-		font-style: italic;
 	}
 
 	.catchwords {
 		padding: 50px 0;
 	}
 
-	.catchwords__list {
-		display: flex;
-		overflow-x: hidden;
+	.glider-wrapper {
+		width: 100%;
+		overflow: hidden;
 	}
 
-	.catchwords > ul > div > li > div {
-		display: flex;
+	.slide-wrapper {
+		width: 100%;
+	}
+
+	.catchwords__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+	}
+
+	.testimonials__item {
+		width: 100%;
+	}
+
+	.testimonials__item > p {
+		padding: 0;
+		margin: 0;
+		font-size: 1.5rem;
+		text-align: center;
+		font-style: italic;
+		width: 100%;
 	}
 </style>

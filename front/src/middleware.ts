@@ -11,7 +11,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			"style-src 'self' 'unsafe-inline';",
 			"img-src 'self' https://res.cloudinary.com https://www.gstatic.com https://www.google.com https://www.google-analytics.com data:;",
 			"font-src 'self';",
-			"connect-src 'self' https://www.google.com https://www.recaptcha.net https://www.gstatic.com https://www.google-analytics.com;",
+			"connect-src 'self' https://www.google.com https://www.recaptcha.net https://www.gstatic.com https://www.google-analytics.com https://cloudflareinsights.com https://static.cloudflareinsights.com;",
 			'frame-src https://www.google.com https://www.recaptcha.net https://aitamasleepcoaching.com/~partytown/;',
 			"object-src 'none';",
 		].join(' '),
