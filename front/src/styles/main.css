@@ -178,7 +178,7 @@ textarea {
 		url('/fonts/montserrat/montserrat-v25-latin-300.woff') format('woff'),
 		url('/fonts/montserrat/montserrat-v25-latin-300.ttf') format('truetype'),
 		url('/fonts/montserrat/montserrat-v25-latin-300.svg#Montserrat')
-			format('svg'); /* Legacy iOS */
+			format('svg');
 
 	font-display: swap;
 }
