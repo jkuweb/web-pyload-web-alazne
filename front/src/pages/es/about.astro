@@ -15,7 +15,7 @@ import type { Page, Media } from '@/payloadTypes';
 import RichText from '@/components/RichText/RichText.astro';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
-
+export const prerender = true;
 const currentLang = Astro.currentLocale || 'es';
 
 const page: Page | null = await getPageBySlug('sobre-mi', 'es');
@@ -74,7 +74,6 @@ if (result?.data) {
 		slot="head"
 		title={seoTitle}
 		description={seoDescription}
-		url={canonical}
 		image={seoImage}
 	/>
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />
