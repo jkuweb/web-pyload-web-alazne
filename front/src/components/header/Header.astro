@@ -105,3 +105,533 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		</nav>
 	</div>
 </header>
+<script is:inline>
+	(function () {
+		'use strict';
+
+		const ClickyMenus = function (menu) {
+			let container = menu.parentElement,
+				currentMenuItem,
+				i,
+				len;
+
+			this.init = function () {
+				menuSetup();
+				document.addEventListener('click', closeOpenMenu);
+			};
+
+			function toggleOnMenuClick(e) {
+				const button = e.currentTarget;
+
+				if (currentMenuItem && button !== currentMenuItem) {
+					toggleSubmenu(currentMenuItem);
+				}
+
+				toggleSubmenu(button);
+			}
+
+			function toggleSubmenu(button) {
+				const submenu = document.getElementById(
+					button.getAttribute('aria-controls'),
+				);
+
+				if ('true' === button.getAttribute('aria-expanded')) {
+					button.setAttribute('aria-expanded', false);
+					submenu.setAttribute('aria-hidden', true);
+					currentMenuItem = false;
+				} else {
+					button.setAttribute('aria-expanded', true);
+					submenu.setAttribute('aria-hidden', false);
+					preventOffScreenSubmenu(submenu);
+					currentMenuItem = button;
+				}
+			}
+
+			function preventOffScreenSubmenu(submenu) {
+				const screenWidth =
+						window.innerWidth ||
+						document.documentElement.clientWidth ||
+						document.body.clientWidth,
+					parent = submenu.offsetParent,
+					menuLeftEdge = parent.getBoundingClientRect().left,
+					menuRightEdge = menuLeftEdge + submenu.offsetWidth;
+
+				if (menuRightEdge + 32 > screenWidth) {
+					submenu.classList.add('sub-menu--right');
+				}
+			}
+
+			function closeOnEscKey(e) {
+				if (27 === e.keyCode) {
+					if (null !== e.target.closest('ul[aria-hidden="false"]')) {
+						currentMenuItem.focus();
+						toggleSubmenu(currentMenuItem);
+					} else if ('true' === e.target.getAttribute('aria-expanded')) {
+						toggleSubmenu(currentMenuItem);
+					}
+				}
+			}
+
+			function closeOpenMenu(e) {
+				if (currentMenuItem && !e.target.closest('#' + container.id)) {
+					toggleSubmenu(currentMenuItem);
+				}
+			}
+
+			function menuSetup() {
+				menu.classList.remove('no-js');
+
+				menu.querySelectorAll('ul').forEach((submenu) => {
+					const menuItem = submenu.parentElement;
+
+					if ('undefined' !== typeof submenu) {
+						let button = convertLinkToButton(menuItem);
+
+						setUpAria(submenu, button);
+
+						button.addEventListener('click', toggleOnMenuClick);
+						menu.addEventListener('keyup', closeOnEscKey);
+					}
+				});
+			}
+
+			function convertLinkToButton(menuItem) {
+				const link = menuItem.getElementsByTagName('a')[0],
+					linkHTML = link.innerHTML,
+					linkAtts = link.attributes,
+					button = document.createElement('button');
+
+				if (null !== link) {
+					button.innerHTML = linkHTML.trim();
+					for (i = 0, len = linkAtts.length; i < len; i++) {
+						let attr = linkAtts[i];
+						if ('href' !== attr.name) {
+							button.setAttribute(attr.name, attr.value);
+						}
+					}
+
+					menuItem.replaceChild(button, link);
+				}
+
+				return button;
+			}
+
+			function setUpAria(submenu, button) {
+				const submenuId = submenu.getAttribute('id');
+
+				let id;
+				if (null === submenuId) {
+					id =
+						button.textContent.trim().replace(/\s+/g, '-').toLowerCase() +
+						'-submenu';
+				} else {
+					id = menuItemId + '-submenu';
+				}
+
+				button.setAttribute('aria-controls', id);
+				button.setAttribute('aria-expanded', false);
+
+				submenu.setAttribute('id', id);
+				submenu.setAttribute('aria-hidden', true);
+			}
+		};
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const menus = document.querySelectorAll('.clicky-menu');
+
+			menus.forEach((menu) => {
+				let clickyMenu = new ClickyMenus(menu);
+				clickyMenu.init();
+			});
+		});
+	})();
+	var toggle = document.querySelector('#toggle');
+	var menu = document.querySelector('#site-navigation');
+	var overlay = document.getElementById('overlay');
+	var closeNavMenu = document.getElementById('closeNavMenu');
+
+	toggle.addEventListener('click', function (e) {
+		e.stopImmediatePropagation();
+		if (menu.classList.contains('is-active')) {
+			menu.classList.remove('is-active');
+		} else {
+			overlay.classList.add('overlay');
+			menu.classList.add('is-active');
+			toggle.classList.add('u-hidden');
+		}
+	});
+	overlay.addEventListener('click', function () {
+		if (menu.classList.contains('is-active')) {
+			overlay.classList.remove('overlay');
+			menu.classList.remove('is-active');
+			toggle.classList.remove('u-hidden');
+		} else {
+			overlay.classList.add('overlay');
+			menu.classList.add('is-active');
+		}
+	});
+	closeNavMenu.addEventListener('click', function () {
+		if (menu.classList.contains('is-active')) {
+			overlay.classList.remove('overlay');
+			menu.classList.remove('is-active');
+			toggle.classList.remove('u-hidden');
+		} else {
+			overlay.classList.add('overlay');
+			menu.classList.add('is-active');
+		}
+	});
+</script>
+<style>
+	.header > div:nth-of-type(1) {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 5;
+		width: 100%;
+		height: 3rem;
+		background-color: #fff;
+		box-shadow:
+			rgb(50 50 93 / 25%) 0 6px 12px -2px,
+			rgb(0 0 0 / 30%) 0 3px 7px -3px;
+	}
+
+	.main-menu > li > a::before {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		display: block;
+		width: 100%;
+		height: 50%;
+		background-color: var(--main-color);
+		opacity: 0.3;
+		transform: scale(0, 1);
+		transition:
+			color 0.1s,
+			-webkit-transform 0.2s ease-out;
+		transition:
+			color 0.1s,
+			transform 0.2s ease-out;
+		transition:
+			color 0.1s,
+			transform 0.2s ease-out,
+			-webkit-transform 0.2s ease-out;
+		content: '';
+		transform-origin: right top;
+	}
+
+	@media screen and (width >= 64rem) {
+		.main-menu > li:nth-of-type(3) {
+			grid-column: 4/5;
+		}
+
+		.main-menu > li:nth-of-type(4) {
+			grid-column: 5/6;
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.main-menu > li > a:hover::before {
+			transform-origin: left top;
+			transform: scale(1, 1);
+		}
+	}
+
+	@media screen and (width >= 700px) {
+		.header > div > div:nth-of-type(3) {
+			width: 65%;
+			margin: 0 auto;
+		}
+	}
+
+	.clicky-menu ul {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		visibility: hidden;
+	}
+	.clicky-menu.no-js li:hover > ul {
+		visibility: visible;
+	}
+	.clicky-menu.no-js li:focus-within > ul {
+		visibility: visible;
+	}
+	.clicky-menu ul[aria-hidden='false'] {
+		visibility: visible;
+	}
+
+	.clicky-menu .sub-menu--right {
+		right: 0 !important;
+		left: auto !important;
+	}
+	svg[hidden] {
+		position: absolute;
+		display: none;
+	}
+
+	.overlay {
+		position: fixed;
+		inset: 0 0 0 170px;
+		z-index: 8;
+		height: 100%;
+		background: rgb(0 0 0 / 70%);
+	}
+
+	.site-navigation {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		width: 100%;
+		height: 100%;
+		background: var(--main-color);
+		color: white;
+		font-family: Montserrat, sans-serif;
+		transition: width 0.4s linear;
+		animation: slide-out-right 0.1s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+		overflow: hidden;
+	}
+
+	@media screen and (width >= 64rem) {
+		.site-navigation {
+			position: relative;
+			width: 100%;
+			max-width: 844px;
+			height: 3rem;
+			margin-right: auto;
+			margin-left: auto;
+		}
+	}
+
+	@media screen and (width >= 1500px) {
+		.site-navigation {
+			max-width: 1220px;
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.site-navigation > div {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 3rem;
+			background: #fff;
+			box-shadow:
+				rgb(50 50 93 / 25%) 0 6px 12px -2px,
+				rgb(0 0 0 / 30%) 0 3px 7px -3px;
+		}
+	}
+
+	.clicky-menu {
+		justify-content: stretch;
+		margin: 4rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu {
+			display: grid;
+			grid-template-columns: repeat(4, 10rem);
+			max-width: 56rem;
+			margin: 0 auto;
+		}
+	}
+
+	.clicky-menu a,
+	.clicky-menu button {
+		margin: 0.25em;
+		padding: 1em;
+		border-radius: 3px;
+		background: transparent;
+		color: #222;
+		font-weight: bold;
+		font-family: inherit;
+		text-decoration: none;
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu a,
+		.clicky-menu button {
+			padding: 0;
+		}
+	}
+
+	.clicky-menu a:focus,
+	.clicky-menu button:focus {
+		outline: 0.125em dotted var(--main-color);
+		outline-offset: -0.125em;
+	}
+
+	.clicky-menu > li {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: stretch;
+		flex: 1 1 auto;
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu > li {
+			display: block;
+			padding: 9px 0;
+		}
+	}
+
+	.clicky-menu > li > a,
+	.clicky-menu > li > button {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		flex: 1 0 auto;
+		border: 0;
+		color: #222;
+		font-size: inherit;
+		line-height: 1.5;
+		cursor: pointer;
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu > li > a,
+		.clicky-menu > li > button {
+			position: relative;
+			display: inline-block;
+			color: #222;
+			font-weight: 400;
+		}
+	}
+
+	.clicky-menu svg {
+		width: 1em;
+		height: 1em;
+		margin-left: 0.5em;
+	}
+
+	.clicky-menu [aria-expanded='true'] svg {
+		transform: scaleY(-1);
+	}
+
+	.clicky-menu ul {
+		width: 12em;
+		min-width: 100%;
+		margin-top: 0.25em;
+		padding: 0;
+		border-radius: 3px;
+		background-color: #eee;
+		list-style: none;
+	}
+
+	@media (width >= 64rem) {
+		.clicky-menu {
+			box-shadow: 2px 4px 4px rgb(0 0 0 / 20%);
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu {
+			box-shadow: none;
+		}
+	}
+	.closeBtn > svg > path {
+		fill: #222;
+	}
+
+	.clicky-menu ul[aria-hidden='false'] {
+		position: static;
+		flex: 0 0 auto;
+		width: 100%;
+	}
+
+	@media (width >= 64rem) {
+		.clicky-menu ul[aria-hidden='false'] {
+			position: absolute;
+			width: auto;
+		}
+	}
+
+	.clicky-menu ul a {
+		display: block;
+		padding-top: 0.375em;
+		padding-bottom: 0.375em;
+	}
+
+	@media (width >= 540px) {
+		.clicky-menu ul a {
+			padding: 0.375em 1em;
+			white-space: nowrap;
+		}
+	}
+
+	.toggle {
+		position: absolute;
+		top: 0.2em;
+		right: 0;
+		padding: 8px;
+		padding-right: 20px;
+		border: 2px solid #fff;
+		border-radius: 5px;
+		background: transparent;
+		color: #fff;
+		font-size: 1em;
+	}
+
+	.toggle:focus,
+	.toggle:hover {
+		background: #fff;
+		color: #000;
+	}
+
+	.closeBtn {
+		position: absolute;
+		top: 1%;
+		right: 5%;
+		border: 1px solid #222;
+	}
+
+	@media screen and (width >= 64rem) {
+		.closeBtn {
+			display: none;
+		}
+	}
+	.site-navigation {
+		display: none;
+	}
+	nav.is-active {
+		display: block;
+	}
+
+	@media screen and (width >= 64rem) {
+		.toggle {
+			display: none;
+		}
+		.site-navigation {
+			display: block;
+		}
+	}
+	@media screen and (width >= 47.82rem) {
+		.clicky-menu > .nav-trasnlate-link-es {
+			position: absolute;
+			right: 100px;
+		}
+
+		.clicky-menu > .nav-trasnlate-link-eu::before {
+			position: absolute;
+			top: 26%;
+			right: 42px;
+			color: #222;
+			content: '|';
+		}
+
+		.clicky-menu > .nav-trasnlate-link-eu {
+			position: absolute;
+			right: 45px;
+		}
+	}
+
+	@media screen and (width >= 64rem) {
+		.clicky-menu > .nav-trasnlate-link-es::before {
+			right: 26px;
+		}
+	}
+</style>
