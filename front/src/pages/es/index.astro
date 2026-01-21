@@ -22,17 +22,17 @@ import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
 const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('inicio', 'es');
 
-// if (!page && Astro.url.pathname !== '/es/') {
-// 	return Astro.redirect('/es/');
-// }
-// const canonical = getCanonicalUrl('/', 'es');
-// const alternates = getAlternateUrls('/');
-// const breadcrumbs = [
-// 	{
-// 		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
-// 		url: canonical,
-// 	},
-// ];
+if (!page && Astro.url.pathname !== '/es/') {
+	return Astro.redirect('/es/');
+}
+const canonical = getCanonicalUrl('/', 'es');
+const alternates = getAlternateUrls('/');
+const breadcrumbs = [
+	{
+		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
+		url: canonical,
+	},
+];
 
 const seoTitle =
 	page.meta?.title ||
@@ -75,15 +75,19 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
+	canonical={canonical}
 	lang="es"
+	alternates={alternates}
 	preloadImages={preloadImages}
 >
-	<!-- <OrganizationSchema
+	<!-- Solo en la home: Organization Schema -->
+	<OrganizationSchema
 		slot="head"
 		description={seoDescription}
 		locale={currentLang}
 	/>
 
+	<!-- En todas las páginas: WebPage Schema -->
 	<WebPageSchema
 		slot="head"
 		title={seoTitle}
@@ -92,7 +96,8 @@ if (result?.data) {
 		image={seoImage}
 	/>
 
-	<BreadcrumbSchema slot="head" items={breadcrumbs} /> -->
+	<!-- En todas las páginas: Breadcrumbs -->
+	<BreadcrumbSchema slot="head" items={breadcrumbs} />
 	<section>
 		<div
 			class="hero-image bg-home"
