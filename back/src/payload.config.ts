@@ -166,38 +166,38 @@ export default buildConfig({
       tabbedUI: true,
     }),
   ],
-  // cors: [
-  // 'https://www.aitamasleepcoaching.com',
-  // 'https://aitamasleepcoaching.com',
-  // 'https://api.aitamasleepcoaching.com',
-  //   process.env.FRONTEND_URL,
-  //   process.env.PAYLOAD_PUBLIC_SERVER_URL,
-  //   'http://localhost:4321',
-  //   'http://localhost:3000',
-  //   'web-pyload-web-alazne-production.up.railway.app',
-  // ].filter(Boolean),
-  // csrf: [
-  // 'https://www.aitamasleepcoaching.com',
-  // 'https://aitamasleepcoaching.com',
-  // 'https://api.aitamasleepcoaching.com',
-  //   process.env.FRONTEND_URL,
-  //   process.env.PAYLOAD_PUBLIC_SERVER_URL,
-  //   'http://localhost:4321',
-  //   'http://localhost:3000',
-  //   'web-pyload-web-alazne-production.up.railway.app',
-  // ].filter(Boolean),
-
   cors: [
+    'https://www.aitamasleepcoaching.com',
+    'https://aitamasleepcoaching.com',
+    'https://api.aitamasleepcoaching.com',
     process.env.FRONTEND_URL,
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
+    'http://localhost:3000',
+    'web-pyload-web-alazne-production.up.railway.app',
+  ].filter(Boolean),
+  csrf: [
+    'https://www.aitamasleepcoaching.com',
+    'https://aitamasleepcoaching.com',
+    'https://api.aitamasleepcoaching.com',
+    process.env.FRONTEND_URL,
+    process.env.PAYLOAD_PUBLIC_SERVER_URL,
+    'http://localhost:4321',
+    'http://localhost:3000',
+    'web-pyload-web-alazne-production.up.railway.app',
   ].filter(Boolean),
 
-  csrf: [
-    process.env.FRONTEND_URL,
-    process.env.PAYLOAD_PUBLIC_SERVER_URL,
-    'http://localhost:4321',
-  ].filter(Boolean),
+  // cors: [
+  //   process.env.FRONTEND_URL,
+  //   process.env.PAYLOAD_PUBLIC_SERVER_URL,
+  //   'http://localhost:4321',
+  // ].filter(Boolean),
+
+  // csrf: [
+  //   process.env.FRONTEND_URL,
+  //   process.env.PAYLOAD_PUBLIC_SERVER_URL,
+  //   'http://localhost:4321',
+  // ].filter(Boolean),
   endpoints: [
     {
       path: '/redeploy',
