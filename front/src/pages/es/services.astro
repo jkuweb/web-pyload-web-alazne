@@ -19,11 +19,11 @@ import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
 const currentLang = Astro.currentLocale || 'es';
 const page: Page | null = await getPageBySlug('servicios', 'es');
 
-if (!page) {
-	return Astro.redirect(`/es/`);
+if (!page && Astro.url.pathname !== '/es/services') {
+	return Astro.redirect('/es/services');
 }
-const canonical = getCanonicalUrl('/es/services', 'es');
-const alternates = getAlternateUrls('/es/services');
+const canonical = getCanonicalUrl('/services', 'es');
+const alternates = getAlternateUrls('/services');
 const breadcrumbs = [
 	{
 		name: currentLang === 'es' ? 'Servicios' : 'Zerbitzuak',

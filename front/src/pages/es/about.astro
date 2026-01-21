@@ -20,11 +20,12 @@ const currentLang = Astro.currentLocale || 'es';
 
 const page: Page | null = await getPageBySlug('sobre-mi', 'es');
 
-if (!page) {
-	return Astro.redirect(`/es/`);
+if (!page && Astro.url.pathname !== '/es/about') {
+	return Astro.redirect('/es/about');
 }
-const canonical = getCanonicalUrl('/es/about', 'es');
-const alternates = getAlternateUrls('/es/about');
+
+const canonical = getCanonicalUrl('/about', 'es');
+const alternates = getAlternateUrls('/about');
 const breadcrumbs = [
 	{
 		name: currentLang === 'es' ? 'Sobre mí' : 'Niri buruz',

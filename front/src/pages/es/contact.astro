@@ -16,11 +16,11 @@ import '@/styles/contact.css';
 const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('contacto', 'es');
 
-if (!page) {
-	return Astro.redirect(`/es/`);
+if (!page && Astro.url.pathname !== '/es/contact') {
+	return Astro.redirect('/es/contact');
 }
-const canonical = getCanonicalUrl('/es/contact', 'es');
-const alternates = getAlternateUrls('/es/contact');
+const canonical = getCanonicalUrl('/contact', 'es');
+const alternates = getAlternateUrls('/contact');
 const breadcrumbs = [
 	{
 		name: currentLang === 'es' ? 'Contacto' : 'Kontaktua',
