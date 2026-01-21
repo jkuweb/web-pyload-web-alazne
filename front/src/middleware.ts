@@ -7,12 +7,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		'Content-Security-Policy',
 		[
 			"default-src 'self';",
-			"script-src 'self' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://www.googletagmanager.com 'unsafe-inline';",
+			"script-src 'self' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://www.googletagmanager.com https://static.cloudflareinsights.com 'unsafe-inline';",
 			"style-src 'self' 'unsafe-inline';",
 			"img-src 'self' https://res.cloudinary.com https://www.gstatic.com https://www.google.com https://www.google-analytics.com data:;",
 			"font-src 'self';",
 			"connect-src 'self' https://www.google.com https://www.recaptcha.net https://www.gstatic.com https://www.google-analytics.com;",
-			'frame-src https://www.google.com https://www.recaptcha.net;',
+			'frame-src https://www.google.com https://www.recaptcha.net https://aitamasleepcoaching.com/~partytown/;',
 			"object-src 'none';",
 		].join(' '),
 	);
