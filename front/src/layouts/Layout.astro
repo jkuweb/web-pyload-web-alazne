@@ -46,77 +46,90 @@ const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 
-		<!-- 1. DNS y conexiones tempranas (PRIMERO) -->
-		<link rel="dns-prefetch" href="https://aitamasleepcoaching.com" />
-		<link rel="preconnect" href="https://aitamasleepcoaching.com" crossorigin />
-		<link rel="dns-prefetch" href="https://res.cloudinary.com" />
 		<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+		<link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
-		<!-- 2. Preload de fuentes críticas (SEGUNDO) -->
-		<link
-			rel="preload"
-			href="/fonts/montserrat/montserrat-v25-latin-regular.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-		<link
-			rel="preload"
-			href="/fonts/montserrat/montserrat-v25-latin-700.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-		<link
-			rel="preload"
-			href="/fonts/silk_font/silk_serif_regular-webfont.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-
-		<!-- 3. Preload de imágenes críticas -->
 		{
 			preloadImages.map((imgUrl) => (
 				<link rel="preload" as="image" href={imgUrl} fetchpriority="high" />
 			))
 		}
 
-		<!-- 4. CSS crítico inline -->
-		<style is:inline>
-			/* Fuentes críticas */
-			@font-face {
-				font-family: 'Montserrat';
-				font-style: normal;
-				font-weight: 400;
-				font-display: swap;
-				src: url('/fonts/montserrat/montserrat-v25-latin-regular.woff2')
-					format('woff2');
-			}
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta name="author" content="Aitama Sleep Coaching" />
 
-			@font-face {
-				font-family: 'Montserrat';
-				font-style: normal;
-				font-weight: 700;
-				font-display: swap;
-				src: url('/fonts/montserrat/montserrat-v25-latin-700.woff2')
-					format('woff2');
-			}
+		<link rel="canonical" href={canonicalUrl} />
 
-			/* Reset básico y fuente por defecto */
-			body {
-				font-family:
-					'Montserrat',
-					-apple-system,
-					BlinkMacSystemFont,
-					'Segoe UI',
-					Arial,
-					sans-serif;
-				margin: 0;
-				padding: 0;
-			}
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
 
-			/* Estilos del botón (movidos aquí desde el final) */
+		<link
+			rel="alternate"
+			hreflang="es"
+			href={`${siteUrl}/es${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
+		/>
+		<link
+			rel="alternate"
+			hreflang="eu"
+			href={`${siteUrl}/eu${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
+		/>
+		<link rel="alternate" hreflang="x-default" href={siteUrl} />
+
+		<script
+			type="text/partytown"
+			src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+		></script>
+		<script type="text/partytown">
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+			gtag('config', '{GA_MEASUREMENT_ID}');
+		</script>
+
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={fullImageUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:locale" content={localeCode} />
+		<meta property="og:site_name" content="Aitama Sleep Coaching" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonicalUrl} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={fullImageUrl} />
+
+		<meta name="theme-color" content="#ffffff" />
+		<meta name="msapplication-TileColor" content="#ffffff" />
+
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+		<slot name="head" />
+	</head>
+
+	<body>
+		<Header />
+
+		<main id="main-content">
+			<slot />
+		</main>
+
+		<Footer />
+
+		<script src="../assets/js/glider.min.js"></script>
+
+		<style>
 			.button__link {
 				display: inline-block;
 				margin: 3rem 3rem 0;
@@ -132,88 +145,5 @@ const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 				background-color: #000;
 			}
 		</style>
-
-		<!-- 5. Meta tags SEO -->
-		<title>{title}</title>
-		<meta name="title" content={title} />
-		<meta name="description" content={description} />
-		<meta name="author" content="Aitama Sleep Coaching" />
-
-		<link rel="canonical" href={canonicalUrl} />
-
-		{noindex && <meta name="robots" content="noindex, nofollow" />}
-
-		<!-- 6. Alternate links -->
-		<link
-			rel="alternate"
-			hreflang="es"
-			href={`${siteUrl}/es${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
-		/>
-		<link
-			rel="alternate"
-			hreflang="eu"
-			href={`${siteUrl}/eu${Astro.url.pathname.replace(/^\/(es|eu)/, '')}`}
-		/>
-		<link rel="alternate" hreflang="x-default" href={siteUrl} />
-
-		<!-- 7. Open Graph -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={canonicalUrl} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:image" content={fullImageUrl} />
-		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="630" />
-		<meta property="og:locale" content={localeCode} />
-		<meta property="og:site_name" content="Aitama Sleep Coaching" />
-
-		<!-- 8. Twitter Card -->
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:url" content={canonicalUrl} />
-		<meta name="twitter:title" content={title} />
-		<meta name="twitter:description" content={description} />
-		<meta name="twitter:image" content={fullImageUrl} />
-
-		<!-- 9. Theme y colores -->
-		<meta name="theme-color" content="#ffffff" />
-		<meta name="msapplication-TileColor" content="#ffffff" />
-
-		<!-- 10. Favicons -->
-		<link rel="icon" href="/favicon.ico" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-
-		<!-- 11. Sitemap -->
-		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
-
-		<!-- 12. Google Analytics (Partytown) -->
-		<script
-			type="text/partytown"
-			src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-		></script>
-		<script type="text/partytown">
-			window.dataLayer = window.dataLayer || [];
-			function gtag() {
-				dataLayer.push(arguments);
-			}
-			gtag('js', new Date());
-			gtag('config', 'G-XXXXXXXXXX');
-		</script>
-
-		<slot name="head" />
-	</head>
-
-	<body>
-		<Header />
-
-		<main id="main-content">
-			<slot />
-		</main>
-
-		<Footer />
-
-		<!-- Script de Glider cargado al final -->
-		<script src="../assets/js/glider.min.js"></script>
 	</body>
 </html>
