@@ -52,25 +52,6 @@ export default defineConfig({
 			JavaScript: true,
 			SVG: true,
 		}),
-		sitemap({
-			i18n: {
-				defaultLocale: 'es',
-				locales: {
-					es: 'es-ES',
-					eu: 'eu-ES',
-				},
-			},
-			customPages: [
-				'https://aitamasleepcoaching.com/es',
-				'https://aitamasleepcoaching.com/es/about',
-				'https://aitamasleepcoaching.com/es/services',
-				'https://aitamasleepcoaching.com/es/contact',
-				'https://aitamasleepcoaching.com/eu',
-				'https://aitamasleepcoaching.com/eu/about',
-				'https://aitamasleepcoaching.com/eu/services',
-				'https://aitamasleepcoaching.com/eu/contact',
-			],
-		}),
 	],
 	image: {
 		service: imageService({
