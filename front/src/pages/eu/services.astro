@@ -20,10 +20,10 @@ const currentLang = Astro.currentLocale || 'es';
 const page: Page | null = await getPageBySlug('zerbitzuak', 'eu');
 
 if (!page) {
-	return Astro.redirect(`/${currentLang}/`);
+	return Astro.redirect(`/eu/`);
 }
-const canonical = getCanonicalUrl('/services', 'eu');
-const alternates = getAlternateUrls('/services');
+const canonical = getCanonicalUrl('/eu/services', 'eu');
+const alternates = getAlternateUrls('/eu/services');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Zerbitzuak' : 'Servicios',

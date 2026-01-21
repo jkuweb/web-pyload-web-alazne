@@ -23,10 +23,10 @@ const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('inicio', 'es');
 
 if (!page) {
-	return Astro.redirect(`/${currentLang}/`);
+	return Astro.redirect(`/es/`);
 }
-const canonical = getCanonicalUrl('/', 'es');
-const alternates = getAlternateUrls('/');
+const canonical = getCanonicalUrl('/es/', 'es');
+const alternates = getAlternateUrls('/es/');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',

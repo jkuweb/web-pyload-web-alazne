@@ -17,10 +17,10 @@ const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('kontaktua', 'eu');
 
 if (!page) {
-	return Astro.redirect(`/${currentLang}/`);
+	return Astro.redirect(`/eu/`);
 }
-const canonical = getCanonicalUrl('/contact', 'eu');
-const alternates = getAlternateUrls('/contact');
+const canonical = getCanonicalUrl('/eu/contact', 'eu');
+const alternates = getAlternateUrls('/eu/contact');
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Kontaktua' : 'Contacto',

@@ -23,11 +23,11 @@ const currentLang = 'eu';
 const page: Page | null = await getPageBySlug('sarrera', 'eu');
 
 if (!page) {
-	return Astro.redirect(`/${currentLang}/`);
+	return Astro.redirect(`/eu/`);
 }
 
-const canonical = getCanonicalUrl('/', 'eu');
-const alternates = getAlternateUrls('/');
+const canonical = getCanonicalUrl('/eu/', 'eu');
+const alternates = getAlternateUrls('/eu/');
 
 const breadcrumbs = [
 	{
