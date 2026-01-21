@@ -110,9 +110,12 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 				style="display: grid;grid-template-rows: repeat(2,5rem);align-items: baseline;grid-row-gap: 1.5rem"
 			>
 				<a
-					href="mailto:contacto@aitamasleepcoaching.com"
+					href="#"
+					data-user="contacto"
+					data-domain="aitamasleepcoaching.com"
 					style="display:grid;place-items: center;grid-row-gap: 1rem;color: #222;"
 					rel="noopener noreferrer"
+					class="email-link"
 				>
 					<svg
 						viewBox="0 0 16 13"
@@ -124,8 +127,8 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 							d="M13.5 0C14.163 0 14.7989 0.263392 15.2678 0.732233C15.7366 1.20107 16 1.83696 16 2.5V10.5C16 11.163 15.7366 11.7989 15.2678 12.2678C14.7989 12.7366 14.163 13 13.5 13H2.5C1.83696 13 1.20107 12.7366 0.732233 12.2678C0.263392 11.7989 0 11.163 0 10.5V2.5C0 1.83696 0.263392 1.20107 0.732233 0.732233C1.20107 0.263392 1.83696 0 2.5 0H13.5ZM15 3.961L8.254 7.931C8.19022 7.96845 8.11893 7.99128 8.04527 7.99785C7.9716 8.00442 7.8974 7.99457 7.828 7.969L7.746 7.931L1 3.963V10.5C1 10.8978 1.15804 11.2794 1.43934 11.5607C1.72064 11.842 2.10218 12 2.5 12H13.5C13.8978 12 14.2794 11.842 14.5607 11.5607C14.842 11.2794 15 10.8978 15 10.5V3.961ZM13.5 1H2.5C2.10218 1 1.72064 1.15804 1.43934 1.43934C1.15804 1.72064 1 2.10218 1 2.5V2.802L8 6.92L15 2.8V2.5C15 2.10218 14.842 1.72064 14.5607 1.43934C14.2794 1.15804 13.8978 1 13.5 1V1Z"
 							fill="#222222"></path>
 					</svg>
-					contacto@aitamasleepcoaching.com</a
-				>
+					<span class="email-text"></span>
+				</a>
 				<p style="display:grid;place-items: center;grid-row-gap: 1rem;">
 					<svg
 						viewBox="0 0 18 28"
@@ -153,6 +156,22 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		</p>
 	</div>
 </footer>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const emailLinks = document.querySelectorAll('.email-link');
+		emailLinks.forEach((link) => {
+			const user = link.dataset.user;
+			const domain = link.dataset.domain;
+			const email = `${user}@${domain}`;
+
+			link.href = `mailto:${email}`;
+			const textSpan = link.querySelector('.email-text');
+			if (textSpan) {
+				textSpan.textContent = email;
+			}
+		});
+	});
+</script>
 <style>
 	.h-footer {
 		max-width: 100rem;
