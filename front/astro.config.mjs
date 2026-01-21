@@ -8,7 +8,7 @@ import partytown from '@astrojs/partytown';
 import netlify from '@astrojs/netlify';
 
 export default defineConfig({
-	site: 'https://aitamasleepcoaching.com/es',
+	// site: 'https://aitamasleepcoaching.com',
 	integrations: [
 		sitemap({
 			i18n: {
@@ -29,31 +29,6 @@ export default defineConfig({
 				'https://aitamasleepcoaching.com/eu/contact',
 			],
 		}),
-	],
-	image: {
-		service: imageService({
-			placeholder: 'blurhash',
-			fallbackService: 'cloudinary',
-		}),
-	},
-	build: {
-		inlineStylesheets: 'always',
-		assets: '_astro',
-	},
-	vite: {
-		build: {
-			cssCodeSplit: false,
-			assetsInlineLimit: 10000,
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						glider: ['glider-js'],
-					},
-				},
-			},
-		},
-	},
-	integrations: [
 		partytown({
 			config: {
 				forward: ['dataLayer.push'],
@@ -97,6 +72,29 @@ export default defineConfig({
 			SVG: true,
 		}),
 	],
+	image: {
+		service: imageService({
+			placeholder: 'blurhash',
+			fallbackService: 'cloudinary',
+		}),
+	},
+	build: {
+		inlineStylesheets: 'always',
+		assets: '_astro',
+	},
+	vite: {
+		build: {
+			cssCodeSplit: false,
+			assetsInlineLimit: 10000,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						glider: ['glider-js'],
+					},
+				},
+			},
+		},
+	},
 	i18n: {
 		defaultLocale: 'es',
 		locales: ['es', 'eu'],
