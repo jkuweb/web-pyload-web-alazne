@@ -4,11 +4,13 @@ import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
 import path from 'path';
 import partytown from '@astrojs/partytown';
-
 import netlify from '@astrojs/netlify';
 
 export default defineConfig({
-	site: 'https://aitamasleepcoaching.com',
+	site: 'https://www.aitamasleepcoaching.com',
+	adapter: netlify(),
+	output: 'server',
+
 	integrations: [
 		partytown({
 			config: {
@@ -30,16 +32,6 @@ export default defineConfig({
 			changefreq: 'weekly',
 			priority: 0.7,
 			lastmod: new Date(),
-			customPages: [
-				'https://aitamasleepcoaching.com/',
-				'https://aitamasleepcoaching.com/about',
-				'https://aitamasleepcoaching.com/services',
-				'https://aitamasleepcoaching.com/contact',
-				'https://aitamasleepcoaching.com/eu',
-				'https://aitamasleepcoaching.com/eu/about',
-				'https://aitamasleepcoaching.com/eu/services',
-				'https://aitamasleepcoaching.com/eu/contact',
-			],
 		}),
 		compress({
 			CSS: true,
@@ -53,17 +45,36 @@ export default defineConfig({
 			SVG: true,
 		}),
 	],
+
+	i18n: {
+		defaultLocale: 'es',
+		locales: ['es', 'eu'],
+		routing: {
+			prefixDefaultLocale: false, // 👈 Cambia a false si no quieres /es/ en español
+		},
+	},
+
 	image: {
 		service: imageService({
 			placeholder: 'blurhash',
 			fallbackService: 'cloudinary',
 		}),
 	},
+
 	build: {
 		inlineStylesheets: 'always',
 		assets: '_astro',
 	},
+
 	vite: {
+		optimizeDeps: {
+			include: ['@unpic/astro'],
+		},
+		resolve: {
+			alias: {
+				'@': path.resolve('./src'),
+			},
+		},
 		build: {
 			cssCodeSplit: false,
 			assetsInlineLimit: 10000,
@@ -76,24 +87,4 @@ export default defineConfig({
 			},
 		},
 	},
-	integrations: [],
-	i18n: {
-		defaultLocale: 'es',
-		locales: ['es', 'eu'],
-		routing: {
-			prefixDefaultLocale: true,
-		},
-	},
-	vite: {
-		optimizeDeps: {
-			include: ['@unpic/astro'],
-		},
-		resolve: {
-			alias: {
-				'@': path.resolve('./src'),
-			},
-		},
-	},
-	adapter: netlify(),
-	output: 'server',
 });
