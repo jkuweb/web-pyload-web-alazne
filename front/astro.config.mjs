@@ -7,7 +7,7 @@ import partytown from '@astrojs/partytown';
 import netlify from '@astrojs/netlify';
 
 export default defineConfig({
-	site: 'https://www.aitamasleepcoaching.com',
+	site: 'https://aitamasleepcoaching.com',
 	adapter: netlify(),
 	output: 'server',
 
@@ -25,7 +25,7 @@ export default defineConfig({
 					eu: 'eu-ES',
 				},
 				routing: {
-					prefixDefaultLocale: true, // 👈 Esto fuerza /es/ en todas las URLs
+					prefixDefaultLocale: false,
 				},
 			},
 			filter: (page) =>
