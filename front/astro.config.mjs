@@ -4,15 +4,17 @@ import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
 import path from 'path';
 import partytown from '@astrojs/partytown';
+
 import netlify from '@astrojs/netlify';
 
 export default defineConfig({
 	site: 'https://aitamasleepcoaching.com',
-
-	output: 'server',
-	adapter: netlify(),
-
 	integrations: [
+		partytown({
+			config: {
+				forward: ['dataLayer.push'],
+			},
+		}),
 		sitemap({
 			i18n: {
 				defaultLocale: 'es',
@@ -28,14 +30,17 @@ export default defineConfig({
 			changefreq: 'weekly',
 			priority: 0.7,
 			lastmod: new Date(),
+			customPages: [
+				'https://aitamasleepcoaching.com/',
+				'https://aitamasleepcoaching.com/about',
+				'https://aitamasleepcoaching.com/services',
+				'https://aitamasleepcoaching.com/contact',
+				'https://aitamasleepcoaching.com/eu',
+				'https://aitamasleepcoaching.com/eu/about',
+				'https://aitamasleepcoaching.com/eu/services',
+				'https://aitamasleepcoaching.com/eu/contact',
+			],
 		}),
-
-		partytown({
-			config: {
-				forward: ['dataLayer.push'],
-			},
-		}),
-
 		compress({
 			CSS: true,
 			HTML: {
@@ -47,32 +52,37 @@ export default defineConfig({
 			JavaScript: true,
 			SVG: true,
 		}),
+		sitemap({
+			i18n: {
+				defaultLocale: 'es',
+				locales: {
+					es: 'es-ES',
+					eu: 'eu-ES',
+				},
+			},
+			customPages: [
+				'https://aitamasleepcoaching.com/es',
+				'https://aitamasleepcoaching.com/es/about',
+				'https://aitamasleepcoaching.com/es/services',
+				'https://aitamasleepcoaching.com/es/contact',
+				'https://aitamasleepcoaching.com/eu',
+				'https://aitamasleepcoaching.com/eu/about',
+				'https://aitamasleepcoaching.com/eu/services',
+				'https://aitamasleepcoaching.com/eu/contact',
+			],
+		}),
 	],
-
-	i18n: {
-		defaultLocale: 'es',
-		locales: ['es', 'eu'],
-		routing: {
-			prefixDefaultLocale: false, // 🔑 evita loop de redirecciones
-		},
-	},
-
 	image: {
 		service: imageService({
 			placeholder: 'blurhash',
 			fallbackService: 'cloudinary',
 		}),
 	},
-
 	build: {
 		inlineStylesheets: 'always',
 		assets: '_astro',
 	},
-
 	vite: {
-		optimizeDeps: {
-			include: ['@unpic/astro'],
-		},
 		build: {
 			cssCodeSplit: false,
 			assetsInlineLimit: 10000,
@@ -84,10 +94,25 @@ export default defineConfig({
 				},
 			},
 		},
+	},
+	integrations: [],
+	i18n: {
+		defaultLocale: 'es',
+		locales: ['es', 'eu'],
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
+	vite: {
+		optimizeDeps: {
+			include: ['@unpic/astro'],
+		},
 		resolve: {
 			alias: {
 				'@': path.resolve('./src'),
 			},
 		},
 	},
+	adapter: netlify(),
+	output: 'server',
 });
