@@ -26,15 +26,15 @@ const page: Page | null = await getPageBySlug('sarrera', 'eu');
 // 	return Astro.redirect('/eu/');
 // }
 
-const canonical = getCanonicalUrl('/', 'eu');
-const alternates = getAlternateUrls('/');
+// const canonical = getCanonicalUrl('/', 'eu');
+// const alternates = getAlternateUrls('/');
 
-const breadcrumbs = [
-	{
-		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
-		url: canonical,
-	},
-];
+// const breadcrumbs = [
+// 	{
+// 		name: currentLang === 'eu' ? 'Inicio' : 'Hasiera',
+// 		url: canonical,
+// 	},
+// ];
 
 const seoTitle =
 	page.meta?.title ||
@@ -78,12 +78,10 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	canonical={canonical}
 	lang="eu"
-	alternates={alternates}
 	preloadImages={preloadImages}
 >
-	<OrganizationSchema
+	<!-- <OrganizationSchema
 		slot="head"
 		description={seoDescription}
 		locale={currentLang}
@@ -97,7 +95,7 @@ if (result?.data) {
 		image={seoImage}
 	/>
 
-	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+	<BreadcrumbSchema slot="head" items={breadcrumbs} /> -->
 	<section>
 		<div
 			class="hero-image bg-home"
