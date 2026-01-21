@@ -22,9 +22,9 @@ import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
 const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('inicio', 'es');
 
-if (!page && Astro.url.pathname !== '/es/') {
-	return Astro.redirect('/es/');
-}
+// if (!page && Astro.url.pathname !== '/es/') {
+// 	return Astro.redirect('/es/');
+// }
 const canonical = getCanonicalUrl('/', 'es');
 const alternates = getAlternateUrls('/');
 const breadcrumbs = [

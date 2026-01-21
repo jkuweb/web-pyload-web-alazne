@@ -22,9 +22,9 @@ import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
 const currentLang = 'eu';
 const page: Page | null = await getPageBySlug('sarrera', 'eu');
 
-if (!page && Astro.url.pathname !== '/eu/') {
-	return Astro.redirect('/eu/');
-}
+// if (!page && Astro.url.pathname !== '/eu/') {
+// 	return Astro.redirect('/eu/');
+// }
 
 const canonical = getCanonicalUrl('/', 'eu');
 const alternates = getAlternateUrls('/');
