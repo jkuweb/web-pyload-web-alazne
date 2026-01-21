@@ -1,15 +1,24 @@
 import { defineConfig } from 'astro/config';
-import { imageService } from '@unpic/astro/service';
+import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
-import path from 'path';
 import partytown from '@astrojs/partytown';
-import netlify from '@astrojs/netlify';
+import { imageService } from '@unpic/astro/service';
+import path from 'path';
 
 export default defineConfig({
 	site: 'https://aitamasleepcoaching.com',
-	adapter: netlify(),
+
 	output: 'server',
+	adapter: netlify(),
+
+	i18n: {
+		defaultLocale: 'es',
+		locales: ['es', 'eu'],
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
 
 	integrations: [
 		partytown({
@@ -17,6 +26,7 @@ export default defineConfig({
 				forward: ['dataLayer.push'],
 			},
 		}),
+
 		sitemap({
 			i18n: {
 				defaultLocale: 'es',
@@ -24,18 +34,13 @@ export default defineConfig({
 					es: 'es-ES',
 					eu: 'eu-ES',
 				},
-				routing: {
-					prefixDefaultLocale: false,
-				},
 			},
 			filter: (page) =>
 				!page.includes('/admin') &&
 				!page.includes('/api') &&
 				!page.includes('/_'),
-			changefreq: 'weekly',
-			priority: 0.7,
-			lastmod: new Date(),
 		}),
+
 		compress({
 			CSS: true,
 			HTML: {
@@ -43,19 +48,10 @@ export default defineConfig({
 				collapseWhitespace: true,
 				removeComments: true,
 			},
-			Image: false,
 			JavaScript: true,
 			SVG: true,
 		}),
 	],
-
-	i18n: {
-		defaultLocale: 'es',
-		locales: ['es', 'eu'],
-		routing: {
-			prefixDefaultLocale: false, // 👈 Cambia a false si no quieres /es/ en español
-		},
-	},
 
 	image: {
 		service: imageService({
@@ -70,24 +66,13 @@ export default defineConfig({
 	},
 
 	vite: {
-		optimizeDeps: {
-			include: ['@unpic/astro'],
-		},
 		resolve: {
 			alias: {
 				'@': path.resolve('./src'),
 			},
 		},
-		build: {
-			cssCodeSplit: false,
-			assetsInlineLimit: 10000,
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						glider: ['glider-js'],
-					},
-				},
-			},
+		optimizeDeps: {
+			include: ['@unpic/astro'],
 		},
 	},
 });
