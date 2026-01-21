@@ -8,7 +8,7 @@ import partytown from '@astrojs/partytown';
 import netlify from '@astrojs/netlify';
 
 export default defineConfig({
-	site: 'https://aitamasleepcoaching.com',
+	site: 'https://aitamasleepcoaching.com/es',
 	integrations: [
 		sitemap({
 			i18n: {
