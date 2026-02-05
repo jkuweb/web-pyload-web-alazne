@@ -1,9 +1,16 @@
 [build]
-  base='front'
+  base = 'front'
   command = "pnpm run build"
   publish = "dist"
+
 [[redirects]]
   from = "/"
   to = "/es/"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  conditions = {Role = ["admin"]}
