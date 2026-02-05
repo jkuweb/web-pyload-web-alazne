@@ -2,3 +2,8 @@
   base='front'
   command = "pnpm run build"
   publish = "dist"
+[[redirects]]
+  from = "/"
+  to = "/es/"
+  status = 301
+  force = true
