@@ -4,6 +4,7 @@ import { useTranslations } from '@/i18n/utils';
 import { Image } from 'astro:assets';
 import { getAbsoluteLocaleUrl } from 'astro:i18n';
 import logoImg from '@/assets/img/logo.png';
+import CookiePreferencesButton from '@/components/Legal/CookiePreferencesButton.astro';
 
 const currentLang = Astro.currentLocale || 'es';
 
@@ -155,6 +156,7 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 			>
 		</p>
 	</div>
+	<CookiePreferencesButton />
 </footer>
 <script>
 	document.addEventListener('DOMContentLoaded', () => {

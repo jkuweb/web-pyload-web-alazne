@@ -1,0 +1,196 @@
+<script>
+	import 'vanilla-cookieconsent/dist/cookieconsent.css';
+	import * as CookieConsent from 'vanilla-cookieconsent';
+
+	const config = {
+		cookie: {
+			name: 'cc_cookie',
+			domain: window.location.hostname,
+			path: '/',
+			sameSite: 'Lax',
+			expiresAfterDays: 365,
+		},
+
+		guiOptions: {
+			consentModal: {
+				layout: 'cloud',
+				position: 'bottom right',
+				equalWeightButtons: true,
+				flipButtons: false,
+			},
+			preferencesModal: {
+				layout: 'box',
+				equalWeightButtons: true,
+				flipButtons: false,
+			},
+		},
+
+		categories: {
+			necessary: {
+				enabled: true,
+				readOnly: true,
+			},
+			analytics: {
+				enabled: false,
+				readOnly: false,
+			},
+			marketing: {
+				enabled: false,
+				readOnly: false,
+			},
+		},
+
+		language: {
+			default: 'es',
+			translations: {
+				es: {
+					consentModal: {
+						title: '🍪 Utilizamos cookies',
+						description:
+							'Usamos cookies para mejorar tu experiencia de navegación, analizar el tráfico del sitio y personalizar el contenido. Puedes aceptar todas las cookies o personalizar tus preferencias.',
+						acceptAllBtn: 'Aceptar todas',
+						acceptNecessaryBtn: 'Solo necesarias',
+						showPreferencesBtn: 'Gestionar preferencias',
+						footer:
+							'<a href="/legal/politica-de-privacidad">Política de privacidad</a>\n<a href="/legal/politica-de-cookies">Política de cookies</a>',
+					},
+					preferencesModal: {
+						title: 'Preferencias de cookies',
+						acceptAllBtn: 'Aceptar todas',
+						acceptNecessaryBtn: 'Solo necesarias',
+						savePreferencesBtn: 'Guardar preferencias',
+						closeIconLabel: 'Cerrar',
+						serviceCounterLabel: 'Servicio|Servicios',
+						sections: [
+							{
+								title: 'Uso de cookies',
+								description:
+									'Utilizamos cookies para mejorar tu experiencia de navegación, mostrar contenido personalizado y analizar el tráfico del sitio. A continuación puedes personalizar qué tipos de cookies deseas permitir.',
+							},
+							{
+								title: 'Cookies estrictamente necesarias',
+								description:
+									'Estas cookies son esenciales para el correcto funcionamiento del sitio web. No pueden desactivarse ya que son necesarias para servicios básicos como la navegación y el acceso a áreas seguras.',
+								linkedCategory: 'necessary',
+							},
+							{
+								title: 'Cookies de análisis y rendimiento',
+								description:
+									'Estas cookies nos permiten analizar cómo los visitantes usan nuestro sitio web y medir el rendimiento de las páginas. Toda la información recopilada es anónima y nos ayuda a mejorar el funcionamiento del sitio.',
+								linkedCategory: 'analytics',
+							},
+							{
+								title: 'Cookies de marketing y publicidad',
+								description:
+									'Estas cookies se utilizan para mostrar anuncios relevantes basados en tus intereses. También ayudan a medir la efectividad de las campañas publicitarias.',
+								linkedCategory: 'marketing',
+							},
+							{
+								title: 'Más información',
+								description:
+									'Para cualquier consulta sobre nuestra política de cookies y privacidad, puedes <a href="/contacto">contactarnos</a> o consultar nuestra <a href="/legal/politica-de-privacidad">política de privacidad</a>.',
+							},
+						],
+					},
+				},
+			},
+		},
+
+		onFirstConsent: ({ cookie }) => {
+			updateConsent(cookie.categories);
+		},
+
+		onConsent: ({ cookie }) => {
+			updateConsent(cookie.categories);
+		},
+
+		onChange: ({ cookie }) => {
+			updateConsent(cookie.categories);
+		},
+	};
+
+	function updateConsent(categories: string[]) {
+		const analyticsGranted = categories.includes('analytics');
+		const marketingGranted = categories.includes('marketing');
+
+		// Actualizar Consent Mode V2
+		if (typeof gtag === 'function') {
+			gtag('consent', 'update', {
+				ad_storage: marketingGranted ? 'granted' : 'denied',
+				ad_user_data: marketingGranted ? 'granted' : 'denied',
+				ad_personalization: marketingGranted ? 'granted' : 'denied',
+				analytics_storage: analyticsGranted ? 'granted' : 'denied',
+				functionality_storage: analyticsGranted ? 'granted' : 'denied',
+				personalization_storage: analyticsGranted ? 'granted' : 'denied',
+			});
+
+			console.log('✅ Consent Mode actualizado:', {
+				analytics: analyticsGranted ? 'granted' : 'denied',
+				marketing: marketingGranted ? 'granted' : 'denied',
+			});
+		}
+
+		// Enviar evento a GTM
+		window.dataLayer = window.dataLayer || [];
+		window.dataLayer.push({
+			event: 'cookie_consent_update',
+			analytics_consent: analyticsGranted ? 'granted' : 'denied',
+			marketing_consent: marketingGranted ? 'granted' : 'denied',
+		});
+	}
+
+	CookieConsent.run(config);
+	(window as any).CookieConsent = CookieConsent;
+</script>
+
+<style is:global>
+	:root {
+		--cc-bg: #ffffff;
+		--cc-text: #1f2937;
+		--cc-btn-primary-bg: #85ccc6;
+		--cc-btn-primary-text: #222;
+		--cc-btn-primary-hover-bg: #317670;
+		--cc-btn-secondary-bg: #f3f4f6;
+		--cc-btn-secondary-text: #374151;
+		--cc-btn-secondary-hover-bg: #e5e7eb;
+		--cc-separator: #e5e7eb;
+		--cc-toggle-bg-on: #85ccc6;
+		--cc-secondary-color: #222;
+		--cc-footer-color: #fff;
+	}
+
+	.dark {
+		--cc-btn-primary-bg: #317670;
+		--cc-bg: #1f2937;
+		--cc-text: #f3f4f6;
+		--cc-btn-secondary-bg: #374151;
+		--cc-btn-secondary-text: #f3f4f6;
+		--cc-btn-secondary-hover-bg: #4b5563;
+		--cc-separator: #374151;
+		--cc-footer-color: #fff;
+	}
+
+	#cc-main .cm {
+		animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	#cc-main .cm__btn {
+		transition: all 0.2s ease;
+	}
+
+	#cc-main .cm__btn--primary:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	}
+</style>

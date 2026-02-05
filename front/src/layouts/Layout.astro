@@ -1,6 +1,7 @@
 ---
 import Header from '@/components/header/Header.astro';
 import Footer from '@/components/footer/Footer.astro';
+import CookieConsent from '@/components/Legal/CookieConsent.astro';
 
 import '../styles/main.css';
 import '../assets/css/glider.min.css';
@@ -9,6 +10,8 @@ import '../styles/header.css';
 const siteUrl = 'https://aitamasleepcoaching.com';
 
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+const GTM_ID = import.meta.env.PUBLIC_GTM_ID || 'GTM-K7JN3XB5';
 
 export interface Props {
 	title: string;
@@ -76,17 +79,37 @@ const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 		/>
 		<link rel="alternate" hreflang="x-default" href={siteUrl} />
 
-		<script
-			type="text/partytown"
-			src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-		></script>
-		<script type="text/partytown">
+		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag() {
 				dataLayer.push(arguments);
 			}
-			gtag('js', new Date());
-			gtag('config', '{GA_MEASUREMENT_ID}');
+			gtag('consent', 'default', {
+				ad_storage: 'denied',
+				ad_user_data: 'denied',
+				ad_personalization: 'denied',
+				analytics_storage: 'denied',
+				functionality_storage: 'denied',
+				personalization_storage: 'denied',
+				security_storage: 'granted',
+				wait_for_update: 500,
+			});
+		</script>
+
+		<script is:inline define:vars={{ GTM_ID }}>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({
+					'gtm.start': new Date().getTime(),
+					event: 'gtm.js',
+				});
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != 'dataLayer' ? '&l=' + l : '';
+				j.async = true;
+				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, 'script', 'dataLayer', GTM_ID);
 		</script>
 
 		<meta property="og:type" content="website" />
@@ -119,6 +142,13 @@ const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 	</head>
 
 	<body>
+		<noscript>
+			<iframe
+				src={'https://www.googletagmanager.com/ns.html?id=' + GTM_ID}
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"></iframe>
+		</noscript>
 		<Header />
 
 		<main id="main-content">
@@ -127,6 +157,7 @@ const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 
 		<Footer />
 
+		<CookieConsent />
 		<script src="../assets/js/glider.min.js"></script>
 
 		<style>
