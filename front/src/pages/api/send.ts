@@ -4,17 +4,11 @@ import { Resend } from 'resend';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
-// Cookies fake para TypeScript
-const fakeCookies = {
-	get: (_key: string) => undefined,
-	set: (_key: string, _value: string, _options?: any) => {},
-	delete: (_key: string, _options?: any) => {},
-};
-
 export const POST: APIRoute = async ({ request }) => {
 	try {
 		const formData = await request.formData();
 
+		// Convertimos todos los campos a string
 		const input = {
 			username: formData.get('username')?.toString() || '',
 			email: formData.get('email')?.toString() || '',
@@ -25,19 +19,32 @@ export const POST: APIRoute = async ({ request }) => {
 			csrf_token: formData.get('csrf_token')?.toString() || '',
 		};
 
+		// Validar reCAPTCHA si lo deseas aquí
+		const recaptchaToken = formData.get('recaptcha')?.toString();
+		if (!recaptchaToken) {
+			return new Response(
+				JSON.stringify({ success: false, error: 'Falta token reCAPTCHA' }),
+				{ status: 400 },
+			);
+		}
+
+		// Fake cookies, necesario para TypeScript pero no usado en Netlify
+		const fakeCookies = {
+			get: (_key: string) => undefined,
+			set: (_key: string, _value: string, _options?: any) => {},
+			delete: (_key: string, _options?: any) => {},
+		};
+
+		// Llamamos a la función que envía emails
 		const result = await handleContactForm(input, fakeCookies, resend);
 
-		return new Response(JSON.stringify({ success: true, result }), {
-			status: 200,
+		return new Response(JSON.stringify(result), {
+			status: result.success ? 200 : 500,
 		});
 	} catch (err) {
-		console.error('Error sending email:', err);
-
 		return new Response(
 			JSON.stringify({ success: false, error: (err as Error).message }),
-			{
-				status: 500,
-			},
+			{ status: 500 },
 		);
 	}
 };
