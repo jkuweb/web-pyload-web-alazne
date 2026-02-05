@@ -51,7 +51,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://region2.google-analytics.com',
 			'https://region1.analytics.google.com',
 			'https://cloudflareinsights.com',
-			'https://universe-static.elfsightcdn.com',
 		];
 
 		const trustedFrames = [

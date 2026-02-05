@@ -1,14 +1,18 @@
 ---
-import { useTranslations } from '@/i18n/utils';
 import type { languagesList } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { actions } from 'astro:actions';
+import SuccessServicePopup from '../pop-ups/SuccessServicePopup.astro';
 
-const { inputErrors = {}, csrf } = Astro.props;
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
+
+const { inputErrors, csrf } = Astro.props;
 ---
 
 <div id="contact"></div>
 <section class="h-contact">
+	<SuccessServicePopup />
 	<div class="wrapper">
 		<p class="heading-title" tabindex="0">{t('form.heading.text')}</p>
 		<h2 class="heading-secondary animated" tabindex="0">
@@ -18,100 +22,207 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 			<p tabindex="0">{t('reclamo')}</p>
 		</div>
 	</div>
-
-	<form
-		id="form"
-		class="h-contact__form"
-		action="/api/send"
-		method="POST"
-		onsubmit="return formSend(event)"
-	>
-		<div>
-			<label for="registration_form_firstName">{t('form.label.nombre')}</label>
-			<input
-				type="text"
-				id="registration_form_firstName"
-				name="username"
-				onfocus="loadRecaptcha()"
-			/>
-			<span id="error-name" style="color:#eb374d">{inputErrors.username}</span>
-		</div>
-
-		<div>
-			<label for="registration_form_email">{t('form.label.email')}</label>
-			<input
-				type="email"
-				id="registration_form_email"
-				name="email"
-				onfocus="loadRecaptcha()"
-			/>
-			<span id="error-email" style="color:#eb374d">{inputErrors.email}</span>
-		</div>
-
-		<div>
-			<label for="select">{t('form.label.select')}</label>
-			<select name="select" id="select" onfocus="loadRecaptcha()">
-				<option value="" selected></option>
-				<option value="Plan de sueño personalizado con seguimiento"
-					>Plan de sueño personalizado con seguimiento</option
+	<div>
+		<form
+			id="form"
+			class="h-contact__form"
+			action={actions.send}
+			method="POST"
+			onsubmit="return formSend(event)"
+		>
+			<div>
+				<label for="registration_form_firstName">{t('form.label.nombre')}</label
 				>
-				<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
-				<option value="Consultas">Consultas</option>
-				<option value="Encuentros grupales">Encuentros grupales</option>
-				<option value="Plan de sueño conmigo pero a tu ritmo"
-					>Plan de sueño conmigo pero a tu ritmo</option
+				<input
+					type="text"
+					id="registration_form_firstName"
+					name="username"
+					onfocus="loadRecaptcha()"
+				/>
+				<span id="error-name" style="color:#eb374d">{inputErrors.username}</span
 				>
-			</select>
-			<span id="error-reason" style="color:#eb374d">{inputErrors.select}</span>
-		</div>
-
-		<div>
-			<label for="message">{t('form.label.mensaje')}</label>
-			<textarea
-				id="message"
-				name="message"
-				cols="40"
-				rows="10"
-				onfocus="loadRecaptcha()"></textarea>
-			<span id="error-message" style="color:#eb374d">{inputErrors.message}</span
+			</div>
+			<div>
+				<label for="registration_form_email">{t('form.label.email')}</label>
+				<input
+					type="email"
+					id="registration_form_email"
+					name="email"
+					onfocus="loadRecaptcha()"
+				/>
+				<span id="error-email" style="color:#eb374d">{inputErrors.email}</span>
+			</div>
+			<div>
+				<label for="select">{t('form.label.select')}</label>
+				<select name="select" id="select" onfocus="loadRecaptcha()">
+					<option value="" selected></option>
+					<option value="Plan de sueño personalizado con seguimiento">
+						Plan de sueño personalizado con seguimiento
+					</option>
+					<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
+					<option value="Consultas">Consultas</option>
+					<option value="Encuentros grupales">Encuentros grupales</option>
+					<option value="Plan de sueño conmigo pero a tu ritmo">
+						Plan de sueño conmigo pero a tu ritmo
+					</option>
+				</select>
+				<span id="error-reason" style="color:#eb374d">{inputErrors.select}</span
+				>
+			</div>
+			<div>
+				<label for="message">{t('form.label.mensaje')}</label>
+				<textarea
+					id="message"
+					name="message"
+					cols="40"
+					rows="10"
+					onfocus="loadRecaptcha()"></textarea>
+				<span id="error-message" style="color:#eb374d"
+					>{inputErrors.message}</span
+				>
+			</div>
+			<input type="hidden" name="lang" id="idioma" value={currentLang} />
+			<input type="hidden" id="recaptcha-token" name="recaptcha" />
+			<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+			<button
+				id="contact-btn"
+				class="btn btn-section aminated h-contact__btn g-recaptcha"
+				style="z-index: 0; margin-top: 1rem;"
+				data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
+				data-callback="onSubmit"
+				data-action="submit"
+				disabled
 			>
-		</div>
-
-		<input type="hidden" name="lang" value={currentLang} />
-		<input type="hidden" name="recaptcha" id="recaptcha-token" />
-		<input type="hidden" name="csrf_token" value={csrf} />
-
-		<button
-			id="contact-btn"
-			class="btn btn-section animated h-contact__btn g-recaptcha"
-			style="z-index: 0; margin-top: 1rem;"
-			data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
-			data-callback="onSubmit"
-			data-action="submit"
-			disabled
-		>
-			{t('form.btn.texto')}
-		</button>
-
-		<div class="h-contact__footer">
-			<input
-				id="terms"
-				name="termsAccepted"
-				type="checkbox"
-				onfocus="loadRecaptcha()"
-				aria-label="Aceptar terminos"
-			/>
-			<p>
-				Todos los datos aportados por el usuario en este formulario NO tendrán
-				persistencia en ninguna base de datos ni en ningún otro sistema de
-				persistencia.
-			</p>
-		</div>
-		<span id="error-terms" style="color:#eb374d"
-			>{inputErrors.termsAccepted}</span
-		>
-	</form>
+				{t('form.btn.texto')}
+			</button>
+			<div class="h-contact__footer">
+				<input
+					id="terms"
+					name="termsAccepted"
+					type="checkbox"
+					onfocus="loadRecaptcha()"
+					aria-label="Aceptar terminos"
+				/>
+				<p>
+					Todos los datos aportados por el usuario en este formulario NO tendrán
+					persistencia en ninguna base de datos ni en ningún otro sistema de
+					persistencia.
+				</p>
+			</div>
+			<span id="error-terms" style="color:#eb374d">
+				{inputErrors.termsAccepted}
+			</span>
+		</form>
+	</div>
 </section>
+<script is:inline>
+	const lang = window.location.pathname.split('/')[1] || 'es';
+
+	const messages =
+		{
+			es: {
+				nameRequired: 'El nombre es obligatorio',
+				nameInvalid: 'El nombre debe de tener al menos 2 caracter',
+				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
+				emailInvalid: 'Email no válido',
+				reasonRequired: 'Selecciona un motivo',
+				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
+				termsRequired: 'Debes aceptar los términos',
+			},
+			eu: {
+				nameRequired: 'Izena derrigorrezkoa da',
+				nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
+				nameLengthInvalid: 'Izenak ezin ditu 50 karaktere baino gehiago izan.',
+				emailInvalid: 'Emaila ez da baliozkoa',
+				reasonRequired: 'Aukera bat hautatu',
+				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
+				termsRequired: 'Baldintzak onartu behar dituzu',
+			},
+		}[lang] || messages.es;
+
+	const form = document.getElementById('form');
+	const submitBtn = document.getElementById('contact-btn');
+	document.addEventListener('DOMContentLoaded', () => {
+		submitBtn?.disabled;
+	});
+
+	const fields = {
+		name: {
+			input: document.getElementById('registration_form_firstName'),
+			error: document.getElementById('error-name'),
+			validate: (v) => {
+				const nameLength = v.length;
+				if (typeof v !== 'string' || v.trim() === '') {
+					return messages.nameRequired;
+				} else if (nameLength <= 2) {
+					return messages.nameInvalid;
+				}
+
+				return nameLength > 50 ? messages.nameLengthInvalid : true;
+			},
+		},
+		email: {
+			input: document.getElementById('registration_form_email'),
+			error: document.getElementById('error-email'),
+			validate: (v) =>
+				/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
+		},
+		reason: {
+			input: document.getElementById('select'),
+			error: document.getElementById('error-reason'),
+			validate: (v) => v !== '' || messages.reasonRequired,
+		},
+		message: {
+			input: document.getElementById('message'),
+			error: document.getElementById('error-message'),
+			validate: (v) => v.trim().length >= 10 || messages.messageShort,
+		},
+		terms: {
+			input: document.getElementById('terms'),
+			error: document.getElementById('error-terms'),
+			validate: (v, input) => input.checked || messages.termsRequired,
+		},
+	};
+
+	function validateAll() {
+		let valid = true;
+
+		Object.values(fields).forEach(({ input, error, validate }) => {
+			const value = input.type === 'checkbox' ? input.checked : input.value;
+			const result = validate(value, input);
+
+			if (result !== true) {
+				error.textContent = result;
+				input.classList.add('invalid');
+				input.setAttribute('aria-invalid', 'true');
+				valid = false;
+			} else {
+				error.textContent = '';
+				input.classList.remove('invalid');
+				input.setAttribute('aria-invalid', 'false');
+			}
+		});
+
+		submitBtn.disabled = !valid;
+		return valid;
+	}
+
+	Object.values(fields).forEach(({ input }) => {
+		const validateAndUpdateButton = () => {
+			validateAll();
+		};
+
+		input.addEventListener('input', validateAndUpdateButton);
+		input.addEventListener('change', validateAndUpdateButton);
+		input.addEventListener('blur', validateAndUpdateButton);
+	});
+
+	form.addEventListener('submit', (e) => {
+		if (!validateAll()) {
+			e.preventDefault();
+		}
+	});
+</script>
 
 <script is:inline>
 	let recaptchaCargado = false;
@@ -132,99 +243,16 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		};
 		document.head.appendChild(script);
 	}
-
-	const lang = window.location.pathname.split('/')[1] || 'es';
-	const messages =
-		{
-			es: {
-				nameRequired: 'El nombre es obligatorio',
-				nameInvalid: 'El nombre debe de tener al menos 2 caracteres',
-				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
-				emailInvalid: 'Email no válido',
-				reasonRequired: 'Selecciona un motivo',
-				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
-				termsRequired: 'Debes aceptar los términos',
-			},
-			eu: {
-				nameRequired: 'Izena derrigorrezkoa da',
-				nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
-				nameLengthInvalid: 'Izenak ezin ditu 50 karaktere baino gehiago izan.',
-				emailInvalid: 'Emaila ez da baliozkoa',
-				reasonRequired: 'Aukera bat hautatu',
-				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
-				termsRequired: 'Baldintzak onartu behar dituzu',
-			},
-		}[lang] || messages.es;
-
-	const form = document.getElementById('form');
-	const submitBtn = document.getElementById('contact-btn');
-	const fields = {
-		name: {
-			input: document.getElementById('registration_form_firstName'),
-			error: document.getElementById('error-name'),
-			validate: (v) =>
-				!v.trim()
-					? messages.nameRequired
-					: v.length < 2
-						? messages.nameInvalid
-						: v.length > 50
-							? messages.nameLengthInvalid
-							: true,
-		},
-		email: {
-			input: document.getElementById('registration_form_email'),
-			error: document.getElementById('error-email'),
-			validate: (v) =>
-				/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? true : messages.emailInvalid,
-		},
-		reason: {
-			input: document.getElementById('select'),
-			error: document.getElementById('error-reason'),
-			validate: (v) => (v !== '' ? true : messages.reasonRequired),
-		},
-		message: {
-			input: document.getElementById('message'),
-			error: document.getElementById('error-message'),
-			validate: (v) => (v.trim().length >= 10 ? true : messages.messageShort),
-		},
-		terms: {
-			input: document.getElementById('terms'),
-			error: document.getElementById('error-terms'),
-			validate: (v, input) => (input.checked ? true : messages.termsRequired),
-		},
-	};
-
-	function validateAll() {
-		let valid = true;
-		Object.values(fields).forEach(({ input, error, validate }) => {
-			const value = input.type === 'checkbox' ? input.checked : input.value;
-			const result = validate(value, input);
-			if (result !== true) {
-				error.textContent = result;
-				input.classList.add('invalid');
-				input.setAttribute('aria-invalid', 'true');
-				valid = false;
-			} else {
-				error.textContent = '';
-				input.classList.remove('invalid');
-				input.setAttribute('aria-invalid', 'false');
-			}
-		});
-		submitBtn.disabled = !valid;
-		return valid;
-	}
-
-	Object.values(fields).forEach(({ input }) => {
-		input.addEventListener('input', validateAll);
-		input.addEventListener('change', validateAll);
-		input.addEventListener('blur', validateAll);
-	});
-
-	async function formSend(event) {
+	function formSend(event) {
 		event.preventDefault();
-		if (!validateAll()) return false;
+
+		if (!validateAll()) {
+			console.warn('❌ El formulario tiene errores de validación.');
+			return false;
+		}
+
 		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
-			alert('⚠️ Sistema de seguridad aún no listo.');
+			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
 			return false;
 		}
 
@@ -235,34 +263,37 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 				})
 				.then(onSubmit);
 		});
+
 		return false;
 	}
 
-	async function onSubmit(token) {
-		const formData = new FormData(form);
-		formData.append('recaptcha', token);
-
-		try {
-			const response = await fetch('/api/send', {
-				method: 'POST',
-				body: formData,
+	function onSubmit(token) {
+		fetch('/recaptcha', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ recaptcha: token }),
+		})
+			.then((response) => response.json())
+			.then((gResponse) => {
+				if (gResponse.success && gResponse.score >= 0.5) {
+					const formToken = document.getElementById('csrf_token')?.value;
+					if (!formToken) {
+						alert('⚠️ Falta token CSRF');
+						return;
+					}
+					document.getElementById('recaptcha-token').value = token;
+					document.getElementById('form').submit();
+				} else {
+					console.warn('❌ Falló la verificación de reCAPTCHA');
+					alert('No pudimos verificar que eres humano.');
+				}
+			})
+			.catch((err) => {
+				console.error('⚠️ Error en verificación reCAPTCHA', err);
+				alert('Error al verificar reCAPTCHA. Intenta más tarde.');
 			});
-			const result = await response.json();
-			if (result.success) {
-				alert('Email enviado ✅');
-				form.reset();
-				submitBtn.disabled = true;
-			} else {
-				alert('Error enviando email ❌');
-				console.error(result.error);
-			}
-		} catch (err) {
-			console.error(err);
-			alert('Error de red, intenta más tarde.');
-		}
 	}
 </script>
-
 <style>
 	.h-contact {
 		position: relative;
