@@ -1,10 +1,35 @@
-[build]
-  base = 'front'
-  command = "pnpm run build"
-  publish = "dist"
+  [build]
+    command = "pnpm run build"
+    publish = "dist"
 
-[[redirects]]
-  from = "/"
-  to = "/es/"
-  status = 301
-  force = true
+  # Astro SSR en Netlify
+  [functions]
+    directory = "netlify/functions"
+
+  # Redirección idioma por defecto
+  [[redirects]]
+    from = "/"
+    to = "/es/"
+    status = 301
+    force = true
+
+  # Permitir indexación y evitar 403 a bots
+  [[headers]]
+    for = "/*"
+    [headers.values]
+      X-Content-Type-Options = "nosniff"
+      Referrer-Policy = "strict-origin-when-cross-origin"
+      Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+  # Sitemap accesible
+  [[headers]]
+    for = "/sitemap*.xml"
+    [headers.values]
+      Content-Type = "application/xml; charset=utf-8"
+      Cache-Control = "public, max-age=3600"
+
+  # Robots.txt accesible
+  [[headers]]
+    for = "/robots.txt"
+    [headers.values]
+      Content-Type = "text/plain; charset=utf-8"
