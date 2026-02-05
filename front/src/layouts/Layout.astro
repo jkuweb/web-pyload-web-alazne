@@ -56,7 +56,6 @@ const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
 
 		<link rel="canonical" href={canonicalUrl} />
 
-		{/* Solo agrega noindex si explícitamente se requiere */}
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 
 		<link
@@ -71,7 +70,6 @@ const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
 		/>
 		<link rel="alternate" hreflang="x-default" href={siteUrl} />
 
-		{/* Google Consent Mode por defecto */}
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag() {
@@ -89,7 +87,6 @@ const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
 			});
 		</script>
 
-		{/* Google Tag Manager */}
 		<script is:inline define:vars={{ GTM_ID }}>
 			(function (w, d, s, l, i) {
 				w[l] = w[l] || [];

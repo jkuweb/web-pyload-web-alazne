@@ -8,7 +8,6 @@ import path from 'path';
 
 export default defineConfig({
 	site: 'https://aitamasleepcoaching.com',
-
 	output: 'server',
 	adapter: netlify(),
 

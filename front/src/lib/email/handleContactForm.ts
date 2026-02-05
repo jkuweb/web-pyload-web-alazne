@@ -4,6 +4,7 @@ import {
 } from '@/email-templates';
 import type { AstroCookies } from 'astro';
 import type { Resend } from 'resend';
+import { ActionError } from 'astro:actions';
 
 export interface ContactFormInput {
 	username: string;
@@ -20,12 +21,14 @@ export async function handleContactForm(
 	resendClient: Resend,
 ) {
 	const { username, email, message, select, lang, csrf_token } = input;
+
+	// Validar CSRF
 	const csrfFromCookie = cookies.get('csrf_token')?.value;
 	if (!csrfFromCookie || csrf_token !== csrfFromCookie) {
-		return {
-			success: false,
-			error: 'Token CSRF inválido',
-		};
+		throw new ActionError({
+			code: 'FORBIDDEN',
+			message: 'Token CSRF inválido',
+		});
 	}
 
 	const contactHtml = getContactEmailTemplate({
@@ -42,6 +45,7 @@ export async function handleContactForm(
 	});
 
 	try {
+		// Enviar email al administrador
 		await resendClient.emails.send({
 			from: 'Alazne <contacto@aitamasleepcoaching.com>',
 			to: ['valverdealazne@gmail.com'],
@@ -50,6 +54,7 @@ export async function handleContactForm(
 			text: `Nuevo mensaje de la web Usuario: ${username}, email: ${email}, asunto: ${select}, mensaje: ${message}`,
 		});
 
+		// Enviar email de confirmación al cliente
 		await resendClient.emails.send({
 			from: 'Alazne <contacto@aitamasleepcoaching.com>',
 			to: [email],
@@ -57,14 +62,16 @@ export async function handleContactForm(
 			html: clientHtml,
 		});
 
+		// Retornar objeto con redirect
 		return {
 			success: true,
 			redirect: `/${lang}/?sent=true`,
 		};
 	} catch (error) {
-		return {
-			success: false,
-			error: `Error al enviar el correo. ${error}`,
-		};
+		console.error('Error al enviar email:', error);
+		throw new ActionError({
+			code: 'INTERNAL_SERVER_ERROR',
+			message: 'Error al enviar el correo',
+		});
 	}
 }

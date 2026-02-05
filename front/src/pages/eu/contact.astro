@@ -3,16 +3,11 @@ import SuccessContactPopup from '@/components/pop-ups/SuccessContactPopup.astro'
 import Layout from '@/layouts/Layout.astro';
 import { generateCSRFToken } from '@/utils/csrf';
 import { actions, isInputError } from 'astro:actions';
-import {
-	getAlternateUrls,
-	getCanonicalUrl,
-	getPageBySlug,
-} from '@/utils/payloadFetch';
+import { getPageBySlug } from '@/utils/payloadFetch';
 import type { Page, Media } from '@/payloadTypes';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
 import '@/styles/contact.css';
-export const prerender = true;
 
 const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('kontaktua', 'eu');

@@ -6,7 +6,6 @@ import SuccessServicePopup from '../pop-ups/SuccessServicePopup.astro';
 
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
-
 const { inputErrors, csrf } = Astro.props;
 ---
 
@@ -26,9 +25,8 @@ const { inputErrors, csrf } = Astro.props;
 		<form
 			id="form"
 			class="h-contact__form"
-			action={actions.send}
+			action={`/${currentLang}/?_action=send`}
 			method="POST"
-			onsubmit="return formSend(event)"
 		>
 			<div>
 				<label for="registration_form_firstName">{t('form.label.nombre')}</label
@@ -39,7 +37,8 @@ const { inputErrors, csrf } = Astro.props;
 					name="username"
 					onfocus="loadRecaptcha()"
 				/>
-				<span id="error-name" style="color:#eb374d">{inputErrors.username}</span
+				<span id="error-name" style="color:#eb374d"
+					>{inputErrors?.username}</span
 				>
 			</div>
 			<div>
@@ -50,7 +49,7 @@ const { inputErrors, csrf } = Astro.props;
 					name="email"
 					onfocus="loadRecaptcha()"
 				/>
-				<span id="error-email" style="color:#eb374d">{inputErrors.email}</span>
+				<span id="error-email" style="color:#eb374d">{inputErrors?.email}</span>
 			</div>
 			<div>
 				<label for="select">{t('form.label.select')}</label>
@@ -66,7 +65,8 @@ const { inputErrors, csrf } = Astro.props;
 						Plan de sueño conmigo pero a tu ritmo
 					</option>
 				</select>
-				<span id="error-reason" style="color:#eb374d">{inputErrors.select}</span
+				<span id="error-reason" style="color:#eb374d"
+					>{inputErrors?.select}</span
 				>
 			</div>
 			<div>
@@ -78,19 +78,22 @@ const { inputErrors, csrf } = Astro.props;
 					rows="10"
 					onfocus="loadRecaptcha()"></textarea>
 				<span id="error-message" style="color:#eb374d"
-					>{inputErrors.message}</span
+					>{inputErrors?.message}</span
 				>
 			</div>
 			<input type="hidden" name="lang" id="idioma" value={currentLang} />
-			<input type="hidden" id="recaptcha-token" name="recaptcha" />
 			<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+			<input
+				type="hidden"
+				id="recaptcha-token"
+				name="recaptcha-token"
+				value=""
+			/>
 			<button
 				id="contact-btn"
-				class="btn btn-section aminated h-contact__btn g-recaptcha"
+				class="btn btn-section animated h-contact__btn"
 				style="z-index: 0; margin-top: 1rem;"
-				data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
-				data-callback="onSubmit"
-				data-action="submit"
+				type="submit"
 				disabled
 			>
 				{t('form.btn.texto')}
@@ -110,11 +113,12 @@ const { inputErrors, csrf } = Astro.props;
 				</p>
 			</div>
 			<span id="error-terms" style="color:#eb374d">
-				{inputErrors.termsAccepted}
+				{inputErrors?.termsAccepted}
 			</span>
 		</form>
 	</div>
 </section>
+
 <script is:inline>
 	const lang = window.location.pathname.split('/')[1] || 'es';
 
@@ -128,6 +132,10 @@ const { inputErrors, csrf } = Astro.props;
 				reasonRequired: 'Selecciona un motivo',
 				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
 				termsRequired: 'Debes aceptar los términos',
+				sending: 'Enviando...',
+				recaptchaError: 'No pudimos verificar que eres humano.',
+				recaptchaNotReady:
+					'El sistema de seguridad aún no está listo. Intenta de nuevo.',
 			},
 			eu: {
 				nameRequired: 'Izena derrigorrezkoa da',
@@ -137,14 +145,15 @@ const { inputErrors, csrf } = Astro.props;
 				reasonRequired: 'Aukera bat hautatu',
 				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
 				termsRequired: 'Baldintzak onartu behar dituzu',
+				sending: 'Bidaltzen...',
+				recaptchaError: 'Ezin izan dugu egiaztatu giza zara.',
+				recaptchaNotReady:
+					'Segurtasun sistema ez dago prest oraindik. Saiatu berriro.',
 			},
 		}[lang] || messages.es;
 
 	const form = document.getElementById('form');
 	const submitBtn = document.getElementById('contact-btn');
-	document.addEventListener('DOMContentLoaded', () => {
-		submitBtn?.disabled;
-	});
 
 	const fields = {
 		name: {
@@ -157,7 +166,6 @@ const { inputErrors, csrf } = Astro.props;
 				} else if (nameLength <= 2) {
 					return messages.nameInvalid;
 				}
-
 				return nameLength > 50 ? messages.nameLengthInvalid : true;
 			},
 		},
@@ -217,11 +225,8 @@ const { inputErrors, csrf } = Astro.props;
 		input.addEventListener('blur', validateAndUpdateButton);
 	});
 
-	form.addEventListener('submit', (e) => {
-		if (!validateAll()) {
-			e.preventDefault();
-		}
-	});
+	// Exponer validateAll globalmente
+	window.validateAll = validateAll;
 </script>
 
 <script is:inline>
@@ -243,56 +248,95 @@ const { inputErrors, csrf } = Astro.props;
 		};
 		document.head.appendChild(script);
 	}
-	function formSend(event) {
+
+	window.loadRecaptcha = loadRecaptcha;
+</script>
+
+<script is:inline>
+	const form = document.getElementById('form');
+	const submitBtn = document.getElementById('contact-btn');
+	const lang = window.location.pathname.split('/')[1] || 'es';
+
+	const messages = {
+		es: {
+			sending: 'Enviando...',
+			recaptchaError: 'No pudimos verificar que eres humano.',
+			recaptchaNotReady:
+				'El sistema de seguridad aún no está listo. Intenta de nuevo.',
+		},
+		eu: {
+			sending: 'Bidaltzen...',
+			recaptchaError: 'Ezin izan dugu egiaztatu giza zara.',
+			recaptchaNotReady:
+				'Segurtasun sistema ez dago prest oraindik. Saiatu berriro.',
+		},
+	}[lang] || {
+		sending: 'Enviando...',
+		recaptchaError: 'Error',
+		recaptchaNotReady: 'Error',
+	};
+
+	form.addEventListener('submit', async function (event) {
 		event.preventDefault();
 
-		if (!validateAll()) {
+		// Validar
+		if (!window.validateAll || !window.validateAll()) {
 			console.warn('❌ El formulario tiene errores de validación.');
 			return false;
 		}
 
-		if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
-			alert('⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.');
+		// Verificar reCAPTCHA
+		if (typeof grecaptcha === 'undefined') {
+			alert(messages.recaptchaNotReady);
 			return false;
 		}
 
-		grecaptcha.ready(() => {
-			grecaptcha
-				.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
-					action: 'submit',
-				})
-				.then(onSubmit);
-		});
+		const originalText = submitBtn.textContent;
+		submitBtn.disabled = true;
+		submitBtn.textContent = messages.sending;
 
-		return false;
-	}
-
-	function onSubmit(token) {
-		fetch('/recaptcha', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ recaptcha: token }),
-		})
-			.then((response) => response.json())
-			.then((gResponse) => {
-				if (gResponse.success && gResponse.score >= 0.5) {
-					const formToken = document.getElementById('csrf_token')?.value;
-					if (!formToken) {
-						alert('⚠️ Falta token CSRF');
-						return;
-					}
-					document.getElementById('recaptcha-token').value = token;
-					document.getElementById('form').submit();
-				} else {
-					console.warn('❌ Falló la verificación de reCAPTCHA');
-					alert('No pudimos verificar que eres humano.');
-				}
-			})
-			.catch((err) => {
-				console.error('⚠️ Error en verificación reCAPTCHA', err);
-				alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+		try {
+			// Obtener token de reCAPTCHA
+			const token = await new Promise((resolve, reject) => {
+				grecaptcha.ready(() => {
+					grecaptcha
+						.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
+							action: 'submit',
+						})
+						.then(resolve)
+						.catch(reject);
+				});
 			});
-	}
+
+			// Verificar reCAPTCHA en el servidor
+			const recaptchaResponse = await fetch('/recaptcha', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ recaptcha: token }),
+			});
+
+			const gResponse = await recaptchaResponse.json();
+
+			if (!gResponse.success || gResponse.score < 0.5) {
+				alert(messages.recaptchaError);
+				submitBtn.disabled = false;
+				submitBtn.textContent = originalText;
+				return false;
+			}
+
+			// Añadir el token al formulario (opcional, si lo necesitas en el backend)
+			document.getElementById('recaptcha-token').value = token;
+
+			// Enviar el formulario normalmente
+			// Astro manejará el action={actions.send} automáticamente
+			form.submit();
+		} catch (err) {
+			console.error('⚠️ Error:', err);
+			alert('Error al verificar reCAPTCHA. Intenta más tarde.');
+			submitBtn.disabled = false;
+			submitBtn.textContent = originalText;
+		}
+	});
 </script>
 <style>
 	.h-contact {

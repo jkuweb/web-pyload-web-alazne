@@ -14,7 +14,6 @@ import { getPageBySlug } from '@/utils/payloadFetch';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import OrganizationSchema from '@/components/SEO/OrganizationSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
-export const prerender = true;
 const currentLang = 'eu';
 const page: Page | null = await getPageBySlug('sarrera', 'eu');
 
