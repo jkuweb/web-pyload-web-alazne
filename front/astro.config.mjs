@@ -27,6 +27,7 @@ export default defineConfig({
 		}),
 
 		sitemap({
+			canonicalURL: 'https://aitamasleepcoaching.com',
 			i18n: {
 				defaultLocale: 'es',
 				locales: {
@@ -39,7 +40,6 @@ export default defineConfig({
 				!page.includes('/api') &&
 				!page.includes('/_'),
 		}),
-
 		compress({
 			CSS: true,
 			HTML: {
