@@ -1,26 +1,12 @@
-# public/robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
-Disallow: /_astro/
 
-# Sitemap
 Sitemap: https://aitamasleepcoaching.com/sitemap-index.xml
 
-# Crawl-delay (opcional, para reducir carga del servidor)
-Crawl-delay: 1
-
-# Reglas específicas para bots conocidos
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
-
-# Bloquear bots maliciosos
-User-agent: AhrefsBot
-Crawl-delay: 2
-
-User-agent: SemrushBot
-Crawl-delay: 2
