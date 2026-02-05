@@ -49,7 +49,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://region2.google-analytics.com',
 			'https://region1.analytics.google.com',
 			'https://cloudflareinsights.com',
-			'https://universe-static.elfsightcdn.com',
 		];
 
 		const trustedFrames = [
@@ -75,7 +74,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 				`style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};`,
 				`object-src 'none';`,
 				`base-uri 'self';`,
-				`form-action 'self' 'unsafe-inline';`, // CAMBIO AQUÍ: permite actions
+				`form-action 'self';`,
 				`upgrade-insecure-requests;`,
 			].join(' '),
 		);
