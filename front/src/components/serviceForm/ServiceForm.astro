@@ -13,7 +13,7 @@ const { inputErrors, csrf } = Astro.props;
 <form
 	id="serviceForm"
 	class="h-contact__form"
-	action={actions.sendContactEmail}
+	action="/api/send"
 	method="POST"
 	onsubmit="return serviceFormSend(event)"
 	style="max-width: 45rem; margin-bottom: 0;"
