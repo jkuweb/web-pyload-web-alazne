@@ -27,7 +27,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
 	const trustedConnect = [
 		"'self'",
-		'https://api.aitamasleepcoaching.com',
+		'https://api.aitamasleepcoaching.com', // tu API
 		'https://res.cloudinary.com',
 		'https://www.google.com',
 		'https://www.recaptcha.net',
@@ -39,36 +39,44 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		'https://region2.google-analytics.com',
 		'https://cloudflareinsights.com',
 		'https://universe-static.elfsightcdn.com',
-		'http://localhost:3000',
-		'http://127.0.0.1:3000',
 	];
 
 	const trustedFrames = ['https://www.google.com', 'https://www.recaptcha.net'];
 	const trustedStyles = ['https://fonts.googleapis.com'];
 	const trustedFonts = ['https://fonts.gstatic.com'];
 
-	// Content Security Policy
-	response.headers.set(
-		'Content-Security-Policy',
-		[
-			`default-src 'self';`,
-			`img-src 'self' data: blob: ${trustedImages.join(' ')};`,
-			`font-src 'self' data: ${trustedFonts.join(' ')};`,
-			`connect-src ${trustedConnect.join(' ')};`,
-			`frame-src 'self' ${trustedFrames.join(' ')};`,
-			`frame-ancestors 'self';`,
-			`script-src 'self' 'unsafe-inline' 'unsafe-eval' ${trustedScripts.join(' ')};`,
-			`script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};`,
-			`style-src 'self' 'unsafe-inline' ${trustedStyles.join(' ')};`,
-			`style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};`,
-			`object-src 'none';`,
-			`base-uri 'self';`,
-			`form-action 'self';`,
-			`upgrade-insecure-requests;`,
-		].join(' '),
-	);
+	// Detectar Googlebot para permitir rastreo sin CSP bloqueante
+	const userAgent = context.request.headers.get('user-agent') || '';
+	const isGoogleBot = /Googlebot/i.test(userAgent);
 
-	// Otros encabezados de seguridad
+	// CSP principal
+	const cspDirectives = [
+		`default-src 'self';`,
+		`img-src 'self' data: blob: ${trustedImages.join(' ')};`,
+		`font-src 'self' data: ${trustedFonts.join(' ')};`,
+		`connect-src ${trustedConnect.join(' ')};`,
+		`frame-src 'self' ${trustedFrames.join(' ')};`,
+		`frame-ancestors 'self';`,
+		`script-src 'self' 'unsafe-inline' 'unsafe-eval' ${trustedScripts.join(' ')};`,
+		`script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};`,
+		`style-src 'self' 'unsafe-inline' ${trustedStyles.join(' ')};`,
+		`style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};`,
+		`object-src 'none';`,
+		`base-uri 'self';`,
+		`form-action 'self';`,
+		`upgrade-insecure-requests;`,
+	];
+
+	// Si es Googlebot, relajar restricciones de script para rastreo
+	if (isGoogleBot) {
+		const relaxScripts = "'unsafe-inline' 'unsafe-eval'";
+		cspDirectives.push(`script-src ${relaxScripts};`);
+		cspDirectives.push(`script-src-elem ${relaxScripts};`);
+	}
+
+	response.headers.set('Content-Security-Policy', cspDirectives.join(' '));
+
+	// Encabezados de seguridad adicionales
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 	response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -77,7 +85,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		'geolocation=(), microphone=(), camera=()',
 	);
 
-	// HSTS para HTTPS
 	if (context.url.protocol === 'https:') {
 		response.headers.set(
 			'Strict-Transport-Security',
