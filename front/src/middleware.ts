@@ -3,6 +3,7 @@ import type { MiddlewareHandler } from 'astro';
 export const onRequest: MiddlewareHandler = async (context, next) => {
 	const response = await next();
 
+	// Dominios confiables
 	const trustedScripts = [
 		'https://www.google.com',
 		'https://www.gstatic.com',
@@ -25,7 +26,8 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 	];
 
 	const trustedConnect = [
-		'api.aitamasleepcoaching.com',
+		"'self'",
+		'https://api.aitamasleepcoaching.com',
 		'https://res.cloudinary.com',
 		'https://www.google.com',
 		'https://www.recaptcha.net',
@@ -35,7 +37,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		'https://www.googletagmanager.com',
 		'https://region1.google-analytics.com',
 		'https://region2.google-analytics.com',
-		'https://region1.analytics.google.com',
 		'https://cloudflareinsights.com',
 		'https://universe-static.elfsightcdn.com',
 		'http://localhost:3000',
@@ -43,18 +44,17 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 	];
 
 	const trustedFrames = ['https://www.google.com', 'https://www.recaptcha.net'];
-
 	const trustedStyles = ['https://fonts.googleapis.com'];
-
 	const trustedFonts = ['https://fonts.gstatic.com'];
 
+	// Content Security Policy
 	response.headers.set(
 		'Content-Security-Policy',
 		[
 			`default-src 'self';`,
 			`img-src 'self' data: blob: ${trustedImages.join(' ')};`,
 			`font-src 'self' data: ${trustedFonts.join(' ')};`,
-			`connect-src 'self' ${trustedConnect.join(' ')};`,
+			`connect-src ${trustedConnect.join(' ')};`,
 			`frame-src 'self' ${trustedFrames.join(' ')};`,
 			`frame-ancestors 'self';`,
 			`script-src 'self' 'unsafe-inline' 'unsafe-eval' ${trustedScripts.join(' ')};`,
@@ -68,6 +68,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		].join(' '),
 	);
 
+	// Otros encabezados de seguridad
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 	response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -76,6 +77,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		'geolocation=(), microphone=(), camera=()',
 	);
 
+	// HSTS para HTTPS
 	if (context.url.protocol === 'https:') {
 		response.headers.set(
 			'Strict-Transport-Security',
