@@ -3,18 +3,22 @@ import type { MiddlewareHandler } from 'astro';
 export const onRequest: MiddlewareHandler = async (context, next) => {
 	const response = await next();
 
+	// Detectar Googlebot y otros crawlers
 	const userAgent = context.request.headers.get('user-agent') || '';
 	const isBot =
 		/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver/i.test(
 			userAgent,
 		);
 
+	// Si es un bot, usar CSP mínima para permitir rastreo
 	if (isBot) {
+		console.log('🤖 Bot detectado:', userAgent);
 		response.headers.set(
 			'Content-Security-Policy',
 			"default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data: blob:; font-src * data:; connect-src *; frame-src *;",
 		);
 	} else {
+		// CSP normal para usuarios
 		const trustedScripts = [
 			'https://www.google.com',
 			'https://www.gstatic.com',
@@ -49,6 +53,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://region2.google-analytics.com',
 			'https://region1.analytics.google.com',
 			'https://cloudflareinsights.com',
+			'https://universe-static.elfsightcdn.com',
 		];
 
 		const trustedFrames = [
@@ -80,6 +85,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		);
 	}
 
+	// Encabezados de seguridad
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 	response.headers.set('X-XSS-Protection', '1; mode=block');
