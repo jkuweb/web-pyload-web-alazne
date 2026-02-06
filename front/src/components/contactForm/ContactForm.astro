@@ -225,7 +225,6 @@ const { inputErrors, csrf } = Astro.props;
 		input.addEventListener('blur', validateAndUpdateButton);
 	});
 
-	// Exponer validateAll globalmente
 	window.validateAll = validateAll;
 </script>
 
@@ -279,13 +278,11 @@ const { inputErrors, csrf } = Astro.props;
 	form.addEventListener('submit', async function (event) {
 		event.preventDefault();
 
-		// Validar
 		if (!window.validateAll || !window.validateAll()) {
 			console.warn('❌ El formulario tiene errores de validación.');
 			return false;
 		}
 
-		// Verificar reCAPTCHA
 		if (typeof grecaptcha === 'undefined') {
 			alert(messages.recaptchaNotReady);
 			return false;
@@ -296,7 +293,6 @@ const { inputErrors, csrf } = Astro.props;
 		submitBtn.textContent = messages.sending;
 
 		try {
-			// Obtener token de reCAPTCHA
 			const token = await new Promise((resolve, reject) => {
 				grecaptcha.ready(() => {
 					grecaptcha
@@ -308,7 +304,6 @@ const { inputErrors, csrf } = Astro.props;
 				});
 			});
 
-			// Verificar reCAPTCHA en el servidor
 			const recaptchaResponse = await fetch('/recaptcha', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -324,11 +319,8 @@ const { inputErrors, csrf } = Astro.props;
 				return false;
 			}
 
-			// Añadir el token al formulario (opcional, si lo necesitas en el backend)
 			document.getElementById('recaptcha-token').value = token;
 
-			// Enviar el formulario normalmente
-			// Astro manejará el action={actions.send} automáticamente
 			form.submit();
 		} catch (err) {
 			console.error('⚠️ Error:', err);

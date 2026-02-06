@@ -7,7 +7,8 @@ import { imageService } from '@unpic/astro/service';
 import path from 'path';
 
 export default defineConfig({
-	site: 'https://aitamasleepcoaching.com',
+	// site: 'https://aitamasleepcoaching.com',
+	site: 'http://localhost:4321',
 	output: 'server',
 	adapter: netlify(),
 
