@@ -63,9 +63,6 @@ export const getContactEmailTemplate = ({ ...formInfo }: Props) => {
         </div>`
 						: ''
 				}
-        <div class="cta-section">
-          <a href="mailto:${email}?subject=Re: ${select}" class="cta-button">${t('email.template.responder.mensaje')}</a>
-        </div>
         <hr />
         <div class="footer">
           <p class="small">San Sebastián</p>

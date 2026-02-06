@@ -55,9 +55,6 @@ export const getServiceContactEmailTemplate = ({ ...formInfo }: Props) => {
           ${telephone ? `<p p class="label" > <strong>${t('email.template.phone')}: </strong> ${telephone}</p > ` : ''}
 				${service ? `<p p class="label" > <strong>${t('email.template.asunto')}: </strong> ${service}</p > ` : ''}
 
-        <div class="cta-section">
-          <a href="mailto:${serviceEmail}?subject=Re: ${service}" class="cta-button">${t('email.template.responder.mensaje')}</a>
-        </div>
         <hr />
         <div class="footer">
           <p class="small">San Sebastián</p>
