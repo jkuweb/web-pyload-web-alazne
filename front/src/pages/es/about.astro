@@ -6,11 +6,7 @@ import Image from '@/components/image/Image.astro';
 import Layout from '@/layouts/Layout.astro';
 import { generateCSRFToken } from '@/utils/csrf';
 import { actions, isInputError } from 'astro:actions';
-import {
-	getAlternateUrls,
-	getCanonicalUrl,
-	getPageBySlug,
-} from '@/utils/payloadFetch';
+import { getPageBySlug } from '@/utils/payloadFetch';
 import type { Page, Media } from '@/payloadTypes';
 import RichText from '@/components/RichText/RichText.astro';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';

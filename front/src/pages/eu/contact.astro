@@ -7,8 +7,6 @@ import { getPageBySlug } from '@/utils/payloadFetch';
 import type { Page, Media } from '@/payloadTypes';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
-import '@/styles/contact.css';
-
 const currentLang = Astro.currentLocale || 'eu';
 const page: Page | null = await getPageBySlug('kontaktua', 'eu');
 

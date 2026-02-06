@@ -11,10 +11,10 @@ const siteUrl = 'https://aitamasleepcoaching.com';
 const GTM_ID = import.meta.env.PUBLIC_GTM_ID || 'GTM-K7JN3XB5';
 
 export interface Props {
-	title: string;
-	description: string;
+	title?: string;
+	description?: string;
 	ogImage?: string;
-	lang: 'es' | 'eu';
+	lang?: 'es' | 'eu';
 	noindex?: boolean;
 	preloadImages?: string[];
 }

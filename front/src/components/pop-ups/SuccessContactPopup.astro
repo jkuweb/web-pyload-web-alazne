@@ -17,7 +17,6 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 </div>
 
 <script is:inline>
-	// Versión más robusta del evento de carga
 	function checkPopup() {
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.get('sent') === 'true') {
@@ -86,7 +85,7 @@ const t = useTranslations(currentLang as keyof typeof languagesList);
 		padding: 20px;
 		border-radius: 8px;
 		max-width: 90%;
-		width: 300px;
+		width: 450px;
 	}
 	button {
 		margin-top: 1rem;
