@@ -31,12 +31,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		response.headers.set(
 			'Content-Security-Policy',
 			`
-        default-src 'self';
-        img-src 'self' data:;
-        style-src 'self';
-        font-src 'self';
-        object-src 'none';
-        base-uri 'self';
+      default-src 'self';
+      img-src 'self' data:;
+      style-src 'self';
+      font-src 'self';
+      object-src 'none';
+      base-uri 'self';
       `.replace(/\s+/g, ' '),
 		);
 	} else if (isPublic) {
@@ -52,28 +52,31 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://res.cloudinary.com',
 			'https://www.gstatic.com',
 			'https://www.google.com',
+			'https://www.googletagmanager.com',
+			'https://www.google-analytics.com',
+		];
+
+		const trustedFrames = [
+			'https://www.google.com',
+			'https://www.recaptcha.net',
+			'https://aitamasleepcoaching.com',
 		];
 
 		response.headers.set(
 			'Content-Security-Policy',
 			`
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-        script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-        style-src 'self' 'unsafe-inline';
-        img-src 'self' data: blob: ${trustedImages.join(' ')};
-        font-src 'self' data:;
-        connect-src 'self'
-          https://www.google.com
-          https://www.gstatic.com
-          https://www.recaptcha.net;
-        frame-src
-          https://www.google.com
-          https://www.recaptcha.net;
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-        upgrade-insecure-requests;
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+      script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: blob: ${trustedImages.join(' ')};
+      font-src 'self' data:;
+      connect-src 'self' ${trustedScripts.join(' ')};
+      frame-src ${trustedFrames.join(' ')};
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
       `.replace(/\s+/g, ' '),
 		);
 	}
