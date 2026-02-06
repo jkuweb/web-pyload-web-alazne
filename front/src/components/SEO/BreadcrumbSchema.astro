@@ -7,6 +7,7 @@ export interface Props {
 }
 
 const { items } = Astro.props;
+const siteUrl = import.meta.env.SITE || 'https://aitamasleepcoaching.com/es';
 
 const schema = {
 	'@context': 'https://schema.org',
@@ -15,7 +16,9 @@ const schema = {
 		'@type': 'ListItem',
 		position: index + 1,
 		name: item.name,
-		item: item.url,
+		item: {
+			'@id': item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+		},
 	})),
 };
 ---
