@@ -22,7 +22,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
 	const userAgent = context.request.headers.get('user-agent') || '';
 	const isBot = BOT_REGEX.test(userAgent);
-
 	const isPublic = PUBLIC_PATHS.some((path) =>
 		context.url.pathname.startsWith(path),
 	);
@@ -61,28 +60,38 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://www.recaptcha.net',
 			'https://aitamasleepcoaching.com',
 		];
+
 		const trustedStyles = [
 			'https://fonts.googleapis.com',
 			'https://www.googletagmanager.com',
 		];
 
+		const trustedConnect = [
+			'https://www.google.com',
+			'https://www.gstatic.com',
+			'https://www.recaptcha.net',
+			'https://www.googletagmanager.com',
+			'https://www.google-analytics.com',
+			'https://*.google-analytics.com',
+		];
+
 		response.headers.set(
 			'Content-Security-Policy',
 			`
-  default-src 'self';
-  script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-  script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-  style-src 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
-  style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
-  img-src 'self' data: blob: ${trustedImages.join(' ')};
-  font-src 'self' data:;
-  connect-src 'self' ${trustedScripts.join(' ')};
-  frame-src ${trustedFrames.join(' ')};
-  object-src 'none';
-  base-uri 'self';
-  form-action 'self';
-  upgrade-insecure-requests;
-  `.replace(/\s+/g, ' '),
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+      script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+      style-src 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
+      style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
+      img-src 'self' data: blob: ${trustedImages.join(' ')};
+      font-src 'self' data:;
+      connect-src 'self' ${trustedConnect.join(' ')};
+      frame-src ${trustedFrames.join(' ')};
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
+      `.replace(/\s+/g, ' '),
 		);
 	}
 
