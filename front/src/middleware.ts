@@ -61,23 +61,28 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://www.recaptcha.net',
 			'https://aitamasleepcoaching.com',
 		];
+		const trustedStyles = [
+			'https://fonts.googleapis.com',
+			'https://www.googletagmanager.com',
+		];
 
 		response.headers.set(
 			'Content-Security-Policy',
 			`
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-      script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: blob: ${trustedImages.join(' ')};
-      font-src 'self' data:;
-      connect-src 'self' ${trustedScripts.join(' ')};
-      frame-src ${trustedFrames.join(' ')};
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      upgrade-insecure-requests;
-      `.replace(/\s+/g, ' '),
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+  script-src-elem 'self' 'unsafe-inline' ${trustedScripts.join(' ')};
+  style-src 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
+  style-src-elem 'self' 'unsafe-inline' ${trustedStyles.join(' ')};
+  img-src 'self' data: blob: ${trustedImages.join(' ')};
+  font-src 'self' data:;
+  connect-src 'self' ${trustedScripts.join(' ')};
+  frame-src ${trustedFrames.join(' ')};
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
+  `.replace(/\s+/g, ' '),
 		);
 	}
 
