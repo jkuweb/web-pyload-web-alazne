@@ -19,14 +19,14 @@ const { inputErrors, csrf } = Astro.props;
 	style="max-width: 45rem; margin-bottom: 0;"
 >
 	<div>
-		<label for="serviceUsername">¿Cómo te llamas?</label>
+		<label for="serviceUsername">{t('form.label.nombre')}</label>
 		<input type="text" id="serviceUsername" name="serviceUsername" />
 		<span id="serviceNameError" style="color:#eb374d"
 			>{inputErrors?.username}</span
 		>
 	</div>
 	<div>
-		<label for="telephone">Teléfono de contacto</label>
+		<label for="telephone">{t('form.label.telf')}</label>
 		<input type="tel" id="telephone" name="telephone" required />
 		<span id="servicePhoneError" style="color:#eb374d"
 			>{inputErrors?.phone}</span
