@@ -1,8 +1,17 @@
 <script>
 	import 'vanilla-cookieconsent/dist/cookieconsent.css';
 	import * as CookieConsent from 'vanilla-cookieconsent';
+	import type { CookieConsentConfig } from 'vanilla-cookieconsent';
 
-	const config = {
+	// Declarar tipos globales
+	declare global {
+		interface Window {
+			dataLayer: any[];
+			CookieConsent: typeof CookieConsent;
+		}
+	}
+
+	const config: CookieConsentConfig = {
 		cookie: {
 			name: 'cc_cookie',
 			domain: window.location.hostname,
@@ -10,21 +19,19 @@
 			sameSite: 'Lax',
 			expiresAfterDays: 365,
 		},
-
 		guiOptions: {
 			consentModal: {
-				layout: 'cloud',
-				position: 'bottom right',
+				layout: 'cloud' as const,
+				position: 'bottom right' as const,
 				equalWeightButtons: true,
 				flipButtons: false,
 			},
 			preferencesModal: {
-				layout: 'box',
+				layout: 'box' as const,
 				equalWeightButtons: true,
 				flipButtons: false,
 			},
 		},
-
 		categories: {
 			necessary: {
 				enabled: true,
@@ -39,7 +46,6 @@
 				readOnly: false,
 			},
 		},
-
 		language: {
 			default: 'es',
 			translations: {
@@ -95,15 +101,12 @@
 				},
 			},
 		},
-
 		onFirstConsent: ({ cookie }) => {
 			updateConsent(cookie.categories);
 		},
-
 		onConsent: ({ cookie }) => {
 			updateConsent(cookie.categories);
 		},
-
 		onChange: ({ cookie }) => {
 			updateConsent(cookie.categories);
 		},
@@ -113,34 +116,35 @@
 		const analyticsGranted = categories.includes('analytics');
 		const marketingGranted = categories.includes('marketing');
 
-		// Actualizar Consent Mode V2
-		if (typeof gtag === 'function') {
-			gtag('consent', 'update', {
-				ad_storage: marketingGranted ? 'granted' : 'denied',
-				ad_user_data: marketingGranted ? 'granted' : 'denied',
-				ad_personalization: marketingGranted ? 'granted' : 'denied',
-				analytics_storage: analyticsGranted ? 'granted' : 'denied',
-				functionality_storage: analyticsGranted ? 'granted' : 'denied',
-				personalization_storage: analyticsGranted ? 'granted' : 'denied',
-			});
+		window.dataLayer = window.dataLayer || [];
 
-			console.log('✅ Consent Mode actualizado:', {
-				analytics: analyticsGranted ? 'granted' : 'denied',
-				marketing: marketingGranted ? 'granted' : 'denied',
-			});
+		function gtag(...args: any[]) {
+			window.dataLayer.push(args);
 		}
 
-		// Enviar evento a GTM
-		window.dataLayer = window.dataLayer || [];
+		gtag('consent', 'update', {
+			ad_storage: marketingGranted ? 'granted' : 'denied',
+			ad_user_data: marketingGranted ? 'granted' : 'denied',
+			ad_personalization: marketingGranted ? 'granted' : 'denied',
+			analytics_storage: analyticsGranted ? 'granted' : 'denied',
+			functionality_storage: analyticsGranted ? 'granted' : 'denied',
+			personalization_storage: analyticsGranted ? 'granted' : 'denied',
+		});
+
 		window.dataLayer.push({
 			event: 'cookie_consent_update',
 			analytics_consent: analyticsGranted ? 'granted' : 'denied',
 			marketing_consent: marketingGranted ? 'granted' : 'denied',
 		});
+
+		console.log('✅ Consent Mode actualizado:', {
+			analytics: analyticsGranted ? 'granted' : 'denied',
+			marketing: marketingGranted ? 'granted' : 'denied',
+		});
 	}
 
 	CookieConsent.run(config);
-	(window as any).CookieConsent = CookieConsent;
+	window.CookieConsent = CookieConsent;
 </script>
 
 <style is:global>
@@ -158,11 +162,9 @@
 		--cc-secondary-color: #222;
 		--cc-footer-color: #fff;
 	}
-
 	#cc-main .cm {
 		animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	}
-
 	@keyframes slideUp {
 		from {
 			opacity: 0;
@@ -173,11 +175,9 @@
 			transform: translateY(0);
 		}
 	}
-
 	#cc-main .cm__btn {
 		transition: all 0.2s ease;
 	}
-
 	#cc-main .cm__btn--primary:hover {
 		transform: translateY(-1px);
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
