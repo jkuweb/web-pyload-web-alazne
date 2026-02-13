@@ -15,11 +15,10 @@ const PUBLIC_PATHS = [
 ];
 
 const BOT_REGEX =
-	/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver/i;
+	/bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver/i;
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
 	const response = await next();
-
 	const userAgent = context.request.headers.get('user-agent') || '';
 	const isBot = BOT_REGEX.test(userAgent);
 	const isPublic = PUBLIC_PATHS.some((path) =>
@@ -56,6 +55,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		];
 
 		const trustedFrames = [
+			"'self'",
 			'https://www.google.com',
 			'https://aitamasleepcoaching.com',
 			'https://challenges.cloudflare.com',
@@ -86,6 +86,8 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       font-src 'self' data:;
       connect-src 'self' ${trustedConnect.join(' ')};
       frame-src ${trustedFrames.join(' ')};
+      worker-src 'self' blob:;
+      child-src 'self' blob:;
       object-src 'none';
       base-uri 'self';
       form-action 'self';
