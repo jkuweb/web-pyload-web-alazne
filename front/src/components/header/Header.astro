@@ -5,7 +5,12 @@ import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
 import { useTranslations } from '@/i18n/utils';
 import { languagesList } from '@/i18n/ui';
 
-const currentLang = Astro.currentLocale || 'es';
+export interface Props {
+	lang?: 'es' | 'eu';
+}
+
+const { lang } = Astro.props;
+const currentLang = lang ?? 'es';
 
 const t = useTranslations(currentLang as keyof typeof languagesList);
 ---

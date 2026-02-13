@@ -28,7 +28,8 @@ const {
 	preloadImages = [],
 } = Astro.props;
 
-const currentLang = lang;
+const currentLang = lang ?? 'es';
+
 const fullImageUrl = ogImage.startsWith('http')
 	? ogImage
 	: `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
@@ -143,7 +144,7 @@ const localeCode = currentLang === 'eu' ? 'eu_ES' : 'es_ES';
 				style="display:none;visibility:hidden"></iframe>
 		</noscript>
 
-		<Header />
+		<Header lang={currentLang} />
 
 		<main id="main-content">
 			<slot />
