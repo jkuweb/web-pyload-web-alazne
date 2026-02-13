@@ -16,7 +16,6 @@ declare global {
       ADMIN_EMAIL: string
       RESEND_FROM_EMAIL: string
       PAYLOAD_PUBLIC_SERVER_URL: string
-      RECAPTCHA_SECRET_KEY: string
       NETLIFY_BUILD_HOOK: string
     }
   }
