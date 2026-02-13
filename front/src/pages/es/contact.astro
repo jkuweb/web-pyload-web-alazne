@@ -60,6 +60,9 @@ Astro.cookies.set('csrf_token', csrf, {
 if (result?.data) {
 	return Astro.redirect(`/${currentLang}/contact/?sent=true`);
 }
+
+// ✅ Variable correcta
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <Layout
@@ -115,82 +118,77 @@ if (result?.data) {
 					action={actions.send}
 					method="POST"
 				>
-					<!-- Nombre -->
 					<div class="h-contact-page__field">
-						<label class="h-contact-page__label" for="contactPageName"
-							>¿Cómo te llamas?</label
-						>
+						<label class="h-contact-page__label" for="contactPageName">
+							¿Cómo te llamas?
+						</label>
 						<input type="text" id="contactPageName" name="username" required />
-						<span id="error-name" style="color:#eb374d"
-							>{inputErrors.username}</span
-						>
+						<span id="error-name" style="color:#eb374d">
+							{inputErrors.username}
+						</span>
 					</div>
 
-					<!-- Email -->
 					<div class="h-contact-page__field">
-						<label class="h-contact-page__label" for="contactPageEmail"
-							>Email</label
-						>
+						<label class="h-contact-page__label" for="contactPageEmail">
+							Email
+						</label>
 						<input type="email" id="contactPageEmail" name="email" required />
-						<span id="error-email" style="color:#eb374d"
-							>{inputErrors.email}</span
-						>
+						<span id="error-email" style="color:#eb374d">
+							{inputErrors.email}
+						</span>
 					</div>
 
-					<!-- Asunto -->
 					<div class="h-contact-page__field">
-						<label class="h-contact-page__label" for="contactPageSelect"
-							>Selecciona un asunto:</label
-						>
+						<label class="h-contact-page__label" for="contactPageSelect">
+							Selecciona un asunto:
+						</label>
 						<select name="select" id="contactPageSelect">
 							<option value="" selected></option>
-							<option value="Plan de sueño personalizado con seguimiento"
-								>Plan de sueño personalizado con seguimiento</option
-							>
+							<option value="Plan de sueño personalizado con seguimiento">
+								Plan de sueño personalizado con seguimiento
+							</option>
 							<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
 							<option value="Consultas">Consultas</option>
 							<option value="Encuentros grupales">Encuentros grupales</option>
-							<option value="Plan de sueño conmigo pero a tu ritmo"
-								>Plan de sueño conmigo pero a tu ritmo</option
-							>
+							<option value="Plan de sueño conmigo pero a tu ritmo">
+								Plan de sueño conmigo pero a tu ritmo
+							</option>
 						</select>
-						<span id="error-reason" style="color:#eb374d"
-							>{inputErrors.select}</span
-						>
+						<span id="error-reason" style="color:#eb374d">
+							{inputErrors.select}
+						</span>
 					</div>
 
-					<!-- Mensaje -->
 					<div class="h-contact-page__field">
-						<label class="h-contact-page__label" for="contactPageMessage"
-							>Mensaje</label
-						>
+						<label class="h-contact-page__label" for="contactPageMessage">
+							Mensaje
+						</label>
 						<textarea
 							id="contactPageMessage"
 							name="message"
 							cols="40"
 							rows="10"
 							required></textarea>
-						<span id="error-message" style="color:#eb374d"
-							>{inputErrors.message}</span
-						>
+						<span id="error-message" style="color:#eb374d">
+							{inputErrors.message}
+						</span>
 					</div>
 
-					<!-- CSRF y Turnstile -->
 					<input type="hidden" name="lang" value={currentLang} />
 					<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
 					<input type="hidden" id="cfTurnstileToken" name="cfTurnstileToken" />
 
-					<!-- Turnstile -->
 					<div
 						class="cf-turnstile"
-						data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
+						data-sitekey={TURNSTILE_SITE_KEY}
 						data-theme="light"
 						data-size="normal"
 						data-callback="onTurnstileSuccess"
+						data-error-callback="onTurnstileError"
+						data-expired-callback="onTurnstileExpired"
 					>
 					</div>
 
-					<!-- Botón -->
 					<button
 						id="contactPageBtn"
 						class="btn btn-section animated h-contact__btn"
@@ -199,7 +197,6 @@ if (result?.data) {
 						disabled>Enviar</button
 					>
 
-					<!-- Términos -->
 					<div class="h-contact__footer">
 						<input
 							id="contactPageTerms"
@@ -214,9 +211,9 @@ if (result?.data) {
 							sistema de persistencia.
 						</p>
 					</div>
-					<span id="error-terms" style="color:#eb374d"
-						>{inputErrors.termsAccepted}</span
-					>
+					<span id="error-terms" style="color:#eb374d">
+						{inputErrors.termsAccepted}
+					</span>
 				</form>
 
 				<SuccessContactPopup />
@@ -224,7 +221,6 @@ if (result?.data) {
 		</section>
 	</section>
 
-	<!-- Validaciones y Turnstile -->
 	<script is:inline>
 		document.addEventListener('DOMContentLoaded', () => {
 			const form = document.getElementById('contactPageForm');
@@ -281,8 +277,11 @@ if (result?.data) {
 						input.classList.remove('invalid');
 					}
 				});
-				submitBtn.disabled = !valid || !tokenInput.value;
-				return valid;
+
+				const hasToken = tokenInput && tokenInput.value.trim() !== '';
+				submitBtn.disabled = !(valid && hasToken);
+
+				return valid && hasToken;
 			}
 
 			Object.values(fields).forEach(({ input }) => {
@@ -294,16 +293,23 @@ if (result?.data) {
 				if (!validateAll()) e.preventDefault();
 			});
 
-			// Callback de Turnstile
 			window.onTurnstileSuccess = (token) => {
+				console.log('✅ Turnstile verificado');
 				tokenInput.value = token;
+				validateAll();
+			};
+
+			window.onTurnstileError = () => {
+				console.error('❌ Error en Turnstile');
+				tokenInput.value = '';
+				validateAll();
+			};
+
+			window.onTurnstileExpired = () => {
+				console.warn('⚠️ Turnstile expirado');
+				tokenInput.value = '';
 				validateAll();
 			};
 		});
 	</script>
-
-	<script
-		src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-		async
-		defer></script>
 </Layout>

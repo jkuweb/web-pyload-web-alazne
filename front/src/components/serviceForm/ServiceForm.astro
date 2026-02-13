@@ -7,6 +7,7 @@ import SuccessPopup from '../pop-ups/SuccessPopup.astro';
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
 const { inputErrors, csrf } = Astro.props;
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <form
@@ -71,10 +72,12 @@ const { inputErrors, csrf } = Astro.props;
 	</div>
 	<div
 		class="cf-turnstile"
-		data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
+		data-sitekey={TURNSTILE_SITE_KEY}
 		data-theme="light"
 		data-size="normal"
-		data-callback="onSuccess"
+		data-callback="onTurnstileSuccess"
+		data-error-callback="onTurnstileError"
+		data-expired-callback="onTurnstileExpired"
 	>
 	</div>
 	<input type="text" name="company" style="display:none" />
@@ -168,9 +171,21 @@ const { inputErrors, csrf } = Astro.props;
 		f.input.addEventListener('blur', updateSubmitButton);
 	});
 
-	window.onSuccess = function (token) {
+	window.onTurnstileSuccess = function (token) {
 		const tokenInput = document.getElementById('cfTurnstileToken');
 		if (tokenInput) tokenInput.value = token;
+		updateSubmitButton();
+	};
+
+	window.onTurnstileError = function () {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = '';
+		updateSubmitButton();
+	};
+
+	window.onTurnstileExpired = function () {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = '';
 		updateSubmitButton();
 	};
 

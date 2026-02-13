@@ -42,7 +42,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		const trustedScripts = [
 			'https://www.google.com',
 			'https://www.gstatic.com',
-			'https://www.recaptcha.net',
 			'https://www.googletagmanager.com',
 			'https://www.google-analytics.com',
 			'https://challenges.cloudflare.com',
@@ -58,7 +57,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
 		const trustedFrames = [
 			'https://www.google.com',
-			'https://www.recaptcha.net',
 			'https://aitamasleepcoaching.com',
 			'https://challenges.cloudflare.com',
 		];
@@ -71,7 +69,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 		const trustedConnect = [
 			'https://www.google.com',
 			'https://www.gstatic.com',
-			'https://www.recaptcha.net',
 			'https://www.googletagmanager.com',
 			'https://www.google-analytics.com',
 			'https://*.google-analytics.com',

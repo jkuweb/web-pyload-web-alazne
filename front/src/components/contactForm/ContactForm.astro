@@ -6,6 +6,7 @@ import SuccessServicePopup from '../pop-ups/SuccessServicePopup.astro';
 const currentLang = Astro.currentLocale || 'es';
 const t = useTranslations(currentLang as keyof typeof languagesList);
 const { inputErrors, csrf } = Astro.props;
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
 <div id="contact"></div>
@@ -31,9 +32,9 @@ const { inputErrors, csrf } = Astro.props;
 				<label for="registration_form_firstName">{t('form.label.nombre')}</label
 				>
 				<input type="text" id="registration_form_firstName" name="username" />
-				<span id="error-name" style="color:#eb374d"
-					>{inputErrors?.username}</span
-				>
+				<span id="error-name" style="color:#eb374d">
+					{inputErrors?.username}
+				</span>
 			</div>
 			<div>
 				<label for="registration_form_email">{t('form.label.email')}</label>
@@ -44,32 +45,31 @@ const { inputErrors, csrf } = Astro.props;
 				<label for="select">{t('form.label.select')}</label>
 				<select name="select" id="select">
 					<option value="" selected></option>
-					<option value="Plan de sueño personalizado con seguimiento"
-						>Plan de sueño personalizado con seguimiento</option
-					>
+					<option value="Plan de sueño personalizado con seguimiento">
+						Plan de sueño personalizado con seguimiento
+					</option>
 					<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
 					<option value="Consultas">Consultas</option>
 					<option value="Encuentros grupales">Encuentros grupales</option>
-					<option value="Plan de sueño conmigo pero a tu ritmo"
-						>Plan de sueño conmigo pero a tu ritmo</option
-					>
+					<option value="Plan de sueño conmigo pero a tu ritmo">
+						Plan de sueño conmigo pero a tu ritmo
+					</option>
 				</select>
-				<span id="error-reason" style="color:#eb374d"
-					>{inputErrors?.select}</span
-				>
+				<span id="error-reason" style="color:#eb374d">
+					{inputErrors?.select}
+				</span>
 			</div>
 			<div>
 				<label for="message">{t('form.label.mensaje')}</label>
 				<textarea id="message" name="message" cols="40" rows="10"></textarea>
-				<span id="error-message" style="color:#eb374d"
-					>{inputErrors?.message}</span
-				>
+				<span id="error-message" style="color:#eb374d">
+					{inputErrors?.message}
+				</span>
 			</div>
 			<input type="hidden" name="lang" id="idioma" value={currentLang} />
 			<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
 
 			<input type="hidden" name="cfTurnstileToken" id="cfTurnstileToken" />
-			<!-- Honeypot -->
 			<input type="text" name="company" style="display:none" />
 
 			<button
@@ -95,15 +95,18 @@ const { inputErrors, csrf } = Astro.props;
 					persistencia.
 				</p>
 			</div>
-			<span id="error-terms" style="color:#eb374d"
-				>{inputErrors?.termsAccepted}</span
-			>
+			<span id="error-terms" style="color:#eb374d">
+				{inputErrors?.termsAccepted}
+			</span>
+
 			<div
 				class="cf-turnstile"
-				data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
+				data-sitekey={TURNSTILE_SITE_KEY}
 				data-theme="light"
 				data-size="normal"
-				data-callback="onSuccess"
+				data-callback="onTurnstileSuccess"
+				data-error-callback="onTurnstileError"
+				data-expired-callback="onTurnstileExpired"
 			>
 			</div>
 		</form>
@@ -114,10 +117,24 @@ const { inputErrors, csrf } = Astro.props;
 	const form = document.getElementById('form');
 	const submitBtn = document.getElementById('contact-btn');
 
-	window.onSuccess = (token) => {
+	window.onTurnstileSuccess = (token) => {
 		const tokenInput = document.getElementById('cfTurnstileToken');
 		if (tokenInput) tokenInput.value = token;
-		if (submitBtn) submitBtn.disabled = false;
+
+		const isValid = validateAll();
+		if (submitBtn) submitBtn.disabled = !isValid;
+	};
+
+	window.onTurnstileError = () => {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = '';
+		if (submitBtn) submitBtn.disabled = true;
+	};
+
+	window.onTurnstileExpired = () => {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = '';
+		if (submitBtn) submitBtn.disabled = true;
 	};
 
 	const lang = window.location.pathname.split('/')[1] || 'es';
@@ -195,12 +212,17 @@ const { inputErrors, csrf } = Astro.props;
 				input.setAttribute('aria-invalid', 'false');
 			}
 		});
-		return valid;
+
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		const hasToken = tokenInput && tokenInput.value.trim() !== '';
+
+		return valid && hasToken;
 	}
 
 	form.addEventListener('input', () => {
 		submitBtn.disabled = !validateAll();
 	});
+
 	form.addEventListener('change', () => {
 		submitBtn.disabled = !validateAll();
 	});

@@ -2,11 +2,9 @@ interface ImportMetaEnv {
 	readonly BASE_URL: string;
 	readonly PUBLIC_CLOUDINARY_CLOUD_NAME: string;
 	readonly RESEND_API_KEY: string;
-	readonly RECAPTCHA3_SECRET_SITE: string;
-	readonly RECAPTCHA3_KEY: string;
 	readonly RESEND_WEBHOOK_SECRET: string;
 	readonly HREF: string;
-	readonly TURNSTILE_SITE_KEY: string;
+	readonly PUBLIC_TURNSTILE_SITE_KEY: string;
 	readonly TURNSTILE_SECRET_KEY: string;
 }
 
