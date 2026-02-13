@@ -61,7 +61,6 @@ if (result?.data) {
 	return Astro.redirect(`/${currentLang}/contact/?sent=true`);
 }
 
-// ✅ Variable correcta
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
@@ -294,19 +293,16 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 			});
 
 			window.onTurnstileSuccess = (token) => {
-				console.log('✅ Turnstile verificado');
 				tokenInput.value = token;
 				validateAll();
 			};
 
 			window.onTurnstileError = () => {
-				console.error('❌ Error en Turnstile');
 				tokenInput.value = '';
 				validateAll();
 			};
 
 			window.onTurnstileExpired = () => {
-				console.warn('⚠️ Turnstile expirado');
 				tokenInput.value = '';
 				validateAll();
 			};

@@ -350,7 +350,6 @@ export const SelfServiceCollection: CollectionConfig = {
 ### Avoid Async Operations in Hot Paths
 
 ```typescript
-// ❌ Slow: Multiple sequential async calls
 export const slowAccess: Access = async ({ req: { user } }) => {
   const org = await req.payload.findByID({ collection: 'orgs', id: user.orgId })
   const team = await req.payload.findByID({ collection: 'teams', id: user.teamId })
@@ -359,9 +358,7 @@ export const slowAccess: Access = async ({ req: { user } }) => {
   return org.active && team.active && subscription.active
 }
 
-// ✅ Fast: Use query constraints or cache in context
 export const fastAccess: Access = ({ req: { user, context } }) => {
-  // Cache expensive lookups
   if (!context.orgStatus) {
     context.orgStatus = checkOrgStatus(user.orgId)
   }
@@ -373,22 +370,19 @@ export const fastAccess: Access = ({ req: { user, context } }) => {
 ### Query Constraint Optimization
 
 ```typescript
-// ❌ Avoid: Non-indexed fields in constraints
 export const slowQuery: Access = () => ({
-  'metadata.internalCode': { equals: 'ABC123' }, // Slow if not indexed
+  'metadata.internalCode': { equals: 'ABC123' }, 
 })
 
-// ✅ Better: Use indexed fields
 export const fastQuery: Access = () => ({
-  status: { equals: 'active' }, // Indexed field
-  organizationId: { in: ['org1', 'org2'] }, // Indexed field
+  status: { equals: 'active' }, 
+  organizationId: { in: ['org1', 'org2'] }, 
 })
 ```
 
 ### Field Access on Large Arrays
 
 ```typescript
-// ❌ Slow: Complex access on array fields
 {
   name: 'items',
   type: 'array',
@@ -398,7 +392,6 @@ export const fastQuery: Access = () => ({
       type: 'text',
       access: {
         read: async ({ req }) => {
-          // Async call runs for EVERY array item
           const result = await expensiveCheck()
           return result
         },
@@ -407,7 +400,6 @@ export const fastQuery: Access = () => ({
   ],
 }
 
-// ✅ Fast: Simple checks or cache result
 {
   name: 'items',
   type: 'array',
@@ -417,7 +409,6 @@ export const fastQuery: Access = () => ({
       type: 'text',
       access: {
         read: ({ req: { user }, context }) => {
-          // Cache once, reuse for all items
           if (context.canReadSecret === undefined) {
             context.canReadSecret = user?.roles?.includes('admin')
           }
@@ -432,14 +423,11 @@ export const fastQuery: Access = () => ({
 ### Avoid N+1 Queries
 
 ```typescript
-// ❌ N+1 Problem: Query per access check
 export const n1Access: Access = async ({ req, id }) => {
-  // Runs for EACH document in list
   const doc = await req.payload.findByID({ collection: 'docs', id })
   return doc.isPublic
 }
 
-// ✅ Better: Use query constraint to filter at DB level
 export const efficientAccess: Access = () => {
   return { isPublic: { equals: true } }
 }
@@ -451,12 +439,6 @@ export const efficientAccess: Access = () => {
 
 ```typescript
 export const debugAccess: Access = ({ req: { user }, id }) => {
-  console.log('Access check:', {
-    userId: user?.id,
-    userRoles: user?.roles,
-    docId: id,
-    timestamp: new Date().toISOString(),
-  })
   return true
 }
 ```
@@ -465,12 +447,6 @@ export const debugAccess: Access = ({ req: { user }, id }) => {
 
 ```typescript
 export const checkArgsAccess: Access = (args) => {
-  console.log('Available arguments:', {
-    hasReq: 'req' in args,
-    hasUser: args.req?.user ? 'yes' : 'no',
-    hasId: args.id ? 'provided' : 'undefined',
-    hasData: args.data ? 'provided' : 'undefined',
-  })
   return true
 }
 ```
@@ -478,14 +454,12 @@ export const checkArgsAccess: Access = (args) => {
 ### Test Access Without User
 
 ```typescript
-// In test/development
 const testAccess = await payload.find({
   collection: 'posts',
-  overrideAccess: false, // Enforce access control
-  user: undefined, // Simulate no user
+  overrideAccess: false, 
+  user: undefined,
 })
 
-console.log('Public access result:', testAccess.docs.length)
 ```
 
 ## Best Practices
