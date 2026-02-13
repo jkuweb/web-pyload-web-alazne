@@ -22,8 +22,8 @@ export default defineConfig({
 	integrations: [
 		partytown({
 			config: {
-				debug: false,
 				forward: ['dataLayer.push', 'gtag'],
+				logForwardedCalls: true,
 			},
 		}),
 
@@ -61,7 +61,7 @@ export default defineConfig({
 	},
 
 	build: {
-		inlineStylesheets: 'always',
+		inlineStylesheets: 'auto',
 		assets: '_astro',
 	},
 
