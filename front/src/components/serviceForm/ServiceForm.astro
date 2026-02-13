@@ -165,11 +165,12 @@ const { inputErrors, csrf } = Astro.props;
 	};
 
 	function validateAll() {
-		let valid = true;
-		Object.values(fields).forEach((f) => {
-			const value =
-				f.input.type === 'checkbox' ? f.input.checked : f.input.value;
-			const result = f.validate(value);
+		var valid = true;
+
+		Object.values(fields).forEach(function (f) {
+			var value = f.input.type === 'checkbox' ? f.input.checked : f.input.value;
+			var result = f.validate(value);
+
 			if (result !== true) {
 				f.error.textContent = result;
 				f.input.classList.add('invalid');
@@ -181,9 +182,37 @@ const { inputErrors, csrf } = Astro.props;
 				f.input.setAttribute('aria-invalid', 'false');
 			}
 		});
+
+		var tokenInput = document.getElementById('cfTurnstileToken');
+		if (!tokenInput || !tokenInput.value) valid = false;
+
 		if (submitBtn) submitBtn.disabled = !valid;
 		return valid;
 	}
+
+	Object.values(fields).forEach(function (f) {
+		f.input.addEventListener('input', validateAll);
+		f.input.addEventListener('change', validateAll);
+		f.input.addEventListener('blur', validateAll);
+	});
+
+	form.addEventListener('submit', function (e) {
+		if (!validateAll()) e.preventDefault();
+	});
+
+	window.onSuccess = function (token) {
+		var tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = token;
+		validateAll();
+	};
+
+	window.onSuccess = function (token) {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) {
+			tokenInput.value = token;
+			validateAll();
+		}
+	};
 
 	Object.values(fields).forEach((f) => {
 		f.input.addEventListener('input', validateAll);
