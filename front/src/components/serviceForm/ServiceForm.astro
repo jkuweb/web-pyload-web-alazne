@@ -69,7 +69,6 @@ const { inputErrors, csrf } = Astro.props;
 			>{inputErrors?.termsAccepted}</span
 		>
 	</div>
-	<!-- Cloudflare Turnstile -->
 	<div
 		class="cf-turnstile"
 		data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
@@ -78,7 +77,6 @@ const { inputErrors, csrf } = Astro.props;
 		data-callback="onSuccess"
 	>
 	</div>
-	<!-- Honeypot -->
 	<input type="text" name="company" style="display:none" />
 	<input type="hidden" name="cfTurnstileToken" id="cfTurnstileToken" />
 	<input
@@ -96,44 +94,17 @@ const { inputErrors, csrf } = Astro.props;
 <script is:inline>
 	const form = document.getElementById('serviceForm');
 	const submitBtn = document.getElementById('serviceBtn');
-	const lang = window.location.pathname.split('/')[1] || 'es';
-
-	const messages = {
-		es: {
-			serviceNameRequired: 'El nombre es obligatorio',
-			serviceNameInvalid: 'El nombre debe de tener al menos 2 caracteres',
-			serviceNameLengthInvalid:
-				'El nombre no debe de tener más de 50 caracteres',
-			servicePhone: 'El número de teléfono es obligatorio',
-			servicePhoneInvalid: 'Introduce un número de teléfono español válido',
-			serviceTermsRequired: 'Debes aceptar los términos',
-			serviceEmailRequired: 'El email es obligatorio',
-			serviceEmailInvalid: 'Email no válido',
-			sending: 'Enviando...',
-		},
-		eu: {
-			serviceNameRequired: 'Izena derrigorrezkoa da',
-			serviceNameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
-			serviceNameLengthInvalid:
-				'Izenak ezin ditu 50 karaktere baino gehiago izan.',
-			servicePhone: 'Telefono zenbakia beharrezkoa da',
-			servicePhoneInvalid: 'Baliozko telefono zenbaki bat sartu',
-			serviceTermsRequired: 'Baldintzak onartu behar dituzu',
-			serviceEmailRequired: 'Posta elektronikoa derrigorrezkoa da',
-			serviceEmailInvalid: 'Posta elektronikoa ez da baliozkoa',
-			sending: 'Bidaltzen...',
-		},
-	}[lang as 'es' | 'eu'];
 
 	const fields = {
 		username: {
 			input: document.getElementById('serviceUsername'),
 			error: document.getElementById('serviceNameError'),
 			validate: (v) => {
-				const len = v.length;
-				if (v.trim() === '') return messages.serviceNameRequired;
-				if (len <= 2) return messages.serviceNameInvalid;
-				if (len > 50) return messages.serviceNameLengthInvalid;
+				if (v.trim() === '') return 'El nombre es obligatorio';
+				if (v.length <= 2)
+					return 'El nombre debe de tener al menos 2 caracteres';
+				if (v.length > 50)
+					return 'El nombre no debe de tener más de 50 caracteres';
 				return true;
 			},
 		},
@@ -141,36 +112,35 @@ const { inputErrors, csrf } = Astro.props;
 			input: document.getElementById('telephone'),
 			error: document.getElementById('servicePhoneError'),
 			validate: (v) => {
-				if (v.trim() === '') return messages.servicePhone;
+				if (v.trim() === '') return 'El número de teléfono es obligatorio';
 				return /^(6|7|8|9)\d{8}$/.test(v.trim())
 					? true
-					: messages.servicePhoneInvalid;
+					: 'Introduce un número de teléfono español válido';
 			},
 		},
 		email: {
 			input: document.getElementById('serviceEmail'),
 			error: document.getElementById('serviceEmailError'),
 			validate: (v) => {
-				if (v.trim() === '') return messages.serviceEmailRequired;
+				if (v.trim() === '') return 'El email es obligatorio';
 				return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
 					? true
-					: messages.serviceEmailInvalid;
+					: 'Email no válido';
 			},
 		},
 		terms: {
 			input: document.getElementById('serviceTerms'),
 			error: document.getElementById('serviceTermsError'),
-			validate: (checked) => checked || messages.serviceTermsRequired,
+			validate: (checked) => checked || 'Debes aceptar los términos',
 		},
 	};
 
-	function validateAll() {
-		var valid = true;
-
-		Object.values(fields).forEach(function (f) {
-			var value = f.input.type === 'checkbox' ? f.input.checked : f.input.value;
-			var result = f.validate(value);
-
+	function validateFields() {
+		let valid = true;
+		Object.values(fields).forEach((f) => {
+			const value =
+				f.input.type === 'checkbox' ? f.input.checked : f.input.value;
+			const result = f.validate(value);
 			if (result !== true) {
 				f.error.textContent = result;
 				f.input.classList.add('invalid');
@@ -182,56 +152,30 @@ const { inputErrors, csrf } = Astro.props;
 				f.input.setAttribute('aria-invalid', 'false');
 			}
 		});
-
-		var tokenInput = document.getElementById('cfTurnstileToken');
-		if (!tokenInput || !tokenInput.value) valid = false;
-
-		if (submitBtn) submitBtn.disabled = !valid;
 		return valid;
 	}
 
-	Object.values(fields).forEach(function (f) {
-		f.input.addEventListener('input', validateAll);
-		f.input.addEventListener('change', validateAll);
-		f.input.addEventListener('blur', validateAll);
-	});
+	function updateSubmitButton() {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		const fieldsValid = validateFields();
+		const tokenValid = tokenInput && tokenInput.value.trim() !== '';
+		if (submitBtn) submitBtn.disabled = !(fieldsValid && tokenValid);
+	}
 
-	form.addEventListener('submit', function (e) {
-		if (!validateAll()) e.preventDefault();
+	Object.values(fields).forEach((f) => {
+		f.input.addEventListener('input', updateSubmitButton);
+		f.input.addEventListener('change', updateSubmitButton);
+		f.input.addEventListener('blur', updateSubmitButton);
 	});
-
-	window.onSuccess = function (token) {
-		var tokenInput = document.getElementById('cfTurnstileToken');
-		if (tokenInput) tokenInput.value = token;
-		validateAll();
-	};
 
 	window.onSuccess = function (token) {
 		const tokenInput = document.getElementById('cfTurnstileToken');
-		if (tokenInput) {
-			tokenInput.value = token;
-			validateAll();
-		}
+		if (tokenInput) tokenInput.value = token;
+		updateSubmitButton();
 	};
 
-	Object.values(fields).forEach((f) => {
-		f.input.addEventListener('input', validateAll);
-		f.input.addEventListener('change', validateAll);
-		f.input.addEventListener('blur', validateAll);
-	});
-
-	form?.addEventListener('submit', (e) => {
-		if (!validateAll()) {
-			e.preventDefault();
-		} else {
-			if (submitBtn) {
-				submitBtn.disabled = true;
-				const loader = document.getElementById('btn-loader');
-				const text = document.getElementById('ServiceBtnText');
-				if (loader) loader.style.display = 'inline-block';
-				if (text) text.textContent = messages.sending;
-			}
-		}
+	form.addEventListener('submit', function (e) {
+		if (submitBtn.disabled) e.preventDefault();
 	});
 </script>
 
