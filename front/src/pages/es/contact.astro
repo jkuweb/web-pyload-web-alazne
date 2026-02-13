@@ -7,29 +7,34 @@ import { getPageBySlug } from '@/utils/payloadFetch';
 import type { Page, Media } from '@/payloadTypes';
 import BreadcrumbSchema from '@/components/SEO/BreadcrumbSchema.astro';
 import WebPageSchema from '@/components/SEO/WebPageSchema.astro';
-const currentLang = Astro.currentLocale || 'eu';
+
+const currentLang = Astro.currentLocale || 'es';
 const page: Page | null = await getPageBySlug('contacto', 'es');
 
 if (!page && Astro.url.pathname !== '/es/contact') {
 	return Astro.redirect('/es/contact');
 }
+
 const breadcrumbs = [
 	{
 		name: currentLang === 'es' ? 'Contacto' : 'Kontaktua',
 		url: Astro.url.pathname,
 	},
 ];
+
 const layoutImage =
-	page.layout[0]?.media && typeof page.layout[0].media === 'object'
+	page?.layout[0]?.media && typeof page.layout[0].media === 'object'
 		? page.layout[0].media
 		: null;
+
 const seoTitle = page.meta?.title || 'Sobre mí';
-const seoDescription = page.meta?.description || '...';
+const seoDescription = page.meta?.description || 'Formulario de contacto';
 const seoImage =
-	page.meta?.image?.unpicUrl ||
+	page?.meta?.image?.unpicUrl ||
 	'https://aitamasleepcoaching.com/img/banner.png';
+
 const heroImage =
-	page.hero && 'media' in page.hero && page.hero.media
+	page?.hero && 'media' in page.hero && page.hero.media
 		? typeof page.hero.media === 'object'
 			? page.hero.media
 			: null
@@ -37,11 +42,11 @@ const heroImage =
 
 const preloadImages = [
 	heroImage?.unpicUrl,
-	page.layout[1]?.media?.unpicUrl,
+	page?.layout[1]?.media?.unpicUrl,
 	layoutImage?.unpicUrl,
 ].filter(Boolean);
-const result = Astro.getActionResult(actions.send);
 
+const result = Astro.getActionResult(actions.send);
 const inputErrors = isInputError(result?.error) ? result?.error.fields : {};
 
 const csrf = generateCSRFToken();
@@ -51,6 +56,7 @@ Astro.cookies.set('csrf_token', csrf, {
 	sameSite: 'strict',
 	secure: true,
 });
+
 if (result?.data) {
 	return Astro.redirect(`/${currentLang}/contact/?sent=true`);
 }
@@ -60,7 +66,7 @@ if (result?.data) {
 	title={seoTitle}
 	description={seoDescription}
 	ogImage={seoImage}
-	lang="es"
+	lang={currentLang}
 	preloadImages={preloadImages}
 >
 	<WebPageSchema
@@ -70,19 +76,17 @@ if (result?.data) {
 		image={seoImage}
 	/>
 	<BreadcrumbSchema slot="head" items={breadcrumbs} />
+
 	<section>
 		<div
 			class="hero-image bg-contact"
 			style={`
-    min-height: 37vh;
-    ${
-			layoutImage?.unpicUrl
-				? `background-image: url(${heroImage?.unpicUrl});`
-				: ''
-		}
-  `}
+				min-height: 37vh;
+				${layoutImage?.unpicUrl ? `background-image: url(${heroImage?.unpicUrl});` : ''}
+			`}
 		>
 		</div>
+
 		<div id="contact"></div>
 
 		<section class="h-contact h-contact-page">
@@ -93,6 +97,7 @@ if (result?.data) {
 					: ''}
 			>
 			</div>
+
 			<div class="h-contact-page__col2">
 				<div class="wrapper" style="margin-top: 3rem;">
 					<p class="heading-title" tabindex="0">Contacto</p>
@@ -103,53 +108,42 @@ if (result?.data) {
 						<p tabindex="0">¡Ponte en contacto conmigo y hablamos!</p>
 					</div>
 				</div>
+
 				<form
 					id="contactPageForm"
 					class="h-contact__form h-contact-page__form"
 					action={actions.send}
 					method="POST"
-					onsubmit="return contactPageFormSend(event)"
 				>
+					<!-- Nombre -->
 					<div class="h-contact-page__field">
 						<label class="h-contact-page__label" for="contactPageName"
 							>¿Cómo te llamas?</label
 						>
-						<input
-							type="text"
-							id="contactPageName"
-							name="username"
-							required=""
-							onfocus="loadRecaptcha()"
-						/>
+						<input type="text" id="contactPageName" name="username" required />
 						<span id="error-name" style="color:#eb374d"
 							>{inputErrors.username}</span
 						>
 					</div>
+
+					<!-- Email -->
 					<div class="h-contact-page__field">
 						<label class="h-contact-page__label" for="contactPageEmail"
 							>Email</label
 						>
-						<input
-							type="email"
-							id="contactPageEmail"
-							name="email"
-							required=""
-							onfocus="loadRecaptcha()"
-						/>
+						<input type="email" id="contactPageEmail" name="email" required />
 						<span id="error-email" style="color:#eb374d"
 							>{inputErrors.email}</span
 						>
 					</div>
+
+					<!-- Asunto -->
 					<div class="h-contact-page__field">
 						<label class="h-contact-page__label" for="contactPageSelect"
 							>Selecciona un asunto:</label
 						>
-						<select
-							name="select"
-							id="contactPageSelect"
-							onfocus="loadRecaptcha()"
-						>
-							<option value="" selected=""></option>
+						<select name="select" id="contactPageSelect">
+							<option value="" selected></option>
 							<option value="Plan de sueño personalizado con seguimiento"
 								>Plan de sueño personalizado con seguimiento</option
 							>
@@ -164,6 +158,8 @@ if (result?.data) {
 							>{inputErrors.select}</span
 						>
 					</div>
+
+					<!-- Mensaje -->
 					<div class="h-contact-page__field">
 						<label class="h-contact-page__label" for="contactPageMessage"
 							>Mensaje</label
@@ -173,227 +169,141 @@ if (result?.data) {
 							name="message"
 							cols="40"
 							rows="10"
-							required=""
-							onfocus="loadRecaptcha()"></textarea>
+							required></textarea>
 						<span id="error-message" style="color:#eb374d"
 							>{inputErrors.message}</span
 						>
 					</div>
-					<input type="hidden" name="lang" id="idioma" value={currentLang} />
-					<input type="hidden" id="recaptcha-token" name="recaptcha" />
+
+					<!-- CSRF y Turnstile -->
+					<input type="hidden" name="lang" value={currentLang} />
 					<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
+					<input type="hidden" id="cfTurnstileToken" name="cfTurnstileToken" />
+
+					<!-- Turnstile -->
+					<div
+						class="cf-turnstile"
+						data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
+						data-theme="light"
+						data-size="normal"
+						data-callback="onTurnstileSuccess"
+					>
+					</div>
+
+					<!-- Botón -->
 					<button
 						id="contactPageBtn"
-						class="btn btn-section animated h-contact__btn g-recaptcha"
+						class="btn btn-section animated h-contact__btn"
 						style="z-index: 0; margin-top: 1rem;"
-						data-sitekey={import.meta.env.RECAPTCHA3_SECRET_SITE}
-						data-action="submit"
-						data-callback="onSubmit"
+						type="submit"
 						disabled>Enviar</button
 					>
+
+					<!-- Términos -->
 					<div class="h-contact__footer">
 						<input
 							id="contactPageTerms"
 							type="checkbox"
 							name="termsAccepted"
-							required=""
-							onfocus="loadRecaptcha()"
+							required
 							aria-label="Aceptar terminos"
 						/>
-						<p style="font-size: .9rem;line-height: 1.2; margin-top:1rem;">
+						<p style="font-size: .9rem; line-height:1.2; margin-top:1rem;">
 							Todos los datos aportados por el usuario en este formulario NO
 							tendrán persistencia en ninguna base de datos ni en ningún otro
 							sistema de persistencia.
 						</p>
 					</div>
-					<span id="error-terms" style="color:#eb374d">
-						{inputErrors.termsAccepted}
-					</span>
+					<span id="error-terms" style="color:#eb374d"
+						>{inputErrors.termsAccepted}</span
+					>
 				</form>
+
 				<SuccessContactPopup />
 			</div>
 		</section>
 	</section>
 
-	<script type="module">
-		const lang = window.location.pathname.split('/')[1] || 'es';
-
-		const messages =
-			{
-				es: {
-					nameRequired: 'El nombre es obligatorio',
-					nameInvalid: 'El nombre debe de tener al menos 2 caracter',
-					nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
-					emailInvalid: 'Email no válido',
-					reasonRequired: 'Selecciona un motivo',
-					messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
-					termsRequired: 'Debes aceptar los términos',
-				},
-				eu: {
-					nameRequired: 'Izena derrigorrezkoa da',
-					nameInvalid: 'Izenak gutxienez 2 karaktere izan behar ditu',
-					nameLengthInvalid:
-						'Izenak ezin ditu 50 karaktere baino gehiago izan.',
-					emailInvalid: 'Emaila ez da baliozkoa',
-					reasonRequired: 'Aukera bat hautatu',
-					messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
-					termsRequired: 'Baldintzak onartu behar dituzu',
-				},
-			}[lang] || messages.es;
-
-		const form = document.getElementById('contactPageForm');
-		const submitBtn = document.getElementById('contactPageBtn');
+	<!-- Validaciones y Turnstile -->
+	<script is:inline>
 		document.addEventListener('DOMContentLoaded', () => {
-			submitBtn?.disabled;
-		});
+			const form = document.getElementById('contactPageForm');
+			const submitBtn = document.getElementById('contactPageBtn');
+			const tokenInput = document.getElementById('cfTurnstileToken');
 
-		const fields = {
-			name: {
-				input: document.getElementById('contactPageName'),
-				error: document.getElementById('error-name'),
-				validate: (v) => {
-					const nameLength = v.length;
-					if (typeof v !== 'string' || v.trim() === '') {
-						return messages.nameRequired;
-					} else if (nameLength <= 2) {
-						return messages.nameInvalid;
-					}
-
-					return nameLength > 50 ? messages.nameLengthInvalid : true;
+			const fields = {
+				name: {
+					input: document.getElementById('contactPageName'),
+					error: document.getElementById('error-name'),
+					validate: (v) => {
+						const len = v.trim().length;
+						if (!len) return 'El nombre es obligatorio';
+						if (len <= 2) return 'El nombre debe tener al menos 3 caracteres';
+						if (len > 50) return 'El nombre no debe superar 50 caracteres';
+						return true;
+					},
 				},
-			},
-			email: {
-				input: document.getElementById('contactPageEmail'),
-				error: document.getElementById('error-email'),
-				validate: (v) =>
-					/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || messages.emailInvalid,
-			},
-			reason: {
-				input: document.getElementById('contactPageSelect'),
-				error: document.getElementById('error-reason'),
-				validate: (v) => v !== '' || messages.reasonRequired,
-			},
-			message: {
-				input: document.getElementById('contactPageMessage'),
-				error: document.getElementById('error-message'),
-				validate: (v) => v.trim().length >= 10 || messages.messageShort,
-			},
-			terms: {
-				input: document.getElementById('contactPageTerms'),
-				error: document.getElementById('error-terms'),
-				validate: (v, input) => input.checked || messages.termsRequired,
-			},
-		};
+				email: {
+					input: document.getElementById('contactPageEmail'),
+					error: document.getElementById('error-email'),
+					validate: (v) =>
+						/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email no válido',
+				},
+				reason: {
+					input: document.getElementById('contactPageSelect'),
+					error: document.getElementById('error-reason'),
+					validate: (v) => v !== '' || 'Selecciona un motivo',
+				},
+				message: {
+					input: document.getElementById('contactPageMessage'),
+					error: document.getElementById('error-message'),
+					validate: (v) =>
+						v.trim().length >= 10 || 'Mensaje muy corto (mín. 10 caracteres)',
+				},
+				terms: {
+					input: document.getElementById('contactPageTerms'),
+					error: document.getElementById('error-terms'),
+					validate: (v, input) => input.checked || 'Debes aceptar los términos',
+				},
+			};
 
-		function validateAll() {
-			let valid = true;
+			function validateAll() {
+				let valid = true;
+				Object.values(fields).forEach(({ input, error, validate }) => {
+					const value = input.type === 'checkbox' ? input.checked : input.value;
+					const result = validate(value, input);
+					if (result !== true) {
+						error.textContent = result;
+						input.classList.add('invalid');
+						valid = false;
+					} else {
+						error.textContent = '';
+						input.classList.remove('invalid');
+					}
+				});
+				submitBtn.disabled = !valid || !tokenInput.value;
+				return valid;
+			}
 
-			Object.values(fields).forEach(({ input, error, validate }) => {
-				const value = input.type === 'checkbox' ? input.checked : input.value;
-				const result = validate(value, input);
-
-				if (result !== true) {
-					error.textContent = result;
-					input.classList.add('invalid');
-					input.setAttribute('aria-invalid', 'true');
-					valid = false;
-				} else {
-					error.textContent = '';
-					input.classList.remove('invalid');
-					input.setAttribute('aria-invalid', 'false');
-				}
+			Object.values(fields).forEach(({ input }) => {
+				input.addEventListener('input', validateAll);
+				input.addEventListener('change', validateAll);
 			});
 
-			submitBtn.disabled = !valid;
-			return valid;
-		}
+			form.addEventListener('submit', (e) => {
+				if (!validateAll()) e.preventDefault();
+			});
 
-		Object.values(fields).forEach(({ input }) => {
-			const validateAndUpdateButton = () => {
+			// Callback de Turnstile
+			window.onTurnstileSuccess = (token) => {
+				tokenInput.value = token;
 				validateAll();
 			};
-
-			input.addEventListener('input', validateAndUpdateButton);
-			input.addEventListener('change', validateAndUpdateButton);
-			input.addEventListener('blur', validateAndUpdateButton);
-		});
-
-		form.addEventListener('submit', (e) => {
-			if (!validateAll()) {
-				e.preventDefault();
-			}
 		});
 	</script>
 
-	<script is:inline>
-		let recaptchaCargado = false;
-
-		function loadRecaptcha() {
-			if (recaptchaCargado) return;
-			recaptchaCargado = true;
-
-			const script = document.createElement('script');
-			script.src =
-				'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
-			script.async = true;
-			script.defer = true;
-			script.onload = () => {
-				grecaptcha.ready(() => {
-					window.recaptchaReady = true;
-				});
-			};
-			document.head.appendChild(script);
-		}
-		function contactPageFormSend(event) {
-			event.preventDefault();
-
-			if (!validateAll()) {
-				console.warn('❌ El formulario tiene errores de validación.');
-				return false;
-			}
-
-			if (!recaptchaCargado || typeof grecaptcha === 'undefined') {
-				alert(
-					'⚠️ El sistema de seguridad aún no está listo. Intenta de nuevo.',
-				);
-				return false;
-			}
-			grecaptcha.ready(() => {
-				grecaptcha
-					.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
-						action: 'submit',
-					})
-					.then(onSubmit);
-			});
-
-			return false;
-		}
-
-		function onSubmit(token) {
-			fetch('/recaptcha', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ recaptcha: token }),
-			})
-				.then((response) => response.json())
-				.then((gResponse) => {
-					if (gResponse.success && gResponse.score >= 0.5) {
-						const formToken = document.getElementById('csrf_token')?.value;
-						if (!formToken) {
-							alert('⚠️ Falta token CSRF');
-							return;
-						}
-						document.getElementById('recaptcha-token').value = token;
-						document.getElementById('contactPageForm').submit();
-					} else {
-						console.warn('❌ Falló la verificación de reCAPTCHA');
-						alert('No pudimos verificar que eres humano.');
-					}
-				})
-				.catch((err) => {
-					console.error('⚠️ Error en verificación reCAPTCHA', err);
-					alert('Error al verificar reCAPTCHA. Intenta más tarde.');
-				});
-		}
-	</script>
+	<script
+		src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+		async
+		defer></script>
 </Layout>
