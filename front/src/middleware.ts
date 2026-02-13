@@ -45,6 +45,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://www.recaptcha.net',
 			'https://www.googletagmanager.com',
 			'https://www.google-analytics.com',
+			'https://challenges.cloudflare.com',
 		];
 
 		const trustedImages = [
@@ -59,6 +60,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 			'https://www.google.com',
 			'https://www.recaptcha.net',
 			'https://aitamasleepcoaching.com',
+			'https://challenges.cloudflare.com',
 		];
 
 		const trustedStyles = [

@@ -371,33 +371,60 @@ if (contactResult?.data || serviceResult?.data) {
 <script is:inline>
 	document.addEventListener('DOMContentLoaded', () => {
 		const modal = document.getElementById('my-modal');
-		const input = document.getElementById('serviceInput');
+		const serviceInput = document.getElementById('serviceInput');
 		const closeBtn = modal?.querySelector('.close');
 
-		document.querySelectorAll('.js-modal').forEach((btn) => {
-			btn.addEventListener('click', (e) => {
-				e.preventDefault();
-				const serviceTitle = btn.dataset.service;
-				if (input && serviceTitle) input.value = serviceTitle;
-				if (modal) {
-					modal.style.display = 'block';
-					document.body.style.overflow = 'hidden';
-				}
-			});
-		});
+		const serviceForm = modal?.querySelector('form');
+		const submitBtn = serviceForm?.querySelector('button[type="submit"]');
+		const tokenInput = serviceForm?.querySelector(
+			'input[name="cfTurnstileToken"]',
+		);
 
-		modal?.addEventListener('click', (e) => {
-			if (e.target === modal) {
-				modal.style.display = 'none';
-				document.body.style.overflow = '';
+		function openModal(serviceTitle) {
+			if (serviceInput && serviceTitle) serviceInput.value = serviceTitle;
+			if (modal) {
+				modal.style.display = 'block';
+				document.body.style.overflow = 'hidden';
 			}
-		});
 
-		closeBtn?.addEventListener('click', () => {
+			if (submitBtn) submitBtn.disabled = true;
+			if (tokenInput) tokenInput.value = '';
+
+			if (serviceForm && window.turnstile) {
+				const oldWidget = serviceForm.querySelector('.cf-turnstile');
+				if (oldWidget) oldWidget.innerHTML = '';
+				window.turnstile.render(oldWidget, {
+					sitekey: import.meta.env.TURNSTILE_SITE_KEY,
+					callback: (token) => {
+						if (tokenInput) tokenInput.value = token;
+						if (submitBtn) submitBtn.disabled = false;
+					},
+				});
+			}
+		}
+
+		function closeModal() {
 			if (modal) {
 				modal.style.display = 'none';
 				document.body.style.overflow = '';
 			}
+		}
+
+		document.querySelectorAll('.js-modal').forEach((btn) => {
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				openModal(btn.dataset.service);
+			});
 		});
+
+		closeBtn?.addEventListener('click', closeModal);
+		modal?.addEventListener('click', (e) => {
+			if (e.target === modal) closeModal();
+		});
+
+		const script = document.createElement('script');
+		script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+		script.async = true;
+		document.head.appendChild(script);
 	});
 </script>

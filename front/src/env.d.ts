@@ -6,6 +6,8 @@ interface ImportMetaEnv {
 	readonly RECAPTCHA3_KEY: string;
 	readonly RESEND_WEBHOOK_SECRET: string;
 	readonly HREF: string;
+	readonly TURNSTILE_SITE_KEY: string;
+	readonly TURNSTILE_SECRET_KEY: string;
 }
 
 interface ImportMeta {

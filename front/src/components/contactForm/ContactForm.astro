@@ -1,7 +1,6 @@
 ---
 import type { languagesList } from '@/i18n/ui';
 import { useTranslations } from '@/i18n/utils';
-import { actions } from 'astro:actions';
 import SuccessServicePopup from '../pop-ups/SuccessServicePopup.astro';
 
 const currentLang = Astro.currentLocale || 'es';
@@ -31,39 +30,29 @@ const { inputErrors, csrf } = Astro.props;
 			<div>
 				<label for="registration_form_firstName">{t('form.label.nombre')}</label
 				>
-				<input
-					type="text"
-					id="registration_form_firstName"
-					name="username"
-					onfocus="loadRecaptcha()"
-				/>
+				<input type="text" id="registration_form_firstName" name="username" />
 				<span id="error-name" style="color:#eb374d"
 					>{inputErrors?.username}</span
 				>
 			</div>
 			<div>
 				<label for="registration_form_email">{t('form.label.email')}</label>
-				<input
-					type="email"
-					id="registration_form_email"
-					name="email"
-					onfocus="loadRecaptcha()"
-				/>
+				<input type="email" id="registration_form_email" name="email" />
 				<span id="error-email" style="color:#eb374d">{inputErrors?.email}</span>
 			</div>
 			<div>
 				<label for="select">{t('form.label.select')}</label>
-				<select name="select" id="select" onfocus="loadRecaptcha()">
+				<select name="select" id="select">
 					<option value="" selected></option>
-					<option value="Plan de sueño personalizado con seguimiento">
-						Plan de sueño personalizado con seguimiento
-					</option>
+					<option value="Plan de sueño personalizado con seguimiento"
+						>Plan de sueño personalizado con seguimiento</option
+					>
 					<option value="Plan a vuestro ritmo">Plan a vuestro ritmo</option>
 					<option value="Consultas">Consultas</option>
 					<option value="Encuentros grupales">Encuentros grupales</option>
-					<option value="Plan de sueño conmigo pero a tu ritmo">
-						Plan de sueño conmigo pero a tu ritmo
-					</option>
+					<option value="Plan de sueño conmigo pero a tu ritmo"
+						>Plan de sueño conmigo pero a tu ritmo</option
+					>
 				</select>
 				<span id="error-reason" style="color:#eb374d"
 					>{inputErrors?.select}</span
@@ -71,24 +60,18 @@ const { inputErrors, csrf } = Astro.props;
 			</div>
 			<div>
 				<label for="message">{t('form.label.mensaje')}</label>
-				<textarea
-					id="message"
-					name="message"
-					cols="40"
-					rows="10"
-					onfocus="loadRecaptcha()"></textarea>
+				<textarea id="message" name="message" cols="40" rows="10"></textarea>
 				<span id="error-message" style="color:#eb374d"
 					>{inputErrors?.message}</span
 				>
 			</div>
 			<input type="hidden" name="lang" id="idioma" value={currentLang} />
 			<input type="hidden" id="csrf_token" name="csrf_token" value={csrf} />
-			<input
-				type="hidden"
-				id="recaptcha-token"
-				name="recaptcha-token"
-				value=""
-			/>
+
+			<input type="hidden" name="cfTurnstileToken" id="cfTurnstileToken" />
+			<!-- Honeypot -->
+			<input type="text" name="company" style="display:none" />
+
 			<button
 				id="contact-btn"
 				class="btn btn-section animated h-contact__btn"
@@ -98,12 +81,12 @@ const { inputErrors, csrf } = Astro.props;
 			>
 				{t('form.btn.texto')}
 			</button>
+
 			<div class="h-contact__footer">
 				<input
 					id="terms"
 					name="termsAccepted"
 					type="checkbox"
-					onfocus="loadRecaptcha()"
 					aria-label="Aceptar terminos"
 				/>
 				<p>
@@ -112,30 +95,43 @@ const { inputErrors, csrf } = Astro.props;
 					persistencia.
 				</p>
 			</div>
-			<span id="error-terms" style="color:#eb374d">
-				{inputErrors?.termsAccepted}
-			</span>
+			<span id="error-terms" style="color:#eb374d"
+				>{inputErrors?.termsAccepted}</span
+			>
+			<div
+				class="cf-turnstile"
+				data-sitekey={import.meta.env.TURNSTILE_SITE_KEY}
+				data-theme="light"
+				data-size="normal"
+				data-callback="onSuccess"
+			>
+			</div>
 		</form>
 	</div>
 </section>
 
 <script is:inline>
-	const lang = window.location.pathname.split('/')[1] || 'es';
+	const form = document.getElementById('form');
+	const submitBtn = document.getElementById('contact-btn');
 
+	window.onSuccess = (token) => {
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (tokenInput) tokenInput.value = token;
+		if (submitBtn) submitBtn.disabled = false;
+	};
+
+	const lang = window.location.pathname.split('/')[1] || 'es';
 	const messages =
 		{
 			es: {
 				nameRequired: 'El nombre es obligatorio',
-				nameInvalid: 'El nombre debe de tener al menos 2 caracter',
+				nameInvalid: 'El nombre debe de tener al menos 2 caracteres',
 				nameLengthInvalid: 'El nombre no debe de tener más de 50 caracteres',
 				emailInvalid: 'Email no válido',
 				reasonRequired: 'Selecciona un motivo',
 				messageShort: 'Mensaje muy corto (mín. 10 caracteres)',
 				termsRequired: 'Debes aceptar los términos',
 				sending: 'Enviando...',
-				recaptchaError: 'No pudimos verificar que eres humano.',
-				recaptchaNotReady:
-					'El sistema de seguridad aún no está listo. Intenta de nuevo.',
 			},
 			eu: {
 				nameRequired: 'Izena derrigorrezkoa da',
@@ -144,29 +140,20 @@ const { inputErrors, csrf } = Astro.props;
 				emailInvalid: 'Emaila ez da baliozkoa',
 				reasonRequired: 'Aukera bat hautatu',
 				messageShort: 'Mezua laburregia da (gutxienez 10 karaktere)',
-				termsRequired: 'Baldintzak onartu behar dituzu',
+				termsRequired: 'Baldintzak onartu behar dituzue',
 				sending: 'Bidaltzen...',
-				recaptchaError: 'Ezin izan dugu egiaztatu giza zara.',
-				recaptchaNotReady:
-					'Segurtasun sistema ez dago prest oraindik. Saiatu berriro.',
 			},
 		}[lang] || messages.es;
-
-	const form = document.getElementById('form');
-	const submitBtn = document.getElementById('contact-btn');
 
 	const fields = {
 		name: {
 			input: document.getElementById('registration_form_firstName'),
 			error: document.getElementById('error-name'),
 			validate: (v) => {
-				const nameLength = v.length;
-				if (typeof v !== 'string' || v.trim() === '') {
-					return messages.nameRequired;
-				} else if (nameLength <= 2) {
-					return messages.nameInvalid;
-				}
-				return nameLength > 50 ? messages.nameLengthInvalid : true;
+				if (!v.trim()) return messages.nameRequired;
+				if (v.length <= 2) return messages.nameInvalid;
+				if (v.length > 50) return messages.nameLengthInvalid;
+				return true;
 			},
 		},
 		email: {
@@ -194,11 +181,9 @@ const { inputErrors, csrf } = Astro.props;
 
 	function validateAll() {
 		let valid = true;
-
 		Object.values(fields).forEach(({ input, error, validate }) => {
 			const value = input.type === 'checkbox' ? input.checked : input.value;
 			const result = validate(value, input);
-
 			if (result !== true) {
 				error.textContent = result;
 				input.classList.add('invalid');
@@ -210,124 +195,31 @@ const { inputErrors, csrf } = Astro.props;
 				input.setAttribute('aria-invalid', 'false');
 			}
 		});
-
-		submitBtn.disabled = !valid;
 		return valid;
 	}
 
-	Object.values(fields).forEach(({ input }) => {
-		const validateAndUpdateButton = () => {
-			validateAll();
-		};
-
-		input.addEventListener('input', validateAndUpdateButton);
-		input.addEventListener('change', validateAndUpdateButton);
-		input.addEventListener('blur', validateAndUpdateButton);
+	form.addEventListener('input', () => {
+		submitBtn.disabled = !validateAll();
+	});
+	form.addEventListener('change', () => {
+		submitBtn.disabled = !validateAll();
 	});
 
-	window.validateAll = validateAll;
-</script>
-
-<script is:inline>
-	let recaptchaCargado = false;
-
-	function loadRecaptcha() {
-		if (recaptchaCargado) return;
-		recaptchaCargado = true;
-
-		const script = document.createElement('script');
-		script.src =
-			'https://www.google.com/recaptcha/api.js?render=6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q';
-		script.async = true;
-		script.defer = true;
-		script.onload = () => {
-			grecaptcha.ready(() => {
-				window.recaptchaReady = true;
-			});
-		};
-		document.head.appendChild(script);
-	}
-
-	window.loadRecaptcha = loadRecaptcha;
-</script>
-
-<script is:inline>
-	const form = document.getElementById('form');
-	const submitBtn = document.getElementById('contact-btn');
-	const lang = window.location.pathname.split('/')[1] || 'es';
-
-	const messages = {
-		es: {
-			sending: 'Enviando...',
-			recaptchaError: 'No pudimos verificar que eres humano.',
-			recaptchaNotReady:
-				'El sistema de seguridad aún no está listo. Intenta de nuevo.',
-		},
-		eu: {
-			sending: 'Bidaltzen...',
-			recaptchaError: 'Ezin izan dugu egiaztatu giza zara.',
-			recaptchaNotReady:
-				'Segurtasun sistema ez dago prest oraindik. Saiatu berriro.',
-		},
-	}[lang] || {
-		sending: 'Enviando...',
-		recaptchaError: 'Error',
-		recaptchaNotReady: 'Error',
-	};
-
-	form.addEventListener('submit', async function (event) {
-		event.preventDefault();
-
-		if (!window.validateAll || !window.validateAll()) {
-			console.warn('❌ El formulario tiene errores de validación.');
+	form.addEventListener('submit', (e) => {
+		if (!validateAll()) {
+			e.preventDefault();
 			return false;
 		}
 
-		if (typeof grecaptcha === 'undefined') {
-			alert(messages.recaptchaNotReady);
+		const tokenInput = document.getElementById('cfTurnstileToken');
+		if (!tokenInput || !tokenInput.value) {
+			e.preventDefault();
+			alert('Por favor, completa el desafío de seguridad.');
 			return false;
 		}
 
-		const originalText = submitBtn.textContent;
 		submitBtn.disabled = true;
 		submitBtn.textContent = messages.sending;
-
-		try {
-			const token = await new Promise((resolve, reject) => {
-				grecaptcha.ready(() => {
-					grecaptcha
-						.execute('6LfgXWgiAAAAAFqncZAaTMnOST7xCbQKj3aQyn7Q', {
-							action: 'submit',
-						})
-						.then(resolve)
-						.catch(reject);
-				});
-			});
-
-			const recaptchaResponse = await fetch('/recaptcha', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ recaptcha: token }),
-			});
-
-			const gResponse = await recaptchaResponse.json();
-
-			if (!gResponse.success || gResponse.score < 0.5) {
-				alert(messages.recaptchaError);
-				submitBtn.disabled = false;
-				submitBtn.textContent = originalText;
-				return false;
-			}
-
-			document.getElementById('recaptcha-token').value = token;
-
-			form.submit();
-		} catch (err) {
-			console.error('⚠️ Error:', err);
-			alert('Error al verificar reCAPTCHA. Intenta más tarde.');
-			submitBtn.disabled = false;
-			submitBtn.textContent = originalText;
-		}
 	});
 </script>
 <style>

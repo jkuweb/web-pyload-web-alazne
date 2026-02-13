@@ -25,6 +25,7 @@ const schemaContactFormSchema = z.object({
 	termsAccepted: z.literal('on'),
 	lang: z.string().max(2).optional().default('es'),
 	csrf_token: z.string(),
+	cfTurnstileToken: z.string(),
 });
 const schemaServiceFormSchema = z.object({
 	serviceUsername: z
@@ -39,6 +40,7 @@ const schemaServiceFormSchema = z.object({
 	service: z.string().min(2),
 	lang: z.string().max(2).optional().default('es'),
 	csrf_token: z.string(),
+	cfTurnstileToken: z.string(),
 });
 export const server = {
 	send: defineAction({

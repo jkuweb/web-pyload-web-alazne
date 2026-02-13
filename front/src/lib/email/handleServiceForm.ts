@@ -1,6 +1,7 @@
 import { getServiceClientEmailTemplate } from '@/email-templates/service-client-email';
 import { getServiceContactEmailTemplate } from '@/email-templates/service-contact-email';
 import type { AstroCookies } from 'astro';
+import { ActionError } from 'astro:actions';
 import type { Resend } from 'resend';
 
 export interface ContactFormInput {
@@ -10,6 +11,8 @@ export interface ContactFormInput {
 	service: string;
 	lang: string;
 	csrf_token: string;
+	cfTurnstileToken: string;
+	company?: string;
 }
 export async function handleServiceForm(
 	input: ContactFormInput,
@@ -23,6 +26,7 @@ export async function handleServiceForm(
 		service,
 		lang,
 		csrf_token,
+		cfTurnstileToken,
 	} = input;
 	const csrfFromCookie = cookies.get('csrf_token')?.value;
 	if (!csrfFromCookie || csrf_token !== csrfFromCookie) {
@@ -31,6 +35,51 @@ export async function handleServiceForm(
 			error: 'Token CSRF inválido',
 		};
 	}
+	// Validar Turnstile
+	const verifyResponse = await fetch(
+		'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: new URLSearchParams({
+				secret: import.meta.env.TURNSTILE_SECRET_KEY,
+				response: cfTurnstileToken,
+			}),
+		},
+	);
+
+	const verifyResult = await verifyResponse.json();
+
+	if (!verifyResult.success) {
+		throw new ActionError({
+			code: 'FORBIDDEN',
+			message: 'Verificación anti-spam fallida',
+		});
+	}
+
+	if (service.includes('http')) {
+		throw new ActionError({
+			code: 'BAD_REQUEST',
+			message: 'Contenido sospechoso',
+		});
+	}
+
+	if (/casino|crypto|loan|seo/i.test(service)) {
+		throw new ActionError({
+			code: 'BAD_REQUEST',
+			message: 'Contenido sospechoso',
+		});
+	}
+
+	if (input.company) {
+		throw new ActionError({
+			code: 'FORBIDDEN',
+			message: 'Bot detectado',
+		});
+	}
+
 	const contactHtml = getServiceClientEmailTemplate({
 		serviceUsername,
 		service,
