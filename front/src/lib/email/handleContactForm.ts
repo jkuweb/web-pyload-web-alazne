@@ -99,7 +99,7 @@ export async function handleContactForm(
 
 	try {
 		await resendClient.emails.send({
-			from: 'Alazne <contacto@aitamasleepcoaching.com>',
+			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: ['valverdealazne@gmail.com'],
 			subject: select,
 			html: contactHtml,
@@ -107,7 +107,7 @@ export async function handleContactForm(
 		});
 
 		await resendClient.emails.send({
-			from: 'Alazne <contacto@aitamasleepcoaching.com>',
+			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: [email],
 			subject: select,
 			html: clientHtml,
@@ -118,7 +118,6 @@ export async function handleContactForm(
 			redirect: `/${lang}/?sent=true`,
 		};
 	} catch (error) {
-		console.error('Error al enviar email:', error);
 		throw new ActionError({
 			code: 'INTERNAL_SERVER_ERROR',
 			message: 'Error al enviar el correo',

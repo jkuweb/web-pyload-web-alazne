@@ -96,7 +96,7 @@ export async function handleServiceForm(
 
 	try {
 		await resendClient.emails.send({
-			from: 'Alazne <contacto@aitamasleepcoaching.com>',
+			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: ['valverdealazne@gmail.com'],
 			subject: service,
 			html: clientHtml,
@@ -104,7 +104,7 @@ export async function handleServiceForm(
 		});
 
 		await resendClient.emails.send({
-			from: 'Alazne <contacto@aitamasleepcoaching.com>',
+			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: [serviceEmail],
 			subject: service,
 			html: contactHtml,

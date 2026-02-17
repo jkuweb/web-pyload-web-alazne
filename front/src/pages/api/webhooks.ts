@@ -21,8 +21,6 @@ export const POST: APIRoute = async ({ request }) => {
 		try {
 			event = wh.verify(payload, headers);
 		} catch (err) {
-			console.error('Webhook verification failed', err);
-
 			return new Response('Invalid signature', { status: 400 });
 		}
 	} else {
@@ -36,7 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
 	) {
 		try {
 			await resend.emails.send({
-				from: 'Alazne <contacto@aitamasleepcoaching.com>',
+				from: 'Alazne <aitama@aitamasleepcoaching.com>',
 				to: ['josebaquerejetawork@gmail.com'],
 				subject: `Email Event Alert: ${event.type}`,
 				html: `
