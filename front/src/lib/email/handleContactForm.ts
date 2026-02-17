@@ -101,6 +101,7 @@ export async function handleContactForm(
 		await resendClient.emails.send({
 			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: ['aitama@aitamasleepcoaching.com'],
+			replyTo: email,
 			subject: select,
 			html: contactHtml,
 			text: `Nuevo mensaje de la web Usuario: ${username}, email: ${email}, asunto: ${select}, mensaje: ${message}`,

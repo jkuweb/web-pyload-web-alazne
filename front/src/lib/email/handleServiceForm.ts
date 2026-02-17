@@ -98,6 +98,7 @@ export async function handleServiceForm(
 		await resendClient.emails.send({
 			from: 'Alazne <aitama@aitamasleepcoaching.com>',
 			to: ['aitama@aitamasleepcoaching'],
+			replyTo: serviceEmail,
 			subject: service,
 			html: clientHtml,
 			text: `Nuevo mensaje de la web Usuario: ${serviceUsername}, email: ${serviceEmail}, servicio: ${service}`,
