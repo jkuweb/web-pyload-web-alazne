@@ -21,17 +21,17 @@ if (!page && Astro.url.pathname !== '/eu/about') {
 const breadcrumbs = [
 	{
 		name: currentLang === 'eu' ? 'Niri buruz' : 'Sobre mí',
-		url: Astro.url.pathname,
+		url: `https://aitamasleepcoaching.com${Astro.url.pathname}`,
 	},
 ];
 
 const seoTitle = page.meta?.title || 'Sobre mí';
 const seoDescription = page.meta?.description || '...';
 const seoImage =
-	page.meta?.image?.unpicUrl ||
+	page?.meta?.image?.unpicUrl ||
 	'https://aitamasleepcoaching.com/img/banner.png';
 const heroImage =
-	page.hero && 'media' in page.hero && page.hero.media
+	page?.hero && 'media' in page.hero && page.hero.media
 		? typeof page.hero.media === 'object'
 			? page.hero.media
 			: null
@@ -39,7 +39,7 @@ const heroImage =
 
 const preloadImages = [
 	heroImage?.unpicUrl,
-	page.layout[1]?.media?.unpicUrl,
+	page?.layout[1]?.media?.unpicUrl,
 ].filter(Boolean);
 
 const result = Astro.getActionResult(actions.send);
